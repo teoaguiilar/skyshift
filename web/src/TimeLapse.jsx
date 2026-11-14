@@ -330,8 +330,11 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
                 <dd>
                   <span className={`status-item ${frame.quality_ok && !frame.measured?.saturated ? 'status-ok' : 'status-warn'}`}>
                     <StarIcon />
-                    {frame.quality_ok ? 'Quality OK' : 'Flagged'}
-                    {frame.measured?.saturated ? ' · Saturated' : ''}
+                    {frame.measured?.saturated
+                      ? `Saturated${frame.quality_ok ? ' (no bad-pixel flags)' : ' · Flagged'}`
+                      : frame.quality_ok
+                        ? 'Quality OK'
+                        : 'Flagged'}
                   </span>
                   {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
                 </dd>
