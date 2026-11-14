@@ -34,10 +34,14 @@ const TOUR = [
 
 const DEFAULT_FOV = 0.5 // degrees
 
-// Background sky: SPHEREx DR1 all-sky data cube (HiPS) served by NASA/IPAC IRSA.
-const BACKGROUND_SURVEY = 'https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube'
+// Fast base map for smooth navigation: AllWISE colour infrared sky (NASA WISE data),
+// served from ESA's HiPS mirror, which answers about 4x faster than IRSA from Europe.
+const BASE_SURVEY = 'https://skies.esac.esa.int/AllWISEColor'
+// SPHEREx DR1 all-sky data cube (HiPS) from NASA/IPAC IRSA, laid on top when zoomed in.
+const SPHEREX_SURVEY = 'https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube'
 // The cube has one image per wavelength. Temporary choice; the data team picks the final one.
-const BACKGROUND_SLICE = 30
+const SPHEREX_SLICE = 30
+const SPHEREX_MAX_FOV = 15 // degrees: SPHEREx layer appears below this field of view
 
 // Name -> coordinates with the CDS Sesame resolver (SIMBAD, NED, VizieR).
 async function resolveName(name) {
@@ -86,6 +90,7 @@ export default function App() {
   const [selected, setSelected] = useState(readUrl())
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('')
+  const [skyLayer, setSkyLayer] = useState('base')
   const [activeId, setActiveId] = useState(() => new URLSearchParams(window.location.search).get('object'))
 
   // Select a sky position: marker + URL + panel.
@@ -105,9 +110,9 @@ export default function App() {
     A.init.then(() => {
       if (cancelled || aladinRef.current) return
       const start = readUrl()
-      const background = A.imageHiPS(BACKGROUND_SURVEY, { name: 'SPHEREx DR1 all-sky' })
+      const base = A.imageHiPS(BASE_SURVEY, { name: 'AllWISE colour (NASA WISE)' })
       const aladin = A.aladin(mapRef.current, {
-        survey: background, // SPHEREx infrared background map
+        survey: base, // fast infrared base map
         fov: start ? start.fov : 100, // start wide, like a planetarium
         target: start ? `${start.ra} ${start.dec}` : '269.45 4.69',
         cooFrame: 'ICRSd',
@@ -126,12 +131,28 @@ export default function App() {
       aladinRef.current = aladin
       window.skyshiftAladin = aladin // handy for debugging in the browser console
 
-      // Choose the wavelength slice once the cube layer has been added.
-      const pickSlice = (tries = 0) => {
-        if (background.added) background.setSliceNumber(BACKGROUND_SLICE)
-        else if (tries < 50) setTimeout(() => pickSlice(tries + 1), 100)
+      // SPHEREx layer on top of the base map, only when zoomed in. While its (slower) tiles
+      // arrive, the base map shows underneath, so the view never goes blank.
+      let spherexOn = false
+      const updateLayers = (fov) => {
+        const wantSpherex = fov <= SPHEREX_MAX_FOV
+        if (wantSpherex === spherexOn) return
+        spherexOn = wantSpherex
+        setSkyLayer(wantSpherex ? 'spherex' : 'base')
+        if (wantSpherex) {
+          const layer = A.imageHiPS(SPHEREX_SURVEY, { name: 'SPHEREx DR1 all-sky' })
+          aladin.setOverlayImageLayer(layer, 'spherex')
+          const pickSlice = (tries = 0) => {
+            if (layer.added) layer.setSliceNumber(SPHEREX_SLICE)
+            else if (tries < 50) setTimeout(() => pickSlice(tries + 1), 100)
+          }
+          pickSlice()
+        } else {
+          aladin.removeImageLayer('spherex')
+        }
       }
-      pickSlice()
+      updateLayers(aladin.getFov()[0])
+      aladin.on('zoomChanged', (fov) => updateLayers(Array.isArray(fov) ? fov[0] : fov))
 
       const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#ff7a3d', sourceSize: 24 })
       aladin.addCatalog(markers)
@@ -212,7 +233,12 @@ export default function App() {
       </nav>
 
       <main className="stage">
-        <div ref={mapRef} className="map" />
+        <div className="map-wrap">
+          <div ref={mapRef} className="map" />
+          <span className="sky-layer">
+            {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
+          </span>
+        </div>
         <aside className="panel">
           {activeId ? (
             <>
