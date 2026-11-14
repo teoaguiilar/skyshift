@@ -1,0 +1,43 @@
+{
+  "id": "r-draconis",
+  "name": "R Draconis",
+  "type": "Mira variable: a pulsating red giant star",
+  "summary": "R Draconis is an aging giant star, far bigger than the Sun, that swells and shrinks. As it pulsates, its visible brightness rises and falls every 246 days, about eight months.",
+  "why_interesting": "It shows the other way a star can change brightness: not dust passing in front, but the whole star pulsating. In infrared light it is so bright that it saturates the SPHEREx detectors, so SkyShift shows its images but not a brightness curve.",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "2,607 ± 135",
+      "unit": "light-years",
+      "compare": "Gaia DR3 parallax 1.2509 ± 0.0648 mas (799 ± 41 parsecs). Parallaxes of large pulsating giants are less reliable, because the star's bright centre shifts as it pulsates. Not used: Gaia DR2, which gave about 2,160 light-years; DR3 is newer and more precise.",
+      "source": "Gaia DR3 parallax, via SIMBAD",
+      "source_url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=R+Dra"
+    },
+    {
+      "label": "Pulsation period",
+      "value": "246.12",
+      "unit": "days",
+      "compare": "About eight months from one brightness peak to the next.",
+      "source": "AAVSO VSX",
+      "source_url": "https://vsx.aavso.org/index.php?view=detail.top&oid=13673"
+    },
+    {
+      "label": "Brightness range (visible, V)",
+      "value": "6.7 to 13.2",
+      "unit": "magnitudes",
+      "compare": "At its brightest it is about 400 times brighter than at its faintest.",
+      "source": "AAVSO VSX",
+      "source_url": "https://vsx.aavso.org/index.php?view=detail.top&oid=13673"
+    },
+    {
+      "label": "Infrared brightness (2MASS J)",
+      "value": "3.71",
+      "unit": "magnitude",
+      "compare": "About 75 to 100 times brighter than RW Aurigae or UX Orionis at this wavelength: that is why it saturates SPHEREx.",
+      "source": "2MASS, via SIMBAD",
+      "source_url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=R+Dra"
+    }
+  ],
+  "written_by": "Juan",
+  "reviewed_by": "Juan (science QC)"
+}
