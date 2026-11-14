@@ -14,7 +14,7 @@ function scale(v, a, b, A, B) {
 
 function Chart({ points, line, current, yLabel, legend }) {
   const ts = [...points.map((p) => p.t), ...(line || []).map((p) => p.t)]
-  const ys = [...points.map((p) => p.y), ...(line || []).map((p) => p.y)]
+  const ys = [...points.flatMap((p) => [p.y, p.lo ?? p.y, p.hi ?? p.y]), ...(line || []).map((p) => p.y)]
   const t0 = Math.min(...ts)
   const t1 = Math.max(...ts)
   let y0 = Math.min(...ys)
@@ -47,6 +47,15 @@ function Chart({ points, line, current, yLabel, legend }) {
         {line && line.length > 1 && (
           <polyline className="expected" points={line.map((p) => `${X(p.t)},${Y(p.y)}`).join(' ')} />
         )}
+        {points.map((p, k) =>
+          p.lo != null && p.hi - p.lo > 0 ? (
+            <g key={`e${k}`} className="err">
+              <line x1={X(p.t)} y1={Y(p.lo)} x2={X(p.t)} y2={Y(p.hi)} />
+              <line x1={X(p.t) - 3} y1={Y(p.lo)} x2={X(p.t) + 3} y2={Y(p.lo)} />
+              <line x1={X(p.t) - 3} y1={Y(p.hi)} x2={X(p.t) + 3} y2={Y(p.hi)} />
+            </g>
+          ) : null,
+        )}
         {points.map((p, k) => (
           <circle key={k} className={p.hollow ? 'pt hollow' : 'pt'} cx={X(p.t)} cy={Y(p.y)} r="3.5" />
         ))}
@@ -57,6 +66,29 @@ function Chart({ points, line, current, yLabel, legend }) {
       </figcaption>
     </figure>
   )
+}
+
+// Images of the same visit (taken less than 3 days apart) become one point:
+// the average, with a bar from the lowest to the highest value of that visit.
+const VISIT_DAYS = 3
+function byVisit(items) {
+  const groups = []
+  for (const it of [...items].sort((a, b) => a.t - b.t)) {
+    const g = groups[groups.length - 1]
+    if (g && it.t - g[0].t < VISIT_DAYS) g.push(it)
+    else groups.push([it])
+  }
+  return groups.map((g) => {
+    const ys = g.map((i) => i.y)
+    return {
+      t: g.reduce((s, i) => s + i.t, 0) / g.length,
+      y: ys.reduce((s, v) => s + v, 0) / ys.length,
+      lo: Math.min(...ys),
+      hi: Math.max(...ys),
+      n: g.length,
+      hollow: g.every((i) => i.hollow),
+    }
+  })
 }
 
 // Offsets in arcsec (east, north) from a reference sky position.
@@ -81,13 +113,14 @@ export function PositionChart({ frames, currentMjd }) {
   const dir = Math.abs(u[1]) > Math.abs(u[0]) ? (u[1] > 0 ? 'north' : 'south') : u[0] > 0 ? 'east' : 'west'
   return (
     <Chart
-      points={usable.map((f) => ({ t: f.mjd, y: along(f.measured), hollow: f.detected === false }))}
-      line={usable.map((f) => ({ t: f.mjd, y: along(f.predicted) }))}
+      points={byVisit(usable.map((f) => ({ t: f.mjd, y: along(f.measured), hollow: f.detected === false })))}
+      line={byVisit(usable.map((f) => ({ t: f.mjd, y: along(f.predicted) })))}
       current={currentMjd}
       yLabel={`Shift towards the ${dir} (arcsec)`}
       legend={
         <>
-          <i className="dot" /> measured by SkyShift (SPHEREx) <i className="dash" /> expected from catalogue motion
+          <i className="dot" /> measured by SkyShift (SPHEREx), average per visit; bar = spread of its images{' '}
+          <i className="dash" /> expected from catalogue motion
         </>
       }
     />
@@ -100,12 +133,13 @@ export function BrightnessChart({ frames, currentMjd }) {
   if (usable.length < 3) return null
   return (
     <Chart
-      points={usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel }))}
+      points={byVisit(usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel })))}
       current={currentMjd}
       yLabel="Relative brightness (SPHEREx)"
       legend={
         <>
-          <i className="dot" /> one SPHEREx image · changes are a candidate variability until checked
+          <i className="dot" /> average per visit; bar = spread of its images. Changes larger than the bars make it a
+          candidate variable until checked
         </>
       }
     />
