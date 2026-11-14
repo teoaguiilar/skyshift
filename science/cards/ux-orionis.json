@@ -7,11 +7,11 @@
   "facts": [
     {
       "label": "Distance",
-      "value": "about 1,500",
+      "value": "1,052 ± 10",
       "unit": "light-years",
-      "compare": "The light you see left it about 1,500 years ago (460 parsecs, the distance adopted in the 2016 study).",
-      "source": "Kreplin et al. (2016)",
-      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+      "compare": "The light you see left it about 1,050 years ago (322 ± 3 parsecs; Gaia DR3 parallax 3.1004 ± 0.0285 mas). Not used: the 460 parsecs (about 1,500 light-years) adopted in the 2016 study, which predates Gaia DR3.",
+      "source": "Gaia DR3 parallax, via SIMBAD",
+      "source_url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=UX+Ori"
     },
     {
       "label": "Mass",
