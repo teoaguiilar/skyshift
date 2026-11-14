@@ -10,6 +10,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BrightnessChart, PositionChart, SpectrumChart, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
+import Frame, { FrameOverlay } from './Frame.jsx'
+import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
 const DATA_BASE = `${REPO_RAW}/data`
@@ -156,13 +158,37 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   return (
     <div className="timelapse">
       <div className="tl-head">
-        <span>SPHEREx time-lapse{manifest.stacked ? ' · stacked visits' : ''}</span>
+        <span className="small-label">SPHEREx time-lapse{manifest.stacked ? ', stacked visits' : ''}</span>
         {science && (
-          <span className="tl-band">
+          <span className="status-meta">
             {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
           </span>
         )}
       </div>
+
+      {manifest.frames.length > 1 && (
+        <div className="first-last">
+          <div className="first-last-row">
+            <Frame src={srcOf(manifest.frames[0], id)} grid={g} frame={manifest.frames[0]} label="First visit" size={148} />
+            <span className="first-last-arrow" aria-hidden="true">
+              →
+            </span>
+            <Frame
+              src={srcOf(manifest.frames[manifest.frames.length - 1], id)}
+              grid={g}
+              frame={manifest.frames[manifest.frames.length - 1]}
+              label="Latest visit"
+              size={148}
+            />
+          </div>
+          <p className="small-label">
+            Real NASA SPHEREx images. North is up; each square is one {g.pixel_scale_arcsec}″ pixel.
+            {manifest.frames.some((f) => f.measured && Number.isFinite(f.measured.ra_deg))
+              ? ' The cyan marks show where SkyShift measured the object.'
+              : ''}
+          </p>
+        </div>
+      )}
 
       {(difference || (science && falseColor)) && (
         <div className="seg" role="tablist">
@@ -227,6 +253,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
         <>
           <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
             <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
+            <FrameOverlay size={VIEW_SIZE} grid={g} measured={frame.measured} />
             {showExpected && expected && (
               <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
                 <circle cx={expected.x} cy={expected.y} r="22" />
@@ -236,7 +263,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
 
           <div className="tl-controls">
-            <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause' : 'Play'}>
+            <button className="btn tl-play" onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause the time-lapse' : 'Play the time-lapse'}>
               {playing ? 'Pause' : 'Play'}
             </button>
             <input
@@ -279,9 +306,12 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             {science ? (
               <>
                 <dt>Quality</dt>
-                <dd className={frame.quality_ok ? '' : 'warn'}>
-                  {frame.quality_ok ? 'OK' : 'Flagged'}
-                  {frame.measured?.saturated ? ' · saturated' : ''}
+                <dd>
+                  <span className={`status-item ${frame.quality_ok && !frame.measured?.saturated ? 'status-ok' : 'status-warn'}`}>
+                    <StarIcon />
+                    {frame.quality_ok ? 'Quality OK' : 'Flagged'}
+                    {frame.measured?.saturated ? ' · Saturated' : ''}
+                  </span>
                   {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
                 </dd>
               </>
@@ -289,8 +319,12 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
               (!frame.quality_ok || frame.measured?.saturated) && (
                 <>
                   <dt>Quality</dt>
-                  <dd className="warn">
-                    {!frame.quality_ok ? 'Flagged' : 'Saturated'} <span className="muted">· details in Science mode</span>
+                  <dd>
+                    <span className="status-item status-warn">
+                      <StarIcon />
+                      {!frame.quality_ok ? 'Flagged' : 'Saturated'}
+                    </span>{' '}
+                    <span className="status-meta">· details in Science mode</span>
                   </dd>
                 </>
               )
@@ -309,7 +343,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
       {note && <p className="note">{note}</p>}
 
       {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
-        <button className="sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target))}>
+        <button className="btn btn-link sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target))}>
           ▶ Watch it move over {simYears(manifest.target).toLocaleString('en')} years <span className="muted">· simulation</span>
         </button>
       )}
@@ -336,7 +370,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           <br />
           {manifest.data_credit}
         </p>
-        <a className="report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
+        <a className="btn btn-primary report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
           Report a candidate ↗
         </a>
       </div>

@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react'
 import TimeLapse from './TimeLapse.jsx'
+import { StarIcon } from './Logo.jsx'
 import { BANDS, DEFAULT_SIZE_ARCMIN, SIZES_ARCMIN, loadSpot } from './spherexSpot.js'
 
 function readChoice() {
@@ -54,7 +55,7 @@ export default function SpotLapse({ ra, dec, science = false }) {
   const pickers = (
     <div className="spot-pickers">
       <div className="spot-row">
-        <span className="spot-label">Detector</span>
+        <span className="small-label">Detector</span>
         <div className="seg small" role="tablist" aria-label="SPHEREx detector">
           {BANDS.map((b) => (
             <button key={b.id} className={band === b.id ? 'on' : ''} onClick={() => choose({ band: b.id })} title={b.range}>
@@ -64,7 +65,7 @@ export default function SpotLapse({ ra, dec, science = false }) {
         </div>
       </div>
       <div className="spot-row">
-        <span className="spot-label">Field</span>
+        <span className="small-label">Field</span>
         <div className="seg small" role="tablist" aria-label="Field of view">
           {SIZES_ARCMIN.map((s) => (
             <button key={s} className={size === s ? 'on' : ''} onClick={() => choose({ size: s })}>
@@ -99,9 +100,17 @@ export default function SpotLapse({ ra, dec, science = false }) {
         <TimeLapse id="spot" manifest={manifest} science={science} />
         <p className="hint">
           {manifest.frames.length} of {manifest.searched} SPHEREx images here were taken at a similar wavelength (±2 %).
-          Something that shifts between dates is only a <strong className="candidate">candidate moving object</strong>, and
-          something that changes brightness only a <strong className="candidate">candidate variable</strong>, until it is checked
-          against other data.
+          Something that shifts between dates is only a{' '}
+          <span className="status-item status-candidate">
+            <StarIcon />
+            candidate moving object
+          </span>
+          , and something that changes brightness only a{' '}
+          <span className="status-item status-candidate">
+            <StarIcon />
+            candidate variable
+          </span>
+          , until it is checked against other data.
         </p>
       </>
     )

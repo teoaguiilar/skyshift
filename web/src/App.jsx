@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
-import Intro, { Logo } from './Intro.jsx'
+import Intro from './Intro.jsx'
+import { Logo } from './Logo.jsx'
 import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
 import { parseCoords } from './coords.js'
@@ -47,6 +48,9 @@ const TOUR = [
 ]
 
 const DEFAULT_FOV = 0.5 // degrees
+// Thumbnails for the guided tour: the first real SPHEREx image of each object (from the pipeline, on GitHub).
+const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
+const thumbOf = (t) => `${REPO_DATA}/${t.id}/${t.id.endsWith('-stacked') ? 'visit_01.png' : 'frame_001.png'}`
 
 // Fast base map for smooth navigation: AllWISE colour infrared sky (NASA WISE data),
 // served from ESA's HiPS mirror, which answers about 4x faster than IRSA from Europe.
@@ -318,10 +322,10 @@ export default function App() {
       })
 
       simRef.current.trail = A.catalog({ name: 'Simulated path', shape: 'circle', color: 'rgba(230,232,235,0.55)', sourceSize: 5 })
-      simRef.current.marker = A.catalog({ name: 'Simulated position', shape: 'circle', color: '#ffc857', sourceSize: 14 })
+      simRef.current.marker = A.catalog({ name: 'Simulated position', shape: 'circle', color: '#f5c451', sourceSize: 14 })
       aladin.addCatalog(simRef.current.trail)
       aladin.addCatalog(simRef.current.marker)
-      const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#ff7a3d', sourceSize: 24 })
+      const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#7fd8ff', sourceSize: 24 })
       aladin.addCatalog(markers)
       markerLayerRef.current = markers
       if (start) markers.addSources([A.source(start.ra, start.dec)])
@@ -451,7 +455,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <Logo size={30} />
-          <span className="brand-tag">see the sky move</span>
+          <span className="brand-tag small-label">See the sky move</span>
         </div>
         <div className="seg mode-switch" role="tablist" aria-label="Mode">
           <button className={!science ? 'on' : ''} onClick={() => setMode('explore')} role="tab" aria-selected={!science}>
@@ -474,7 +478,9 @@ export default function App() {
             placeholder="Name or coordinates, e.g. 17 57 48 +04 41 36"
             aria-label="Search the sky"
           />
-          <button type="submit">Go</button>
+          <button type="submit" className="btn search-go">
+            Go
+          </button>
         </form>
         <button className="help-btn" onClick={() => setTutorial(tutorialFor(mode))} aria-label="Show the tutorial" title="Tutorial">
           ?
@@ -482,12 +488,18 @@ export default function App() {
       </header>
 
       <nav className="tour" aria-label="Guided tour">
-        <span className="tour-label">Guided tour</span>
-        <span className="tour-legend">
+        <span className="small-label tour-label">Guided tour</span>
+        <span className="tour-legend small-label">
           <span className="key moves" /> moves <span className="key varies" /> changes brightness
         </span>
         {TOUR.map((t) => (
-          <button key={t.label} className={`tour-btn ${t.kind}${activeId === t.id ? ' active' : ''}`} onClick={() => goTo(t.query, t.id)}>
+          <button
+            key={t.label}
+            className={`tour-obj ${t.kind}`}
+            aria-pressed={activeId === t.id}
+            onClick={() => goTo(t.query, t.id)}
+          >
+            <img src={thumbOf(t)} alt="" loading="lazy" />
             {t.label}
           </button>
         ))}
