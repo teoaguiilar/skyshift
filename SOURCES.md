@@ -18,6 +18,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | astropy, astroquery, reproject, numpy, matplotlib | Python libraries of the data pipeline | https://www.astropy.org | BSD-3-Clause (astropy, astroquery, reproject, numpy), matplotlib licence (PSF-based) |
 | AAVSO International Variable Star Index (VSX) | Type, brightness range and period of RW Aur, R Dra and UX Ori | https://vsx.aavso.org | See acknowledgements below |
 | Papers on RW Aur and UX Ori cited by Juan | Background of the variable stars | see science/variable-stars.md | Cited |
+| Two Micron All Sky Survey (2MASS), via SIMBAD | J magnitudes of the variable stars | https://irsa.ipac.caltech.edu/Missions/2mass.html | See acknowledgements below |
 
 ## Acknowledgements
 
@@ -26,3 +27,5 @@ This research has made use of the NASA/IPAC Infrared Science Archive, which is f
 This work has made use of data from the European Space Agency (ESA) mission Gaia (https://www.cosmos.esa.int/gaia), processed by the Gaia Data Processing and Analysis Consortium (DPAC, https://www.cosmos.esa.int/web/gaia/dpac/consortium). Funding for the DPAC has been provided by national institutions, in particular the institutions participating in the Gaia Multilateral Agreement.
 
 This research has made use of the International Variable Star Index (VSX) database, operated at AAVSO, Cambridge, Massachusetts, USA.
+
+This publication makes use of data products from the Two Micron All Sky Survey, which is a joint project of the University of Massachusetts and the Infrared Processing and Analysis Center/California Institute of Technology, funded by the National Aeronautics and Space Administration and the National Science Foundation.
