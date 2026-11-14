@@ -279,6 +279,30 @@ const ES = {
   'partial: IRSA was slow, so not every image was measured.': 'parcial: IRSA iba lento, así que no se midieron todas las imágenes.',
   'Measured on the fly: no aperture correction, so absolute values are approximate; the shape is what matters.':
     'Medido al momento: sin corrección de apertura, así que los valores absolutos son aproximados; lo que importa es la forma.',
+  // Intuitive layer
+  Moves: 'Se mueve',
+  'Changes brightness': 'Cambia de brillo',
+  'What to look for': 'Qué mirar',
+  'It moves {pm}″ a year towards the {dir} (catalogue value). Watch the dot shift between the first and the latest visit.':
+    'Se mueve {pm}″ al año hacia el {dir} (valor de catálogo). Mira cómo se desplaza el punto entre la primera y la última visita.',
+  'north-east': 'noreste',
+  'south-east': 'sureste',
+  'south-west': 'suroeste',
+  'north-west': 'noroeste',
+  'It is too bright for SPHEREx: it saturates the images, so its brightness changes cannot be measured here.':
+    'Es demasiado brillante para SPHEREx: satura las imágenes, así que aquí no se pueden medir sus cambios de brillo.',
+  'Between visits its SPHEREx brightness changed by about ×{ratio}. Watch it get brighter and fainter.':
+    'Entre visitas, su brillo en SPHEREx cambió unas ×{ratio} veces. Mira cómo se enciende y se apaga.',
+  'Watch it move': 'Ver cómo se mueve',
+  'Share link': 'Compartir enlace',
+  'Link copied': 'Enlace copiado',
+  'Copy this link': 'Copia este enlace',
+  'Start here': 'Empieza aquí',
+  'The star with the largest proper motion across our sky.': 'La estrella con el mayor movimiento propio de nuestro cielo.',
+  'A very cold brown dwarf, made visible by stacking SPHEREx images.': 'Una enana marrón muy fría, que se ve sumando imágenes de SPHEREx.',
+  'A young star whose light is dimmed by clumps of dust.': 'Una estrella joven cuya luz apagan grumos de polvo.',
+  'Or drag and zoom the map and click any point of the sky to see its SPHEREx images.':
+    'O arrastra y acerca el mapa y pulsa cualquier punto del cielo para ver sus imágenes de SPHEREx.',
   // Tutorial buttons
   Skip: 'Saltar',
   Back: 'Atrás',

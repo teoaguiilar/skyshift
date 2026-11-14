@@ -81,7 +81,7 @@ function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat })
 // Each visit becomes one point: the mean, with an error bar = standard deviation / sqrt(n)
 // (idea of Juan). The single images are drawn small and grey behind.
 const VISIT_GAP_DAYS = 30
-function byVisit(items) {
+export function byVisit(items) {
   const sorted = [...items].sort((a, b) => a.t - b.t)
   const groups = []
   for (const it of sorted) {

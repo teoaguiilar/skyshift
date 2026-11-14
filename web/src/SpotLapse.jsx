@@ -4,11 +4,12 @@
  * The user chooses the SPHEREx detector (D1-D6) and the field of view; both are kept in the URL.
  */
 import { useEffect, useState } from 'react'
-import TimeLapse from './TimeLapse.jsx'
+import TimeLapse, { ShareButton } from './TimeLapse.jsx'
 import { StarIcon } from './Logo.jsx'
 import { t } from './i18n.js'
 import ReportForm from './ReportForm.jsx'
 import { SpectrumChart } from './Charts.jsx'
+import { IconFlag, IconWave } from './Icons.jsx'
 
 // "Spectrum (on the fly)": asks our /api/spectrum function (by Teo) to measure this point in every
 // SPHEREx image of one visit, all six detectors (0.75-5 µm). It can take up to a minute.
@@ -53,7 +54,8 @@ function OnTheFlySpectrum({ ra, dec }) {
   return (
     <div className="otf">
       <div className="otf-actions">
-        <button className="btn btn-link" onClick={() => run(visit)} disabled={state === 'loading'}>
+        <button className="btn action" onClick={() => run(visit)} disabled={state === 'loading'}>
+          <IconWave />
           {t('Spectrum (on the fly)')}
         </button>
         <div className="seg small" role="tablist" aria-label={t('Visit')}>
@@ -234,9 +236,13 @@ export default function SpotLapse({ ra, dec, science = false }) {
     <>
       {pickers}
       {/* Available at once, without waiting for the SPHEREx images (they can take a minute). */}
-      <button className="btn btn-primary report spot-report" onClick={() => setReporting(true)}>
-        {t('Report a candidate')}
-      </button>
+      <div className="actions">
+        <button className="btn btn-primary action" onClick={() => setReporting(true)}>
+          <IconFlag />
+          {t('Report a candidate')}
+        </button>
+        <ShareButton />
+      </div>
       <OnTheFlySpectrum ra={ra} dec={dec} />
       {reporting && (
         <ReportForm

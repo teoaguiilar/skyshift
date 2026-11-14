@@ -13,7 +13,7 @@ import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
 import { parallaxShift } from './Parallax.jsx'
 import { parseCoords } from './coords.js'
-import { getLang, setLang, t } from './i18n.js'
+import { getLang, setLang, t, t as tr } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import './App.css'
@@ -70,6 +70,12 @@ function tourObjectFor(text) {
 }
 
 const DEFAULT_FOV = 0.5 // degrees
+// "Start here" suggestions in the empty panel (one line each, checked by the science team).
+const START_HERE = [
+  { id: 'barnard', text: 'The star with the largest proper motion across our sky.' },
+  { id: 'wise-0855-stacked', text: 'A very cold brown dwarf, made visible by stacking SPHEREx images.' },
+  { id: 'ux-orionis', text: 'A young star whose light is dimmed by clumps of dust.' },
+]
 // Thumbnails for the guided tour: the first real SPHEREx image of each object (from the pipeline, on GitHub).
 const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 const thumbOf = (t) => `${REPO_DATA}/${t.id}/${t.id.endsWith('-stacked') ? 'visit_01.png' : 'frame_001.png'}`
@@ -613,9 +619,6 @@ export default function App() {
 
       <nav className="tour" aria-label="Guided tour">
         <span className="small-label tour-label">{t('Guided tour')}</span>
-        <span className="tour-legend small-label">
-          <span className="key moves" /> {t('moves')} <span className="key varies" /> {t('changes brightness')}
-        </span>
         {TOUR.map((t) => (
           <button
             key={t.label}
@@ -624,7 +627,10 @@ export default function App() {
             onClick={() => goTo(t.query, t.id)}
           >
             <img src={thumbOf(t)} alt="" loading="lazy" />
-            {t.label}
+            <span className="tour-text">
+              <span>{t.label}</span>
+              <span className={`tag ${t.kind}`}>{t.kind === 'moves' ? tr('Moves') : tr('Changes brightness')}</span>
+            </span>
           </button>
         ))}
       </nav>
@@ -727,7 +733,7 @@ export default function App() {
             </>
           ) : (
             <>
-              <h2>{candidate ? `${t('Community candidate')}: ${candidate.name}` : t('Selected spot')}</h2>
+              <h2>{candidate ? `${t('Community candidate')}: ${candidate.name}` : selected ? t('Selected spot') : t('Start here')}</h2>
               {candidate && <ObjectCard card={candidate} />}
               {selected ? (
                 <dl className="coords">
@@ -737,7 +743,21 @@ export default function App() {
                   <dd>{selected.dec.toFixed(5)}°</dd>
                 </dl>
               ) : (
-                <p className="hint">{t('Drag and zoom the map, then click any point of the sky — or pick a guided tour.')}</p>
+                <div className="start-here">
+                  {START_HERE.map((s) => {
+                    const obj = TOUR.find((x) => x.id === s.id)
+                    return (
+                      <button key={s.id} className="start-card" onClick={() => goTo(obj.query, obj.id)}>
+                        <img src={thumbOf(obj)} alt="" />
+                        <span>
+                          <strong>{obj.label}</strong>
+                          <span className="muted">{t(s.text)}</span>
+                        </span>
+                      </button>
+                    )
+                  })}
+                  <p className="hint">{t('Or drag and zoom the map and click any point of the sky to see its SPHEREx images.')}</p>
+                </div>
               )}
               {selected && <SpotLapse ra={selected.ra} dec={selected.dec} science={science} />}
             </>

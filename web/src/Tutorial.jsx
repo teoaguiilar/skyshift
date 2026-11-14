@@ -19,8 +19,8 @@ export const EXPLORE_STEPS = [
     target: '.tour',
     title: 'Guided tour',
     titleEs: 'Visita guiada',
-    textEs: 'Los objetos del reto. Borde continuo: la estrella se mueve. Borde discontinuo: la estrella cambia de brillo. Pulsa uno y el mapa vuela hasta él.',
-    text: 'The objects of the challenge. Solid border: the star moves. Dashed border: the star changes brightness. Press one and the map flies there.',
+    textEs: 'Los objetos del reto, con miniaturas reales de SPHEREx. La etiqueta bajo cada nombre dice si se mueve o cambia de brillo. Pulsa uno y el mapa vuela hasta él.',
+    text: 'The objects of the challenge, with real SPHEREx thumbnails. The label under each name says whether it moves or changes brightness. Press one and the map flies there.',
   },
   {
     target: '.map-wrap',

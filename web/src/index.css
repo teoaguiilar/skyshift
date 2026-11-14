@@ -19,6 +19,9 @@
   --title: 'Michroma', 'Archivo', sans-serif; /* logo and the one big title only */
   /* Kit v2: no monospace look. Data use Archivo with tabular figures; the old name is kept so nothing breaks. */
   --mono: var(--sans);
+  /* Corners: 10 px (Pedro, 14 Nov, pending OK from Antonio and Teo; the kit said 2 px). Change here only. */
+  --radius: 10px;
+  --radius-sm: 6px;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }

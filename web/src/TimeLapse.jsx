@@ -8,13 +8,40 @@
  * Every number shown comes from those files; nothing is typed in by hand here.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BrightnessChart, PositionChart, SpectrumChart, hasBrightness, hasPosition } from './Charts.jsx'
+import { BrightnessChart, PositionChart, SpectrumChart, byVisit, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
 import UpClose, { hasUpClose } from './UpClose.jsx'
 import Parallax, { usedParallax } from './Parallax.jsx'
 import { getLang, t as tr } from './i18n.js'
 import ReportForm from './ReportForm.jsx'
+import { IconEye, IconFlag, IconLink, IconPlay } from './Icons.jsx'
+
+// "What to look for": one sentence built from the data, so a newcomer knows what to watch.
+const DIRS = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west']
+function whatToLook(manifest, kind) {
+  const tg = manifest.target
+  if (kind === 'moves' && Number.isFinite(tg?.pmra_mas_yr) && Number.isFinite(tg?.pmdec_mas_yr)) {
+    const pm = Math.hypot(tg.pmra_mas_yr, tg.pmdec_mas_yr) / 1000
+    const ang = (Math.atan2(tg.pmra_mas_yr, tg.pmdec_mas_yr) * 180) / Math.PI // 0 = north, 90 = east
+    const dir = DIRS[Math.round((((ang % 360) + 360) % 360) / 45) % 8]
+    return tr('It moves {pm}″ a year towards the {dir} (catalogue value). Watch the dot shift between the first and the latest visit.', {
+      pm: pm.toFixed(pm < 1 ? 2 : 1),
+      dir: tr(dir),
+    })
+  }
+  if (kind === 'varies') {
+    const usable = manifest.frames.filter((f) => f.measured?.flux_rel != null && !f.measured?.saturated)
+    if (usable.length < 3) return tr('It is too bright for SPHEREx: it saturates the images, so its brightness changes cannot be measured here.')
+    const visits = byVisit(usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel })))
+    const ys = visits.map((v) => v.y).filter((y) => y > 0)
+    if (ys.length >= 2) {
+      const ratio = Math.max(...ys) / Math.min(...ys)
+      return tr('Between visits its SPHEREx brightness changed by about ×{ratio}. Watch it get brighter and fainter.', { ratio: ratio.toFixed(1) })
+    }
+  }
+  return null
+}
 import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
@@ -58,6 +85,26 @@ const getJson = (url) =>
 function simYears(target) {
   const pm = Math.hypot(target.pmra_mas_yr, target.pmdec_mas_yr) // mas/yr
   return [100, 1000, 10000].find((y) => (pm * y) / 1000 >= 120) ?? 10000
+}
+
+// Copies the page link (it already holds the object, view, mode and language).
+export function ShareButton() {
+  const [done, setDone] = useState(false)
+  const share = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setDone(true)
+      setTimeout(() => setDone(false), 2000)
+    } catch {
+      window.prompt(tr('Copy this link'), window.location.href)
+    }
+  }
+  return (
+    <button className="btn action" onClick={share}>
+      <IconLink />
+      {done ? tr('Link copied') : tr('Share link')}
+    </button>
+  )
 }
 
 export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate, hideReport = false, objectName }) {
@@ -168,6 +215,36 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
           </span>
         )}
+      </div>
+
+      {!given && whatToLook(manifest, kind) && (
+        <p className="look">
+          <IconEye />
+          <span>
+            <strong>{tr('What to look for')}: </strong>
+            {whatToLook(manifest, kind)}
+          </span>
+        </p>
+      )}
+
+      <div className="actions">
+        {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
+          <button
+            className={`btn action${kind === 'moves' ? ' btn-primary' : ''}`}
+            onClick={() => onSimulate(manifest.target, simYears(manifest.target), usedParallax(cardId ?? id, manifest.target, card))}
+            title={tr('▶ Watch it move: 2 years up close, then {years} years', { years: simYears(manifest.target).toLocaleString(getLang()) })}
+          >
+            <IconPlay />
+            {tr('Watch it move')}
+          </button>
+        )}
+        {!hideReport && (
+          <button className="btn action" onClick={() => setReporting(true)}>
+            <IconFlag />
+            {tr('Report a candidate')}
+          </button>
+        )}
+        {!hideReport && <ShareButton />}
       </div>
 
       {manifest.frames.length > 1 && (
@@ -349,12 +426,6 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
       {note && <p className="note">{note}</p>}
 
-      {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
-        <button className="btn btn-link sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target), usedParallax(cardId ?? id, manifest.target, card))}>
-          {tr('▶ Watch it move: 2 years up close, then {years} years', { years: simYears(manifest.target).toLocaleString(getLang()) })}{' '}
-          <span className="muted">{tr('· simulation')}</span>
-        </button>
-      )}
 
       {tabs.length > 0 && (
         <div className="info">
@@ -387,11 +458,6 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           <br />
           {manifest.data_credit}
         </p>
-        {!hideReport && (
-          <button className="btn btn-primary report" onClick={() => setReporting(true)}>
-            {tr('Report a candidate')}
-          </button>
-        )}
         {reporting && (
           <ReportForm
             onClose={() => setReporting(false)}
