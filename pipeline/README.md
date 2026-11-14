@@ -25,6 +25,26 @@ python pipeline/stack_epochs.py --name "WISE J085510.83-071442.5" --slug wise-08
 
 WISE 0855, the coldest known brown dwarf, cannot be seen in single SPHEREx images. Stacking the 21 images of each visit in detector D6 (4.4 to 5.0 microns) shows it clearly (S/N about 18 in November 2025 and April 2026), at the position predicted by the catalogue. This is a *candidate detection*.
 
+## Spectra: brightness at every wavelength
+
+`spectrum.py` measures the object in every SPHEREx image of all six detector arrays (0.75 to 5 microns). Each image sees one wavelength at the object's position, so together they give its spectrum. The light inside a circle of 2 pixels is summed and the local background (ring of 4 to 7 pixels) is subtracted; there is no aperture correction, so absolute fluxes are approximate and the shape is what matters. Saturated and badly flagged images are left out.
+
+```bash
+python pipeline/spectrum.py --name "eps Ind B" --slug eps-indi-b
+```
+
+Output: `data/<slug>/spectrum.json` (every measurement plus a binned spectrum), `spectrum.png` and `science/csv/<slug>-spectrum.csv`. Epsilon Indi B shows the peaks and deep dips typical of a methane brown dwarf. Barnard's Star only gives a spectrum from 3.8 to 5 microns and R Draconis none (both saturate). The WISE 0855 spectrum is contaminated below about 3 microns and is not shown.
+
+## Changes with time
+
+- `plot_time.py` draws `motion.png` (position against time, measured against the catalogue proper motion) and `lightcurve.png` (relative brightness against time). Images of the same visit are averaged into one point with its error bar (standard deviation / square root of n). Points are not joined: visits are months apart, so we do not know what happens in between.
+- `difference.py` subtracts the first visit from the last one (`difference.png`). Everything that stays still cancels out; a moving object leaves a dark spot where it was and a bright spot where it is now. It works for Barnard's Star, Epsilon Indi B and the stacked WISE 0855.
+
+```bash
+python pipeline/plot_time.py
+python pipeline/difference.py --name "Barnard's Star" --slug barnard --band D2
+```
+
 ## How to run it
 
 ```bash
