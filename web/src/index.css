@@ -13,3 +13,7 @@
 html, body, #root { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); }
 button, input { font: inherit; color: inherit; }
+
+@media (max-width: 760px) {
+  html, body, #root { height: auto; min-height: 100%; }
+}

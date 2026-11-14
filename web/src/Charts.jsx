@@ -6,13 +6,13 @@
 
 const W = 340
 const H = 150
-const PAD = { l: 40, r: 10, t: 10, b: 24 }
+const PAD = { l: 52, r: 10, t: 10, b: 24 }
 
 function scale(v, a, b, A, B) {
   return b === a ? (A + B) / 2 : A + ((v - a) / (b - a)) * (B - A)
 }
 
-function Chart({ points, line, current, yLabel, legend }) {
+function Chart({ points, line, current, yLabel, legend, xFormat, yFormat }) {
   const ts = [...points.map((p) => p.t), ...(line || []).map((p) => p.t)]
   const ys = [...points.flatMap((p) => [p.y, p.lo ?? p.y, p.hi ?? p.y]), ...(line || []).map((p) => p.y)]
   const t0 = Math.min(...ts)
@@ -24,7 +24,8 @@ function Chart({ points, line, current, yLabel, legend }) {
   y1 += pad
   const X = (t) => scale(t, t0, t1, PAD.l, W - PAD.r)
   const Y = (y) => scale(y, y0, y1, H - PAD.b, PAD.t)
-  const date = (mjd) => new Date((mjd - 40587) * 86400000).toISOString().slice(0, 7)
+  const date = xFormat ?? ((mjd) => new Date((mjd - 40587) * 86400000).toISOString().slice(0, 7))
+  const yf = yFormat ?? ((v) => v.toFixed(0))
 
   return (
     <figure className="chart">
@@ -32,10 +33,10 @@ function Chart({ points, line, current, yLabel, legend }) {
         <line className="axis" x1={PAD.l} y1={H - PAD.b} x2={W - PAD.r} y2={H - PAD.b} />
         <line className="axis" x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={H - PAD.b} />
         <text className="tick" x={PAD.l - 4} y={Y(y1 - pad) + 3} textAnchor="end">
-          {(y1 - pad).toFixed(0)}
+          {yf(y1 - pad)}
         </text>
         <text className="tick" x={PAD.l - 4} y={Y(y0 + pad) + 3} textAnchor="end">
-          {(y0 + pad).toFixed(0)}
+          {yf(y0 + pad)}
         </text>
         <text className="tick" x={PAD.l} y={H - 8}>
           {date(t0)}
@@ -140,6 +141,34 @@ export function BrightnessChart({ frames, currentMjd }) {
         <>
           <i className="dot" /> average per visit; bar = spread of its images. Changes larger than the bars make it a
           candidate variable until checked
+        </>
+      }
+    />
+  )
+}
+
+const fmtFlux = (v) =>
+  Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)} Jy` : Math.abs(v) >= 1e3 ? `${(v / 1e3).toFixed(1)} mJy` : `${v.toFixed(0)} µJy`
+
+// Spectrum: SPHEREx brightness at each wavelength (binned), from data/<object>/spectrum.json.
+export function SpectrumChart({ spectrum }) {
+  const pts = (spectrum?.binned ?? []).filter((b) => Number.isFinite(b.flux_ujy))
+  if (pts.length < 3) return null
+  return (
+    <Chart
+      points={pts.map((b) => ({
+        t: b.wavelength_um,
+        y: b.flux_ujy,
+        lo: b.flux_err_ujy != null ? b.flux_ujy - b.flux_err_ujy : null,
+        hi: b.flux_err_ujy != null ? b.flux_ujy + b.flux_err_ujy : null,
+      }))}
+      xFormat={(um) => `${um.toFixed(2)} µm`}
+      yFormat={fmtFlux}
+      yLabel="Spectrum: brightness at each colour (SPHEREx, 0.75–5 µm)"
+      legend={
+        <>
+          <i className="dot" /> SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.
+          {spectrum.saturated_images_skipped > 0 && ` ${spectrum.saturated_images_skipped} saturated images left out.`}
         </>
       }
     />

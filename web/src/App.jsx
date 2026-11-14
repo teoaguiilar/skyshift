@@ -8,6 +8,7 @@ import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
 import ObjectCard from './ObjectCard.jsx'
+import SpectrumPanel from './SpectrumPanel.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -18,6 +19,7 @@ const TOUR = [
   {
     id: 'wise-0855-stacked',
     card: 'wise-0855',
+    hideSpectrum: true, // spectrum under review by the data team (light from neighbours?)
     label: 'WISE 0855−0714',
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
@@ -161,6 +163,24 @@ export default function App() {
       markerLayerRef.current = markers
       if (start) markers.addSources([A.source(start.ra, start.dec)])
 
+      // A link with only ?object=<id> (e.g. the QR code) flies straight to that object.
+      const linkedId = new URLSearchParams(window.location.search).get('object')
+      const linked = TOUR.find((t) => t.id === linkedId)
+      // When the base map finishes loading, Aladin jumps to the map's own default view
+      // (the whole sky). Put back the view from the link once that has happened.
+      const restoreView = (tries = 0) => {
+        if (!base.added && tries < 100) return setTimeout(() => restoreView(tries + 1), 100)
+        setTimeout(() => {
+          if (start) {
+            aladin.gotoRaDec(start.ra, start.dec)
+            aladin.setFoV(start.fov)
+          } else if (linked) {
+            goTo(linked.query, linked.id)
+          }
+        }, 400)
+      }
+      restoreView()
+
       // Click anywhere on the sky (not while dragging) to choose that spot.
       aladin.on('click', (e) => {
         if (!e || e.isDragging) return
@@ -251,6 +271,9 @@ export default function App() {
               <TimeLapse id={activeId} kind={TOUR.find((t) => t.id === activeId)?.kind} />
               {TOUR.find((t) => t.id === activeId)?.note && (
                 <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
+              )}
+              {!TOUR.find((t) => t.id === activeId)?.hideSpectrum && (
+                <SpectrumPanel id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
               )}
               <ObjectCard id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
             </>

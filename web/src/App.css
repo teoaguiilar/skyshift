@@ -94,8 +94,17 @@
 .tl-toggle { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
 .credit { font-size: 11px; color: var(--muted); margin: 0; }
 
+/* Phones (for the QR code in the presentation): the page scrolls, map on top, panel below. */
 @media (max-width: 760px) {
-  .topbar { flex-direction: column; align-items: stretch; }
-  .stage { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
-  .panel { border-left: 0; border-top: 1px solid var(--line); }
+  .app { height: auto; min-height: 100%; display: block; overflow: visible; }
+  .topbar { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 14px; }
+  .search { flex: none; }
+  .tour { padding: 8px 14px; gap: 6px; }
+  .tour-legend { margin-left: 0; width: 100%; }
+  .stage { display: block; }
+  .map-wrap { height: 55vh; }
+  .map { height: 100%; min-height: 0; }
+  .panel { border-left: 0; border-top: 1px solid var(--line); overflow: visible; padding: 14px; }
+  .tl-view { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; }
 }
+.panel > .chart { margin-top: 12px; }
