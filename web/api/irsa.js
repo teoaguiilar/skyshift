@@ -254,15 +254,21 @@ export function buildImageFits(buffer) {
 // HTTP handler
 // ---------------------------------------------------------------------------
 
-async function irsaFetch(url) {
-  const ctrl = new AbortController()
-  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
-  try {
-    const r = await fetch(url, { signal: ctrl.signal })
-    if (!r.ok) throw Object.assign(new Error(`IRSA answered ${r.status}`), { status: 502 })
-    return r
-  } finally {
-    clearTimeout(timer)
+async function irsaFetch(url, tries = 3) {
+  // IRSA sometimes answers 503 for a moment: wait a little and try again.
+  for (let attempt = 1; ; attempt++) {
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
+    try {
+      const r = await fetch(url, { signal: ctrl.signal })
+      if (r.ok) return r
+      if (r.status < 500 || attempt >= tries) {
+        throw Object.assign(new Error(`IRSA answered ${r.status}`), { status: 502 })
+      }
+    } finally {
+      clearTimeout(timer)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 800 * attempt))
   }
 }
 
