@@ -77,7 +77,7 @@ export default function TimeLapse({ id, manifest: given }) {
   return (
     <div className="timelapse">
       <div className="tl-head">
-        <span>SPHEREx time-lapse</span>
+        <span>SPHEREx time-lapse{manifest.stacked ? ' · stacked visits' : ''}</span>
         <span className="tl-band">
           {manifest.band} · {manifest.wavelength_um.toFixed(2)} µm
         </span>
@@ -120,7 +120,20 @@ export default function TimeLapse({ id, manifest: given }) {
           {frame.date} <span className="muted">({index + 1}/{manifest.frames.length})</span>
         </dd>
         <dt>λ</dt>
-        <dd>{frame.wavelength_um.toFixed(3)} µm</dd>
+        <dd>
+          {frame.wavelength_range_um
+            ? `${frame.wavelength_range_um[0].toFixed(2)}–${frame.wavelength_range_um[1].toFixed(2)} µm`
+            : `${frame.wavelength_um.toFixed(3)} µm`}
+        </dd>
+        {frame.stacked_images && (
+          <>
+            <dt>Stack</dt>
+            <dd>
+              {frame.stacked_images} images · S/N {frame.snr?.toFixed(1)} ·{' '}
+              <span className={frame.detected ? '' : 'warn'}>{frame.detected ? 'detected' : 'not detected'}</span>
+            </dd>
+          </>
+        )}
         <dt>Quality</dt>
         <dd className={frame.quality_ok ? '' : 'warn'}>
           {frame.quality_ok ? 'OK' : 'Flagged'}

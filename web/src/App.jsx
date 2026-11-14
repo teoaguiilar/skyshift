@@ -15,11 +15,11 @@ const TOUR = [
   { id: 'barnard', label: "Barnard's Star", query: "Barnard's star", kind: 'moves' },
   { id: 'eps-indi-b', label: 'Epsilon Indi B', query: 'eps Ind B', kind: 'moves' },
   {
-    id: 'wise-0855',
+    id: 'wise-0855-stacked',
     label: 'WISE 0855−0714',
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
-    note: 'This brown dwarf is too faint to see in single SPHEREx images, so its motion is not shown here yet.',
+    note: 'Too faint in single images: SkyShift stacks all SPHEREx images of each visit to reveal it.',
   },
   { id: 'rw-aurigae', label: 'RW Aurigae', query: 'RW Aur', kind: 'varies' },
   {
