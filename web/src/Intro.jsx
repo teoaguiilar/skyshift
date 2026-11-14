@@ -236,24 +236,24 @@ export default function Intro({ tour = [], onLeave, onStart, lang = 'en', onLang
         </p>
 
         <p className="intro-lead reveal" style={{ '--d': '2.6s' }}>
-          {t(
-            'SPHEREx is a NASA telescope that photographs the whole sky in infrared, again and again. SkyShift lines up those photos by date, so you can see what moves or changes brightness.',
-          )}
+          {t('SPHEREx, a NASA telescope, photographs the whole sky in infrared again and again.')}{' '}
+          <strong>{t('SkyShift puts those real photos in date order, like a flipbook, so you can see what moves or changes.')}</strong>
         </p>
 
         <ul className="intro-list reveal" style={{ '--d': '2.85s' }}>
-          <li>
-            <StarIcon size={12} color="var(--accent)" />
-            {t('Watch nearby stars drift across the sky.')}
-          </li>
-          <li>
-            <StarIcon size={12} color="var(--accent)" />
-            {t('See young and old stars change brightness.')}
-          </li>
-          <li>
-            <StarIcon size={12} color="var(--accent)" />
-            {t('Click any point of the sky to see its SPHEREx images.')}
-          </li>
+          {[
+            ['Motion', 'Nearby stars and brown dwarfs drifting across the sky, checked against ESA Gaia.'],
+            ['Brightness', 'Young and old stars getting brighter and fainter.'],
+            ['Spectrum', 'Their light split into infrared colours, from 0.75 to 5 µm.'],
+            ['Anywhere', 'Click any point of the sky for its SPHEREx photos, and report what you find.'],
+          ].map(([label, text]) => (
+            <li key={label}>
+              <StarIcon size={12} color="var(--accent)" />
+              <span>
+                <strong>{t(label)}</strong> · {t(text)}
+              </span>
+            </li>
+          ))}
         </ul>
 
         <div className="intro-actions reveal" style={{ '--d': '3.1s' }}>

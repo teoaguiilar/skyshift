@@ -427,3 +427,8 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .filter-info { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2); font-size: 13px; line-height: 1.5; }
 .filter-info p { margin: 0 0 6px; }
 .filter-info p:last-child { margin-bottom: 0; }
+
+/* Welcome screen: one line per thing SkyShift does */
+.intro-list li { align-items: flex-start; line-height: 1.45; }
+.intro-list li svg { flex: none; margin-top: 4px; }
+.intro-list strong, .intro-lead strong { color: var(--text); font-weight: 600; }
