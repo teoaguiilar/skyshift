@@ -22,6 +22,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | React and React DOM | Web app user interface | https://react.dev | MIT |
 | Vite, @vitejs/plugin-react and oxlint | Build and lint tools of the web app | https://vite.dev | MIT |
 | Vercel | Hosting of the web app and of the IRSA bridge function | https://vercel.com | Hosting service (free plan) |
+| ESA Gaia DR3 (Gaia Collaboration 2023), via ESA Gaia Archive TAP | Optional star layer on the map, moved to 2026.0 with proper motion | https://gea.esac.esa.int/archive/ | ESA/Gaia/DPAC, CC BY-SA 3.0 IGO |
 
 ## Acknowledgements
 
