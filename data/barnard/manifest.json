@@ -29,8 +29,15 @@
       "date": "2025-08-25",
       "mjd": 60912.714147,
       "wavelength_um": 1.5166,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.4463463609457,
         "dec_deg": 4.767193432185275
@@ -49,8 +56,15 @@
       "date": "2025-08-30",
       "mjd": 60917.67394,
       "wavelength_um": 1.496,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.44634332668716,
         "dec_deg": 4.767232518967938
@@ -71,6 +85,14 @@
       "wavelength_um": 1.4804,
       "quality_ok": false,
       "flag_value": 69207047,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "HOT",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.4462231992897,
         "dec_deg": 4.768779975275357
@@ -89,8 +111,15 @@
       "date": "2026-03-15",
       "mjd": 61114.034988,
       "wavelength_um": 1.5161,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.4462231983769,
         "dec_deg": 4.768779987033403
@@ -109,8 +138,15 @@
       "date": "2026-08-18",
       "mjd": 61270.867116,
       "wavelength_um": 1.5115,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.44612725239455,
         "dec_deg": 4.770015938326031
@@ -129,8 +165,15 @@
       "date": "2026-08-21",
       "mjd": 61273.72267,
       "wavelength_um": 1.4778,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.44612550543474,
         "dec_deg": 4.7700384421687
@@ -149,8 +192,15 @@
       "date": "2026-08-21",
       "mjd": 61273.788222,
       "wavelength_um": 1.5029,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.44612546533153,
         "dec_deg": 4.770038958766145
@@ -169,8 +219,15 @@
       "date": "2026-09-22",
       "mjd": 61305.628021,
       "wavelength_um": 1.5116,
-      "quality_ok": false,
+      "quality_ok": true,
       "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
       "predicted": {
         "ra_deg": 269.4461059864943,
         "dec_deg": 4.770289879540864

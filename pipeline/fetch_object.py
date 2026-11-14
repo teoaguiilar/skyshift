@@ -48,6 +48,26 @@ from astropy import log  # noqa: E402
 log.setLevel("WARNING")
 
 PIXEL_SCALE_ARCSEC = 6.15  # approximate SPHEREx pixel size
+
+# SPHEREx Level 2 pixel flags (SPHEREx Explanatory Supplement, Table 16).
+FLAG_NAMES = {
+    0: "TRANSIENT", 1: "OVERFLOW", 2: "SUR_ERROR", 6: "NONFUNC", 7: "DICHROIC",
+    9: "MISSING_DATA", 10: "HOT", 11: "COLD", 12: "FULLSAMPLE", 14: "PHANMISS",
+    15: "NONLINEAR", 17: "PERSIST", 19: "OUTLIER", 20: "CROSSTALK", 21: "SOURCE",
+    22: "GHOST", 23: "GHOST_FPA", 24: "GHOST_EXT", 25: "STREAK", 26: "BLOOM",
+    27: "SNOWBALL", 28: "HALO", 29: "SATELLITE_HALO",
+}
+# Flags the Supplement describes as unusable for science. SOURCE (bit 21) only
+# says the pixel belongs to a known star, which is our target, so it is fine.
+BAD_FLAGS = {"NONFUNC", "DICHROIC", "MISSING_DATA", "HOT", "COLD", "NONLINEAR",
+             "SATELLITE_HALO"}
+
+
+def flag_names(value):
+    """Turn a FLAGS bit value into a list of flag names."""
+    if value is None or value < 0:
+        return ["UNKNOWN"]
+    return [name for bit, name in FLAG_NAMES.items() if value & (1 << bit)]
 TRANSIENT_ERRORS = (
     TimeoutError,
     urllib.error.HTTPError,
@@ -351,6 +371,8 @@ def main():
     vmin, vmax = np.nanpercentile(stack, [1, 99.7])
 
     print("5/5 Writing PNG frames and manifest.json...")
+    for old in out_dir.glob("frame_*.png"):  # drop frames left over from earlier runs
+        old.unlink()
     manifest_frames = []
     for i, (f, img) in enumerate(zip(frames, aligned), start=1):
         name = f"frame_{i:03d}.png"
@@ -369,8 +391,9 @@ def main():
             "date": Time(f["mjd"], format="mjd").to_value("iso", subfmt="date"),
             "mjd": f["mjd"],
             "wavelength_um": round(f["wavelength_um"], 4),
-            "quality_ok": f["flag_value"] == 0,
+            "quality_ok": not (set(flag_names(f["flag_value"])) & (BAD_FLAGS | {"UNKNOWN"})),
             "flag_value": f["flag_value"],
+            "flags": flag_names(f["flag_value"]),
             "predicted": {"ra_deg": float(predicted.ra.deg), "dec_deg": float(predicted.dec.deg)},
             "measured": measured,
             "processing_version": f["version"],

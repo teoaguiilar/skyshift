@@ -1,0 +1,211 @@
+{
+  "object": "rw-aurigae",
+  "name": "RW Aur",
+  "target": {
+    "simbad_id": "V* RW Aur",
+    "ra_j2000_deg": 76.95652603458,
+    "dec_j2000_deg": 30.40143817389,
+    "pmra_mas_yr": 7.23,
+    "pmdec_mas_yr": -20.33,
+    "parallax_mas": 15.42,
+    "source": "SIMBAD via CDS Sesame"
+  },
+  "band": "D2",
+  "wavelength_um": 1.4411,
+  "wavelength_tolerance": 0.02,
+  "grid": {
+    "center_ra_deg": 76.95658637786195,
+    "center_dec_deg": 30.401291825384774,
+    "pixel_scale_arcsec": 6.15,
+    "width": 35,
+    "height": 35,
+    "png_upscale": 10,
+    "note": "In the PNG files north is up and east is left; each sky pixel is 10x10 PNG pixels"
+  },
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA); target data from SIMBAD (CDS)",
+  "frames": [
+    {
+      "file": "frame_001.png",
+      "date": "2025-09-08",
+      "mjd": 60926.275136,
+      "wavelength_um": 1.4411,
+      "quality_ok": true,
+      "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658584411042,
+        "dec_deg": 30.40129311987622
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.401291825384774,
+        "flux_rel": 276.93509111036343,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W37_1A/l2b-v27-2026-235/2/level2_2025W37_1A_0068_1D2_spx_l2b-v27-2026-235.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_002.png",
+      "date": "2025-09-10",
+      "mjd": 60928.789549,
+      "wavelength_um": 1.4303,
+      "quality_ok": true,
+      "flag_value": 69206023,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658586013998,
+        "dec_deg": 30.401293081000244
+      },
+      "measured": {
+        "ra_deg": 76.95580246987147,
+        "dec_deg": 30.40129182304414,
+        "flux_rel": 257.416543418879,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W37_1A/l2b-v27-2026-235/2/level2_2025W37_1A_0553_1D2_spx_l2b-v27-2026-235.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_003.png",
+      "date": "2026-03-02",
+      "mjd": 61101.428883,
+      "wavelength_um": 1.427,
+      "quality_ok": true,
+      "flag_value": 69206019,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658696072711,
+        "dec_deg": 30.401290411779524
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.401291825384774,
+        "flux_rel": 459.3625759207259,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2026W10_1A/l2b-v27-2026-229/2/level2_2026W10_1A_0092_2D2_spx_l2b-v27-2026-229.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_004.png",
+      "date": "2026-03-02",
+      "mjd": 61101.430375,
+      "wavelength_um": 1.461,
+      "quality_ok": true,
+      "flag_value": 69206019,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658696073662,
+        "dec_deg": 30.401290411756452
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.400623072708882,
+        "flux_rel": 461.5575766625685,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2026W10_1A/l2b-v27-2026-229/2/level2_2026W10_1A_0092_3D2_spx_l2b-v27-2026-229.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_005.png",
+      "date": "2026-09-10",
+      "mjd": 61293.378474,
+      "wavelength_um": 1.4619,
+      "quality_ok": true,
+      "flag_value": 69337091,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "PERSIST",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658818441832,
+        "dec_deg": 30.40128744399799
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.401291825384774,
+        "flux_rel": 394.95162071511237,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W37_1A/l2b-v27-2026-255/2/level2_2026W37_1A_0615_1D2_spx_l2b-v27-2026-255.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_006.png",
+      "date": "2026-09-15",
+      "mjd": 61298.335158,
+      "wavelength_um": 1.417,
+      "quality_ok": true,
+      "flag_value": 69206019,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658821601751,
+        "dec_deg": 30.401287367361437
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.401291825384774,
+        "flux_rel": 429.97818242061095,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W38_1A/l2b-v27-2026-261/2/level2_2026W38_1A_0254_2D2_spx_l2b-v27-2026-261.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    },
+    {
+      "file": "frame_007.png",
+      "date": "2026-09-15",
+      "mjd": 61298.33665,
+      "wavelength_um": 1.4511,
+      "quality_ok": true,
+      "flag_value": 2097154,
+      "flags": [
+        "OVERFLOW",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.95658821602701,
+        "dec_deg": 30.40128736733836
+      },
+      "measured": {
+        "ra_deg": 76.95658637786195,
+        "dec_deg": 30.401876920066513,
+        "flux_rel": 457.266164229654,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W38_1A/l2b-v27-2026-261/2/level2_2026W38_1A_0254_3D2_spx_l2b-v27-2026-261.fits?center=76.95658637786195,30.401291825384774d&size=0.06"
+    }
+  ]
+}
