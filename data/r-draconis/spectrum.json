@@ -21,7 +21,7 @@
     {
       "wavelength_um": 0.7388,
       "flux_ujy": 3736361.61,
-      "flux_err_ujy": 668400.39,
+      "flux_err_ujy": 990970.42,
       "n": 2
     },
     {
@@ -39,7 +39,7 @@
     {
       "wavelength_um": 0.7808,
       "flux_ujy": 2750424.7,
-      "flux_err_ujy": 146286.34,
+      "flux_err_ujy": 232778.59,
       "n": 3
     }
   ],

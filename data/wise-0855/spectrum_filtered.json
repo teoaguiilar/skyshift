@@ -28,91 +28,91 @@
     {
       "wavelength_um": 3.8264,
       "flux_ujy": 272.75,
-      "flux_err_ujy": 97.39,
+      "flux_err_ujy": 144.39,
       "n": 2
     },
     {
       "wavelength_um": 3.8714,
       "flux_ujy": 268.44,
-      "flux_err_ujy": 18.55,
+      "flux_err_ujy": 12.77,
       "n": 4
     },
     {
       "wavelength_um": 3.9348,
       "flux_ujy": 234.23,
-      "flux_err_ujy": 64.43,
+      "flux_err_ujy": 27.3,
       "n": 3
     },
     {
       "wavelength_um": 4.0387,
       "flux_ujy": 272.68,
-      "flux_err_ujy": 38.65,
+      "flux_err_ujy": 27.7,
       "n": 5
     },
     {
       "wavelength_um": 4.1132,
       "flux_ujy": 375.04,
-      "flux_err_ujy": 85.2,
+      "flux_err_ujy": 78.1,
       "n": 6
     },
     {
       "wavelength_um": 4.1889,
       "flux_ujy": 537.8,
-      "flux_err_ujy": 36.09,
+      "flux_err_ujy": 48.06,
       "n": 9
     },
     {
       "wavelength_um": 4.295,
       "flux_ujy": 634.39,
-      "flux_err_ujy": 83.4,
+      "flux_err_ujy": 6.45,
       "n": 5
     },
     {
       "wavelength_um": 4.3689,
       "flux_ujy": 660.03,
-      "flux_err_ujy": 54.43,
+      "flux_err_ujy": 30.35,
       "n": 6
     },
     {
       "wavelength_um": 4.4365,
       "flux_ujy": 551.31,
-      "flux_err_ujy": 61.97,
+      "flux_err_ujy": 67.15,
       "n": 6
     },
     {
       "wavelength_um": 4.5487,
       "flux_ujy": 709.42,
-      "flux_err_ujy": 112.43,
+      "flux_err_ujy": 113.05,
       "n": 6
     },
     {
       "wavelength_um": 4.6255,
       "flux_ujy": 640.62,
-      "flux_err_ujy": 93.17,
+      "flux_err_ujy": 35.21,
       "n": 4
     },
     {
       "wavelength_um": 4.7104,
       "flux_ujy": 431.96,
-      "flux_err_ujy": 139.19,
+      "flux_err_ujy": 176.05,
       "n": 4
     },
     {
       "wavelength_um": 4.8249,
       "flux_ujy": 531.75,
-      "flux_err_ujy": 70.34,
+      "flux_err_ujy": 82.45,
       "n": 8
     },
     {
       "wavelength_um": 4.9313,
       "flux_ujy": 294.09,
-      "flux_err_ujy": 102.86,
+      "flux_err_ujy": 96.43,
       "n": 8
     },
     {
       "wavelength_um": 4.9928,
       "flux_ujy": 642.85,
-      "flux_err_ujy": 86.58,
+      "flux_err_ujy": 128.36,
       "n": 2
     }
   ],

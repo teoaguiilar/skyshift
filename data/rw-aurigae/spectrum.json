@@ -27,7 +27,7 @@
     {
       "wavelength_um": 0.7537,
       "flux_ujy": 124669.15,
-      "flux_err_ujy": 32312.57,
+      "flux_err_ujy": 57591.58,
       "n": 3
     },
     {
@@ -39,61 +39,61 @@
     {
       "wavelength_um": 0.7789,
       "flux_ujy": 107491.74,
-      "flux_err_ujy": 16206.59,
+      "flux_err_ujy": 24027.9,
       "n": 2
     },
     {
       "wavelength_um": 0.7919,
       "flux_ujy": 165287.2,
-      "flux_err_ujy": 27227.02,
+      "flux_err_ujy": 40366.77,
       "n": 2
     },
     {
       "wavelength_um": 0.8138,
       "flux_ujy": 152049.96,
-      "flux_err_ujy": 42591.75,
+      "flux_err_ujy": 63146.53,
       "n": 2
     },
     {
       "wavelength_um": 0.8297,
       "flux_ujy": 180650.64,
-      "flux_err_ujy": 25441.11,
+      "flux_err_ujy": 37718.99,
       "n": 2
     },
     {
       "wavelength_um": 0.8468,
       "flux_ujy": 231377.86,
-      "flux_err_ujy": 62370.05,
+      "flux_err_ujy": 44722.58,
       "n": 3
     },
     {
       "wavelength_um": 0.8587,
       "flux_ujy": 201950.83,
-      "flux_err_ujy": 29994.94,
+      "flux_err_ujy": 46442.39,
       "n": 3
     },
     {
       "wavelength_um": 0.879,
       "flux_ujy": 163059.75,
-      "flux_err_ujy": 26065.89,
+      "flux_err_ujy": 14357.65,
       "n": 3
     },
     {
       "wavelength_um": 0.8997,
       "flux_ujy": 155395.96,
-      "flux_err_ujy": 1305.97,
+      "flux_err_ujy": 1936.23,
       "n": 2
     },
     {
       "wavelength_um": 0.9211,
       "flux_ujy": 163728.68,
-      "flux_err_ujy": 4235.17,
+      "flux_err_ujy": 6279.06,
       "n": 2
     },
     {
       "wavelength_um": 0.9429,
       "flux_ujy": 190115.96,
-      "flux_err_ujy": 25522.44,
+      "flux_err_ujy": 36487.43,
       "n": 3
     },
     {
@@ -105,61 +105,61 @@
     {
       "wavelength_um": 0.9726,
       "flux_ujy": 200006.23,
-      "flux_err_ujy": 17270.91,
+      "flux_err_ujy": 26322.26,
       "n": 5
     },
     {
       "wavelength_um": 0.992,
       "flux_ujy": 191906.23,
-      "flux_err_ujy": 12249.82,
+      "flux_err_ujy": 18161.58,
       "n": 2
     },
     {
       "wavelength_um": 1.0117,
       "flux_ujy": 223111.83,
-      "flux_err_ujy": 15613.35,
+      "flux_err_ujy": 12973.43,
       "n": 3
     },
     {
       "wavelength_um": 1.0364,
       "flux_ujy": 213454.73,
-      "flux_err_ujy": 19278.35,
+      "flux_err_ujy": 28582.08,
       "n": 2
     },
     {
       "wavelength_um": 1.0569,
       "flux_ujy": 229885.96,
-      "flux_err_ujy": 14995.75,
+      "flux_err_ujy": 22232.7,
       "n": 2
     },
     {
       "wavelength_um": 1.0785,
       "flux_ujy": 232416.85,
-      "flux_err_ujy": 30769.07,
+      "flux_err_ujy": 19052.55,
       "n": 3
     },
     {
       "wavelength_um": 1.0991,
       "flux_ujy": 222283.35,
-      "flux_err_ujy": 23188.12,
+      "flux_err_ujy": 23112.59,
       "n": 4
     },
     {
       "wavelength_um": 1.1208,
       "flux_ujy": 220240.14,
-      "flux_err_ujy": 31942.52,
+      "flux_err_ujy": 45483.28,
       "n": 4
     },
     {
       "wavelength_um": 1.1469,
       "flux_ujy": 264363.35,
-      "flux_err_ujy": 28681.32,
+      "flux_err_ujy": 42522.93,
       "n": 2
     },
     {
       "wavelength_um": 1.1737,
       "flux_ujy": 247807.04,
-      "flux_err_ujy": 33067.96,
+      "flux_err_ujy": 50482.28,
       "n": 3
     },
     {
@@ -171,277 +171,277 @@
     {
       "wavelength_um": 1.2032,
       "flux_ujy": 270450.86,
-      "flux_err_ujy": 27363.56,
+      "flux_err_ujy": 44880.98,
       "n": 3
     },
     {
       "wavelength_um": 1.2318,
       "flux_ujy": 275336.91,
-      "flux_err_ujy": 22354.97,
+      "flux_err_ujy": 17406.0,
       "n": 3
     },
     {
       "wavelength_um": 1.2651,
       "flux_ujy": 293662.78,
-      "flux_err_ujy": 29844.33,
+      "flux_err_ujy": 39624.69,
       "n": 4
     },
     {
       "wavelength_um": 1.295,
       "flux_ujy": 334078.58,
-      "flux_err_ujy": 6395.65,
+      "flux_err_ujy": 9482.18,
       "n": 2
     },
     {
       "wavelength_um": 1.3119,
       "flux_ujy": 269456.76,
-      "flux_err_ujy": 60218.7,
+      "flux_err_ujy": 89280.24,
       "n": 2
     },
     {
       "wavelength_um": 1.3333,
       "flux_ujy": 341553.82,
-      "flux_err_ujy": 30148.78,
+      "flux_err_ujy": 18171.07,
       "n": 3
     },
     {
       "wavelength_um": 1.3632,
       "flux_ujy": 296863.05,
-      "flux_err_ujy": 38778.27,
+      "flux_err_ujy": 57492.66,
       "n": 2
     },
     {
       "wavelength_um": 1.3936,
       "flux_ujy": 355485.96,
-      "flux_err_ujy": 34083.06,
+      "flux_err_ujy": 36572.77,
       "n": 3
     },
     {
       "wavelength_um": 1.427,
       "flux_ujy": 373945.54,
-      "flux_err_ujy": 55950.25,
+      "flux_err_ujy": 29164.95,
       "n": 3
     },
     {
       "wavelength_um": 1.4561,
       "flux_ujy": 372611.78,
-      "flux_err_ujy": 41295.87,
+      "flux_err_ujy": 27877.99,
       "n": 4
     },
     {
       "wavelength_um": 1.4863,
       "flux_ujy": 365574.64,
-      "flux_err_ujy": 57481.23,
+      "flux_err_ujy": 85221.67,
       "n": 2
     },
     {
       "wavelength_um": 1.5046,
       "flux_ujy": 317074.06,
-      "flux_err_ujy": 31695.81,
+      "flux_err_ujy": 46992.21,
       "n": 2
     },
     {
       "wavelength_um": 1.5335,
       "flux_ujy": 405813.85,
-      "flux_err_ujy": 35576.55,
+      "flux_err_ujy": 55545.96,
       "n": 3
     },
     {
       "wavelength_um": 1.5708,
       "flux_ujy": 428345.55,
-      "flux_err_ujy": 24659.55,
+      "flux_err_ujy": 30649.47,
       "n": 3
     },
     {
       "wavelength_um": 1.608,
       "flux_ujy": 531671.31,
-      "flux_err_ujy": 82135.58,
+      "flux_err_ujy": 14441.74,
       "n": 3
     },
     {
       "wavelength_um": 1.6436,
       "flux_ujy": 423020.31,
-      "flux_err_ujy": 46435.23,
+      "flux_err_ujy": 48260.82,
       "n": 5
     },
     {
       "wavelength_um": 1.6772,
       "flux_ujy": 421640.73,
-      "flux_err_ujy": 30499.61,
+      "flux_err_ujy": 13096.05,
       "n": 3
     },
     {
       "wavelength_um": 1.7151,
       "flux_ujy": 448524.11,
-      "flux_err_ujy": 27279.04,
+      "flux_err_ujy": 2410.97,
       "n": 3
     },
     {
       "wavelength_um": 1.7454,
       "flux_ujy": 485475.86,
-      "flux_err_ujy": 78844.34,
+      "flux_err_ujy": 116894.61,
       "n": 2
     },
     {
       "wavelength_um": 1.7679,
       "flux_ujy": 432628.28,
-      "flux_err_ujy": 30411.86,
+      "flux_err_ujy": 45088.62,
       "n": 2
     },
     {
       "wavelength_um": 1.8003,
       "flux_ujy": 525595.05,
-      "flux_err_ujy": 31622.99,
+      "flux_err_ujy": 57084.75,
       "n": 3
     },
     {
       "wavelength_um": 1.8426,
       "flux_ujy": 543947.42,
-      "flux_err_ujy": 35528.83,
+      "flux_err_ujy": 50299.97,
       "n": 3
     },
     {
       "wavelength_um": 1.8823,
       "flux_ujy": 618009.53,
-      "flux_err_ujy": 28460.1,
+      "flux_err_ujy": 42194.95,
       "n": 2
     },
     {
       "wavelength_um": 1.926,
       "flux_ujy": 553651.29,
-      "flux_err_ujy": 33387.11,
+      "flux_err_ujy": 22894.96,
       "n": 4
     },
     {
       "wavelength_um": 1.9601,
       "flux_ujy": 518812.05,
-      "flux_err_ujy": 3881.84,
+      "flux_err_ujy": 5755.22,
       "n": 2
     },
     {
       "wavelength_um": 1.9921,
       "flux_ujy": 550188.66,
-      "flux_err_ujy": 22303.65,
+      "flux_err_ujy": 854.28,
       "n": 3
     },
     {
       "wavelength_um": 2.0323,
       "flux_ujy": 583548.56,
-      "flux_err_ujy": 9352.83,
+      "flux_err_ujy": 13866.51,
       "n": 2
     },
     {
       "wavelength_um": 2.0731,
       "flux_ujy": 565622.07,
-      "flux_err_ujy": 17244.96,
+      "flux_err_ujy": 27938.62,
       "n": 3
     },
     {
       "wavelength_um": 2.1214,
       "flux_ujy": 586010.75,
-      "flux_err_ujy": 39686.03,
+      "flux_err_ujy": 31792.72,
       "n": 3
     },
     {
       "wavelength_um": 2.1661,
       "flux_ujy": 554572.32,
-      "flux_err_ujy": 40163.33,
+      "flux_err_ujy": 47317.15,
       "n": 4
     },
     {
       "wavelength_um": 2.2203,
       "flux_ujy": 638554.07,
-      "flux_err_ujy": 13835.2,
+      "flux_err_ujy": 22453.26,
       "n": 3
     },
     {
       "wavelength_um": 2.2601,
       "flux_ujy": 667642.42,
-      "flux_err_ujy": 28172.25,
+      "flux_err_ujy": 41768.17,
       "n": 2
     },
     {
       "wavelength_um": 2.3017,
       "flux_ujy": 665153.74,
-      "flux_err_ujy": 39125.42,
+      "flux_err_ujy": 37318.45,
       "n": 3
     },
     {
       "wavelength_um": 2.3432,
       "flux_ujy": 634805.42,
-      "flux_err_ujy": 37096.47,
+      "flux_err_ujy": 54999.23,
       "n": 2
     },
     {
       "wavelength_um": 2.3848,
       "flux_ujy": 617323.63,
-      "flux_err_ujy": 24046.67,
+      "flux_err_ujy": 22768.37,
       "n": 3
     },
     {
       "wavelength_um": 2.4521,
       "flux_ujy": 876262.49,
-      "flux_err_ujy": 74168.3,
+      "flux_err_ujy": 59180.67,
       "n": 3
     },
     {
       "wavelength_um": 2.5009,
       "flux_ujy": 892680.38,
-      "flux_err_ujy": 47773.59,
+      "flux_err_ujy": 70829.12,
       "n": 2
     },
     {
       "wavelength_um": 2.5433,
       "flux_ujy": 823854.79,
-      "flux_err_ujy": 23526.47,
+      "flux_err_ujy": 34880.34,
       "n": 2
     },
     {
       "wavelength_um": 2.5911,
       "flux_ujy": 862705.43,
-      "flux_err_ujy": 33949.68,
+      "flux_err_ujy": 50333.79,
       "n": 2
     },
     {
       "wavelength_um": 2.6519,
       "flux_ujy": 851587.33,
-      "flux_err_ujy": 2788.57,
+      "flux_err_ujy": 4941.72,
       "n": 3
     },
     {
       "wavelength_um": 2.7092,
       "flux_ujy": 867205.64,
-      "flux_err_ujy": 8557.15,
+      "flux_err_ujy": 12686.83,
       "n": 2
     },
     {
       "wavelength_um": 2.7554,
       "flux_ujy": 835587.31,
-      "flux_err_ujy": 1484.97,
+      "flux_err_ujy": 2201.61,
       "n": 2
     },
     {
       "wavelength_um": 2.8073,
       "flux_ujy": 1038655.46,
-      "flux_err_ujy": 149263.15,
+      "flux_err_ujy": 221297.55,
       "n": 2
     },
     {
       "wavelength_um": 2.8433,
       "flux_ujy": 965990.59,
-      "flux_err_ujy": 31916.74,
+      "flux_err_ujy": 51923.71,
       "n": 3
     },
     {
       "wavelength_um": 2.9199,
       "flux_ujy": 1073649.25,
-      "flux_err_ujy": 60220.89,
+      "flux_err_ujy": 89283.49,
       "n": 2
     },
     {
       "wavelength_um": 2.9996,
       "flux_ujy": 1078908.5,
-      "flux_err_ujy": 85237.95,
+      "flux_err_ujy": 126373.79,
       "n": 2
     },
     {
@@ -453,151 +453,151 @@
     {
       "wavelength_um": 3.0997,
       "flux_ujy": 1082110.31,
-      "flux_err_ujy": 138653.98,
+      "flux_err_ujy": 205568.39,
       "n": 2
     },
     {
       "wavelength_um": 3.1675,
       "flux_ujy": 1169979.09,
-      "flux_err_ujy": 3103.02,
+      "flux_err_ujy": 4600.54,
       "n": 2
     },
     {
       "wavelength_um": 3.2533,
       "flux_ujy": 1213849.3,
-      "flux_err_ujy": 61918.71,
+      "flux_err_ujy": 13880.23,
       "n": 3
     },
     {
       "wavelength_um": 3.2893,
       "flux_ujy": 848897.73,
-      "flux_err_ujy": 154856.79,
+      "flux_err_ujy": 16860.33,
       "n": 3
     },
     {
       "wavelength_um": 3.3559,
       "flux_ujy": 1317996.0,
-      "flux_err_ujy": 28106.46,
+      "flux_err_ujy": 41670.64,
       "n": 2
     },
     {
       "wavelength_um": 3.4322,
       "flux_ujy": 1291822.4,
-      "flux_err_ujy": 190426.54,
+      "flux_err_ujy": 198748.76,
       "n": 3
     },
     {
       "wavelength_um": 3.512,
       "flux_ujy": 1078344.24,
-      "flux_err_ujy": 173648.72,
+      "flux_err_ujy": 257451.59,
       "n": 2
     },
     {
       "wavelength_um": 3.5729,
       "flux_ujy": 1324006.56,
-      "flux_err_ujy": 196512.77,
+      "flux_err_ujy": 291349.83,
       "n": 2
     },
     {
       "wavelength_um": 3.6353,
       "flux_ujy": 1418771.82,
-      "flux_err_ujy": 78640.7,
+      "flux_err_ujy": 116592.7,
       "n": 2
     },
     {
       "wavelength_um": 3.7184,
       "flux_ujy": 1333508.44,
-      "flux_err_ujy": 244398.19,
+      "flux_err_ujy": 390471.29,
       "n": 3
     },
     {
       "wavelength_um": 3.8149,
       "flux_ujy": 1482613.3,
-      "flux_err_ujy": 252571.43,
+      "flux_err_ujy": 325388.08,
       "n": 5
     },
     {
       "wavelength_um": 3.8542,
       "flux_ujy": 1927933.46,
-      "flux_err_ujy": 226485.16,
+      "flux_err_ujy": 198241.57,
       "n": 6
     },
     {
       "wavelength_um": 3.9473,
       "flux_ujy": 1921283.0,
-      "flux_err_ujy": 218310.28,
+      "flux_err_ujy": 176073.51,
       "n": 8
     },
     {
       "wavelength_um": 4.0167,
       "flux_ujy": 1880703.65,
-      "flux_err_ujy": 251322.22,
+      "flux_err_ujy": 278748.22,
       "n": 5
     },
     {
       "wavelength_um": 4.1218,
       "flux_ujy": 1227008.7,
-      "flux_err_ujy": 302428.44,
+      "flux_err_ujy": 87605.26,
       "n": 3
     },
     {
       "wavelength_um": 4.1983,
       "flux_ujy": 2186897.88,
-      "flux_err_ujy": 180136.58,
+      "flux_err_ujy": 145906.12,
       "n": 8
     },
     {
       "wavelength_um": 4.2763,
       "flux_ujy": 2082448.28,
-      "flux_err_ujy": 255089.81,
+      "flux_err_ujy": 329194.1,
       "n": 8
     },
     {
       "wavelength_um": 4.3641,
       "flux_ujy": 2260518.82,
-      "flux_err_ujy": 246523.96,
+      "flux_err_ujy": 207920.85,
       "n": 7
     },
     {
       "wavelength_um": 4.4408,
       "flux_ujy": 1784583.41,
-      "flux_err_ujy": 196666.08,
+      "flux_err_ujy": 248629.51,
       "n": 11
     },
     {
       "wavelength_um": 4.5444,
       "flux_ujy": 2202871.05,
-      "flux_err_ujy": 258971.75,
+      "flux_err_ujy": 270175.61,
       "n": 6
     },
     {
       "wavelength_um": 4.63,
       "flux_ujy": 2404203.31,
-      "flux_err_ujy": 284552.0,
+      "flux_err_ujy": 435510.15,
       "n": 8
     },
     {
       "wavelength_um": 4.7307,
       "flux_ujy": 1876854.4,
-      "flux_err_ujy": 229452.09,
+      "flux_err_ujy": 191651.22,
       "n": 9
     },
     {
       "wavelength_um": 4.8279,
       "flux_ujy": 1967636.72,
-      "flux_err_ujy": 263603.7,
+      "flux_err_ujy": 290348.73,
       "n": 9
     },
     {
       "wavelength_um": 4.9173,
       "flux_ujy": 1981194.04,
-      "flux_err_ujy": 311357.46,
+      "flux_err_ujy": 407351.1,
       "n": 8
     },
     {
       "wavelength_um": 5.004,
       "flux_ujy": 2156890.83,
-      "flux_err_ujy": 231804.34,
+      "flux_err_ujy": 343673.11,
       "n": 2
     }
   ],

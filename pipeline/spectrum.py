@@ -84,7 +84,10 @@ def binned(points, step=0.02):
         if sel.sum() == 0:
             continue
         vals = fl[sel]
-        err = 1.2533 * np.std(vals) / np.sqrt(sel.sum()) if sel.sum() > 1 else None
+        # Robust error of the median: uses the median absolute deviation, so one odd
+        # image (e.g. a cosmic ray) does not blow up the error bar of its bin.
+        mad = np.median(np.abs(vals - np.median(vals)))
+        err = 1.2533 * 1.4826 * mad / np.sqrt(sel.sum()) if sel.sum() > 1 else None
         out.append({"wavelength_um": round(float(np.median(wl[sel])), 4),
                     "flux_ujy": round(float(np.median(vals)), 2),
                     "flux_err_ujy": None if err is None else round(float(err), 2),
@@ -133,10 +136,17 @@ def main():
     parser.add_argument("--size", type=float, default=0.06, help="Cutout size in degrees (default 0.06, same as fetch_object.py so cached cutouts are reused)")
     parser.add_argument("--workers", type=int, default=10, help="Parallel downloads (default 10)")
     parser.add_argument("--replot", action="store_true", help="Only redraw spectrum.png from spectrum.json")
+    parser.add_argument("--rebin", action="store_true",
+                        help="Recompute the binned spectrum from the points in spectrum.json (no download), then redraw")
     args = parser.parse_args()
 
     out_dir = Path("data") / args.slug
     out_dir.mkdir(parents=True, exist_ok=True)
+    if args.rebin:
+        result = json.loads((out_dir / "spectrum.json").read_text())
+        result["binned"] = binned([p for p in result["points"] if not p.get("saturated")])
+        (out_dir / "spectrum.json").write_text(json.dumps(result, indent=2))
+        args.replot = True
     if args.replot:
         plot(json.loads((out_dir / "spectrum.json").read_text()), out_dir / "spectrum.png")
         print(f"Redrawn {out_dir}/spectrum.png")
