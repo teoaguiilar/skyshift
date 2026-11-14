@@ -147,23 +147,41 @@
   font-family: var(--mono); font-size: 15px; cursor: pointer; }
 .help-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Welcome screen: the live map shows, blurred, behind it */
-.intro { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; overflow: auto;
-  background: rgba(7, 11, 24, 0.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  transition: background 0.9s ease, backdrop-filter 0.9s ease; }
-.intro-card { max-width: 540px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px;
-  animation: intro-in 0.8s ease-out both; transition: opacity 0.6s ease, transform 0.9s cubic-bezier(0.5, 0, 0.75, 0), filter 0.6s ease; }
-.intro-title { margin: 6px 0 0; }
-.intro-lead { margin: 0; font-size: 17px; line-height: 1.55; color: var(--text); }
-.intro-list { list-style: none; margin: 4px 0 6px; padding: 0; display: flex; flex-direction: column; gap: 9px; text-align: left; font-size: 14px; color: var(--muted); }
+/* Welcome screen: night sky drawn in a canvas, the big animated logo, then the text */
+.intro { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; overflow: auto; background: var(--bg);
+  transition: opacity 0.7s ease 0.6s; }
+.intro-sky { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.intro-card { position: relative; max-width: 720px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;
+  transition: opacity 0.5s ease, transform 1.1s cubic-bezier(0.5, 0, 0.75, 0), filter 0.6s ease; }
+.big-logo { font-size: clamp(36px, 8.5vw, 120px); margin-bottom: 4px; }
+.big-word { font-family: var(--title); font-size: 0.55em; letter-spacing: 0.24em; line-height: 1; white-space: nowrap; color: var(--text); margin-right: -0.24em; }
+.big-word .ch { display: inline-block; }
+.big-i { display: inline-block; width: 0.4em; height: 1em; vertical-align: -0.16em; margin-right: 0.22em; overflow: visible; }
+.intro-tag { margin: 0; font-size: clamp(18px, 2.2vw, 24px); color: var(--accent); letter-spacing: 0.02em; }
+.intro-lead { margin: 0; max-width: 560px; font-size: 17px; line-height: 1.55; color: var(--text); }
+.intro-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 15px; color: var(--muted); }
 .intro-list li { display: flex; align-items: center; gap: 12px; }
-
-.intro-start { margin-top: 6px; min-width: 180px; min-height: 48px; font-size: 16px; }
+.intro-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 4px; }
+.intro-start { min-width: 200px; min-height: 50px; font-size: 17px; }
 .intro-science { font-size: 14px; color: var(--muted); }
-.intro-foot { margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
-.intro.leaving { background: rgba(7, 11, 24, 0); backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); pointer-events: none; }
-.intro.leaving .intro-card { opacity: 0; transform: scale(1.25); filter: blur(6px); }
+.intro-objects { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 6px; }
+.intro-thumbs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.intro-thumb { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 92px; padding: 6px; background: rgba(13, 19, 38, 0.85);
+  border: 1px solid var(--line); border-radius: 2px; color: var(--text); font: 12px var(--sans); cursor: pointer; }
+.intro-thumb img { width: 64px; height: 64px; image-rendering: pixelated; display: block; background: #000; }
+.intro-thumb:hover { border-color: var(--accent); }
+.intro-foot { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+/* Text appears after the logo, one block after another (--d = delay) */
+.reveal { animation: intro-in 0.8s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
 @keyframes intro-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+/* Leaving: the text flies towards you and fades while the stars warp; then the screen fades into the map */
+.intro.leaving { opacity: 0; pointer-events: none; }
+.intro.leaving .intro-card { opacity: 0; transform: scale(1.6); filter: blur(8px); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none; }
+  .intro, .intro-card { transition: opacity 0.3s; }
+  .intro.leaving .intro-card { transform: none; filter: none; }
+}
 
 /* Tutorial: spotlight on one element + a card */
 .tut { position: fixed; inset: 0; z-index: 90; }
@@ -185,6 +203,7 @@
   .mode-switch { margin-left: auto; }
   .brand-tag { display: none; }
   .intro-lead { font-size: 15px; }
+  .intro-thumb { width: 84px; }
   .tut-card { left: 12px !important; right: 12px; width: auto !important; top: auto !important; bottom: 12px; transform: none !important; }
 }
 
@@ -276,7 +295,6 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .first-last-arrow { align-self: center; margin-top: -24px; }
 .first-last .frame figcaption { flex-direction: column; gap: 0; margin-top: 4px; }
 @media (max-width: 760px) {
-  .intro { background: rgba(7, 11, 24, 0.94); }
   /* Guided tour: one row that scrolls sideways instead of five rows of buttons */
   .tour { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .tour-obj { flex: none; }

@@ -243,13 +243,15 @@ export default function App() {
   // Welcome screen: while it fades, the map dives in a little.
   function onIntroLeave() {
     const aladin = aladinRef.current
-    if (aladin && !interactedRef.current) aladin.zoomToFoV(60, 1.6)
+    if (aladin && !interactedRef.current) aladin.zoomToFoV(40, 2.2)
   }
-  function onIntroStart(startMode) {
+  function onIntroStart(startMode, objectId = null) {
     setShowIntro(false)
     if (startMode === 'science') scienceTutSeen.current = true
     setMode(startMode, { tutorial: false })
-    setTimeout(() => setTutorial(tutorialFor(startMode)), 250)
+    const picked = TOUR.find((t) => t.id === objectId)
+    if (picked) goTo(picked.query, picked.id) // straight to that object; the ? button opens the tutorial
+    else setTimeout(() => setTutorial(tutorialFor(startMode)), 250)
   }
 
   useEffect(() => {
@@ -605,7 +607,13 @@ export default function App() {
         </aside>
       </main>
 
-      {showIntro && <Intro onLeave={onIntroLeave} onStart={onIntroStart} />}
+      {showIntro && (
+        <Intro
+          tour={TOUR.map((t) => ({ id: t.id, label: t.label, thumb: thumbOf(t) }))}
+          onLeave={onIntroLeave}
+          onStart={onIntroStart}
+        />
+      )}
       {tutorial && <Tutorial steps={tutorial} onClose={() => setTutorial(null)} />}
     </div>
   )
