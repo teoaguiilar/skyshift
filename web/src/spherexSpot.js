@@ -296,6 +296,8 @@ export async function loadSpot(ra, dec, { band = 'D2', sizeArcmin = DEFAULT_SIZE
   }
   await Promise.all(Array.from({ length: CONCURRENCY }, worker))
   if (signal?.aborted) return null
+  // Images exist but none could be downloaded: IRSA is down, not "no data here".
+  if (got.length === 0) throw new Error('IRSA_DOWN')
 
   const best = bestWindow(got)
   if (!best || best.days < 2) return { empty: true, downloaded: got.length }

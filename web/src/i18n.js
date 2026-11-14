@@ -139,6 +139,8 @@ const ES = {
   'The NASA SPHEREx archive (IRSA) did not answer: it is busy or down for a moment. This is not an error in your search.':
     'El archivo de NASA SPHEREx (IRSA) no ha respondido: está ocupado o caído un momento. No es un error de tu búsqueda.',
   'Try again': 'Reintentar',
+  "NASA's IRSA archive is not answering right now. Try again in a few minutes, or explore the guided tour.":
+    'El archivo IRSA de la NASA no responde ahora mismo. Inténtalo de nuevo en unos minutos o explora la visita guiada.',
   '{n} of {searched} SPHEREx images here were taken at a similar wavelength (±2 %).':
     '{n} de las {searched} imágenes de SPHEREx de aquí se tomaron con una longitud de onda parecida (±2 %).',
   'Something that shifts between dates is only a': 'Algo que se desplaza entre fechas es solo un',

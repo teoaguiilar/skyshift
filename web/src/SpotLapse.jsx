@@ -32,12 +32,18 @@ function OnTheFlySpectrum({ ra, dec }) {
     try {
       const q = `ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}${which === 'first' ? '&visit=first' : ''}`
       const r = await fetch(`/api/spectrum?${q}`, { signal: ctrl.signal })
+      if ([502, 503, 504].includes(r.status)) throw new Error('IRSA_DOWN')
       const data = await r.json().catch(() => null)
       if (!r.ok || !data) throw new Error(data?.error || `HTTP ${r.status}`)
       setResult(data)
       setState('done')
     } catch (e) {
-      setError(e.name === 'AbortError' ? t('IRSA took too long, try again') : e.message)
+      // IRSA busy or down (502/503/504) or too slow: a friendly message, not a raw error.
+      setError(
+        e.name === 'AbortError' || e.message === 'IRSA_DOWN' || /IRSA|took too long|502|503|504/.test(e.message)
+          ? t("NASA's IRSA archive is not answering right now. Try again in a few minutes, or explore the guided tour.")
+          : e.message,
+      )
       setState('error')
     } finally {
       clearTimeout(timer)
@@ -59,7 +65,14 @@ function OnTheFlySpectrum({ ra, dec }) {
         </div>
       </div>
       {state === 'loading' && <p className="hint">{t('Measuring every SPHEREx image of this visit, all six detectors… up to 1 min.')}</p>}
-      {state === 'error' && <p className="status">{error}</p>}
+      {state === 'error' && (
+        <div className="spot-fail">
+          <p className="status">{error}</p>
+          <button className="btn btn-link" onClick={() => run(visit)}>
+            {t('Try again')}
+          </button>
+        </div>
+      )}
       {state === 'done' && result && (
         <>
           {result.count === 0 ? (
@@ -179,7 +192,7 @@ export default function SpotLapse({ ra, dec, science = false }) {
         ) : (
           <p className="status">
             {t(
-              'The NASA SPHEREx archive (IRSA) did not answer: it is busy or down for a moment. This is not an error in your search.',
+              "NASA's IRSA archive is not answering right now. Try again in a few minutes, or explore the guided tour.",
             )}
           </p>
         )}
