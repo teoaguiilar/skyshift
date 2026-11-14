@@ -9,6 +9,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 const DATA_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 const VIEW_SIZE = 340 // px on screen
 
+// Frames from data/ have a file name; frames built in the browser carry their own image (src).
+const srcOf = (f, id) => f.src ?? `${DATA_BASE}/${id}/${f.file}`
+
 // Sky position -> pixel in the PNG (north up, east left).
 function skyToPixel(ra, dec, grid) {
   const scale = grid.pixel_scale_arcsec / grid.png_upscale // arcsec per PNG pixel
@@ -20,7 +23,7 @@ function skyToPixel(ra, dec, grid) {
   return { x: w / 2 - dx, y: h / 2 - dy, w, h }
 }
 
-export default function TimeLapse({ id }) {
+export default function TimeLapse({ id, manifest: given }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -33,6 +36,10 @@ export default function TimeLapse({ id }) {
     setError(false)
     setIndex(0)
     setPlaying(true)
+    if (given) {
+      setManifest({ ...given, frames: [...given.frames].sort((a, b) => a.mjd - b.mjd) })
+      return
+    }
     fetch(`${DATA_BASE}/${id}/manifest.json`, { cache: 'no-cache' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))))
       .then((m) => {
@@ -40,12 +47,12 @@ export default function TimeLapse({ id }) {
         // Preload every frame so the animation does not flicker.
         m.frames.forEach((f) => {
           const img = new Image()
-          img.src = `${DATA_BASE}/${id}/${f.file}`
+          img.src = srcOf(f, id)
         })
         setManifest(m)
       })
       .catch(() => setError(true))
-  }, [id])
+  }, [id, given])
 
   useEffect(() => {
     clearInterval(timer.current)
@@ -77,7 +84,7 @@ export default function TimeLapse({ id }) {
       </div>
 
       <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
-        <img src={`${DATA_BASE}/${id}/${frame.file}`} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
+        <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
         {showExpected && expected && (
           <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
             <circle cx={expected.x} cy={expected.y} r="22" />
@@ -122,10 +129,12 @@ export default function TimeLapse({ id }) {
         </dd>
       </dl>
 
+      {manifest.frames.some((f) => f.predicted) && (
       <label className="tl-toggle">
         <input type="checkbox" checked={showExpected} onChange={(e) => setShowExpected(e.target.checked)} />
         Show expected position (catalogue proper motion)
       </label>
+      )}
 
       <p className="hint">
         {manifest.frames.length} images from {first} to {last}. Each square is one SPHEREx pixel (6.15″).

@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
+import SpotLapse from './SpotLapse.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -234,7 +235,7 @@ export default function App() {
               ) : (
                 <p className="hint">Drag and zoom the map, then click any point of the sky — or pick a guided tour.</p>
               )}
-              <p className="hint">SPHEREx time-lapses are ready for the guided-tour objects.</p>
+              {selected && <SpotLapse ra={selected.ra} dec={selected.dec} />}
             </>
           )}
           {status && <p className="status">{status}</p>}
