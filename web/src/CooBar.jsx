@@ -4,6 +4,7 @@
  * Shows where the mouse points (or the centre of the view): RA/Dec in ICRS, in sexagesimal and in
  * degrees, galactic coordinates, and the field of view. "Grid" turns on Aladin's coordinate grid.
  */
+import { t } from './i18n.js'
 import { useEffect, useState } from 'react'
 import { toGalactic } from './coords.js'
 
@@ -58,7 +59,7 @@ export default function CooBar({ aladinRef, hub }) {
 
   return (
     <div className="coo-bar" onMouseEnter={() => setCursor(null)}>
-      <span className="coo-where">{cursor ? 'Mouse' : 'Centre'}</span>
+      <span className="coo-where">{cursor ? t('Mouse') : t('Centre')}</span>
       <span>
         <span className="muted">ICRS</span> RA {hms(p.ra)} · Dec {dms(p.dec)}
       </span>
@@ -66,7 +67,7 @@ export default function CooBar({ aladinRef, hub }) {
         ({p.ra.toFixed(4)}°, {sdeg(p.dec, 4)})
       </span>
       <span>
-        <span className="muted">Galactic</span> l {l.toFixed(3)}° · b {sdeg(b, 3)}
+        <span className="muted">{t('Galactic')}</span> l {l.toFixed(3)}° · b {sdeg(b, 3)}
       </span>
       <span>
         <span className="muted">FoV</span> {fovText(aladin.getFov())}
@@ -81,7 +82,7 @@ export default function CooBar({ aladinRef, hub }) {
             else aladin.hideCooGrid()
           }}
         />
-        Grid
+        {t('Grid')}
       </label>
     </div>
   )

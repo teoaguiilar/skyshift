@@ -3,6 +3,7 @@
  * Code written with help from Claude (Anthropic), reviewed by the SkyShift Murcia team. See AI_USAGE.md.
  * Data: the `measured` / `predicted` fields of data/<object>/manifest.json (pipeline by Teo).
  */
+import { t } from './i18n.js'
 
 const W = 340
 const H = 150
@@ -138,17 +139,17 @@ export function PositionChart({ frames, currentMjd }) {
       raw={usable.map((f) => ({ t: f.mjd, y: along(f.measured) }))}
       line={byVisit(usable.map((f) => ({ t: f.mjd, y: along(f.predicted) })))}
       current={currentMjd}
-      yLabel={`Shift towards the ${dir} (arcsec)`}
+      yLabel={t('Shift towards the {dir} (arcsec)', { dir: t(dir) })}
       legend={
         <>
           <span className="legend-row">
-            <i className="dot" /> Measured by SkyShift (SPHEREx): mean per visit ± standard error
+            <i className="dot" /> {t('Measured by SkyShift (SPHEREx): mean per visit ± standard error')}
           </span>
           <span className="legend-row">
-            <i className="dot grey" /> Single SPHEREx images
+            <i className="dot grey" /> {t('Single SPHEREx images')}
           </span>
           <span className="legend-row">
-            <i className="dash" /> Expected from the catalogue motion
+            <i className="dash" /> {t('Expected from the catalogue motion')}
           </span>
         </>
       }
@@ -165,16 +166,16 @@ export function BrightnessChart({ frames, currentMjd }) {
       points={byVisit(usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel })))}
       raw={usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel }))}
       current={currentMjd}
-      yLabel="Relative brightness (SPHEREx)"
+      yLabel={t('Relative brightness (SPHEREx)')}
       legend={
         <>
           <span className="legend-row">
-            <i className="dot" /> Mean per visit ± standard error
+            <i className="dot" /> {t('Mean per visit ± standard error')}
           </span>
           <span className="legend-row">
-            <i className="dot grey" /> Single SPHEREx images
+            <i className="dot grey" /> {t('Single SPHEREx images')}
           </span>
-          <span className="legend-row muted">Changes much larger than the bars make it a candidate variable until checked.</span>
+          <span className="legend-row muted">{t('Changes much larger than the bars make it a candidate variable until checked.')}</span>
         </>
       }
     />
@@ -198,11 +199,11 @@ export function SpectrumChart({ spectrum, note }) {
       }))}
       xFormat={(um) => `${um.toFixed(2)} µm`}
       yFormat={fmtFlux}
-      yLabel="Spectrum: brightness at each colour (SPHEREx, 0.75–5 µm)"
+      yLabel={t('Spectrum: brightness at each colour (SPHEREx, 0.75–5 µm)')}
       legend={
         <>
-          <i className="dot" /> SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.
-          {spectrum.saturated_images_skipped > 0 && ` ${spectrum.saturated_images_skipped} saturated images left out.`}
+          <i className="dot" /> {t('SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.')}
+          {spectrum.saturated_images_skipped > 0 && ` ${t('{n} saturated images left out.', { n: spectrum.saturated_images_skipped })}`}
           {note && ` ${note}`}
         </>
       }

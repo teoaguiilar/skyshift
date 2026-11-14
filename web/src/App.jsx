@@ -13,6 +13,7 @@ import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
 import { parallaxShift } from './Parallax.jsx'
 import { parseCoords } from './coords.js'
+import { getLang, setLang, t } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import './App.css'
 
@@ -47,6 +48,25 @@ const TOUR = [
   },
   { id: 'ux-orionis', label: 'UX Orionis', query: 'UX Ori', kind: 'varies' },
 ]
+
+// Other names people may type for the tour objects (compared without spaces, dots, quotes or dashes).
+const TOUR_ALIASES = {
+  barnard: ['barnard', 'barnards', 'barnardsstar', 'estrelladebarnard', 'gj699', 'gl699', 'v2500oph'],
+  'eps-indi-b': ['epsindb', 'epsilonindib', 'epsindib', 'epsilonindusb'],
+  'wise-0855-stacked': ['wise0855', 'wise08550714', 'wisej0855', 'wisej085510.83071442.5', 'wisej085510830714425', 'wise0855714'],
+  'rw-aurigae': ['rwaur', 'rwaurigae'],
+  'r-draconis': ['rdra', 'rdraconis'],
+  'ux-orionis': ['uxori', 'uxorionis'],
+}
+const normName = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
+function tourObjectFor(text) {
+  const n = normName(text)
+  if (!n) return null
+  return (
+    TOUR.find((t) => normName(t.label) === n || normName(t.query) === n || normName(t.id) === n) ??
+    TOUR.find((t) => (TOUR_ALIASES[t.id] ?? []).some((a) => normName(a) === n))
+  )
+}
 
 const DEFAULT_FOV = 0.5 // degrees
 // Thumbnails for the guided tour: the first real SPHEREx image of each object (from the pipeline, on GitHub).
@@ -140,12 +160,17 @@ export default function App() {
   const [skyLayer, setSkyLayer] = useState('base')
   const [gaiaOn, setGaiaOn] = useState(false)
   const [mode, setModeState] = useState(readMode)
+  const [lang, setLangState] = useState(getLang) // re-renders everything when the language changes
+  const changeLang = (next) => {
+    setLang(next)
+    setLangState(next)
+  }
   const science = mode === 'science'
   const [showIntro, setShowIntro] = useState(() => !hasDeepLink())
   const [tutorial, setTutorial] = useState(null) // list of steps while the tutorial is open
   const scienceTutSeen = useRef(false)
   const cooHub = useRef({ cursor: () => {}, view: () => {} }).current // feeds the Science coordinate bar
-  const [gaiaStatus, setGaiaStatus] = useState('')
+  const [gaiaStatus, setGaiaStatus] = useState(null) // {key, vars}, translated when shown
   const [gaiaStar, setGaiaStar] = useState(null) // Gaia star clicked on the map
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
@@ -243,7 +268,7 @@ export default function App() {
     // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
     // star is no longer there (Barnard's Star is about 4.5′ further north today). Say so next to the circle.
     const moves = TOUR.find((t) => t.id === objectId)?.kind === 'moves'
-    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? 'Catalogue position in 2000: the star has moved since' : '' })])
+    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? t('Catalogue position in 2000: the star has moved since') : '' })])
     writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
     setActiveId(objectId)
@@ -367,7 +392,7 @@ export default function App() {
       markerLayerRef.current = markers
       if (start) {
         const startMoves = TOUR.find((t) => t.id === new URLSearchParams(window.location.search).get('object'))?.kind === 'moves'
-        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? 'Catalogue position in 2000: the star has moved since' : '' })])
+        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? t('Catalogue position in 2000: the star has moved since') : '' })])
       }
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
@@ -386,13 +411,13 @@ export default function App() {
           gaiaCat.removeAll()
           if (!gaiaRef.current.on) {
             setGaiaStar(null)
-            return setGaiaStatus('')
+            return setGaiaStatus(null)
           }
           const fov = aladin.getFov()[0]
-          if (fov > GAIA_MAX_FOV) return setGaiaStatus('zoom in to load')
+          if (fov > GAIA_MAX_FOV) return setGaiaStatus({ key: 'zoom in to load' })
           const [ra, dec] = aladin.getRaDec()
           const seq = ++gaiaSeq
-          setGaiaStatus('loading…')
+          setGaiaStatus({ key: 'loading…' })
           try {
             const ctrl = new AbortController()
             const t = setTimeout(() => ctrl.abort(), 12000) // never hang the page
@@ -411,9 +436,9 @@ export default function App() {
               byBin[bin < 0 ? gaiaCats.length - 1 : bin].push(A.source(sra, sdec, star))
             })
             byBin.forEach((list, i) => list.length && gaiaCats[i].addSources(list))
-            setGaiaStatus(`${data.count} stars, G < 16`)
+            setGaiaStatus({ key: '{count} stars, G < 16', vars: { count: data.count } })
           } catch {
-            if (seq === gaiaSeq) setGaiaStatus('Gaia archive not answering, try later')
+            if (seq === gaiaSeq) setGaiaStatus({ key: 'Gaia archive not answering, try later' })
           }
         }, 700)
       }
@@ -481,13 +506,21 @@ export default function App() {
       setStatus('')
       return
     }
-    setStatus(`Searching “${text}”…`)
+    // Typing the name of a guided-tour object opens its full panel (time-lapse, charts, card), not just the spot.
+    if (!objectId) {
+      const tourObj = tourObjectFor(text)
+      if (tourObj) {
+        text = tourObj.query
+        objectId = tourObj.id
+      }
+    }
+    setStatus(t('Searching “{text}”…', { text }))
     resolveName(text)
       .then(({ ra, dec }) => {
         flyTo(ra, dec, DEFAULT_FOV, objectId)
         setStatus('')
       })
-      .catch(() => setStatus(`“${text}” not found. Try another name, or coordinates such as 269.45 4.69, 17 57 48 +04 41 36 or gal 31.0 14.1.`))
+      .catch(() => setStatus(t('“{text}” not found. Try another name, or coordinates such as 269.45 4.69, 17 57 48 +04 41 36 or gal 31.0 14.1.', { text })))
   }
 
   return (
@@ -495,15 +528,22 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <Logo size={30} />
-          <span className="brand-tag small-label">See the sky move</span>
+          <span className="brand-tag small-label">{t('See the sky move')}</span>
         </div>
         <div className="seg mode-switch" role="tablist" aria-label="Mode">
           <button className={!science ? 'on' : ''} onClick={() => setMode('explore')} role="tab" aria-selected={!science}>
-            Explore
+            {t('Explore')}
           </button>
           <button className={science ? 'on' : ''} onClick={() => setMode('science')} role="tab" aria-selected={science}>
-            Science
+            {t('Science')}
           </button>
+        </div>
+        <div className="seg lang-switch" role="tablist" aria-label="Language / Idioma">
+          {['en', 'es'].map((l) => (
+            <button key={l} className={lang === l ? 'on' : ''} onClick={() => changeLang(l)} role="tab" aria-selected={lang === l}>
+              {l.toUpperCase()}
+            </button>
+          ))}
         </div>
         <form
           className="search"
@@ -515,22 +555,22 @@ export default function App() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Name or coordinates, e.g. 17 57 48 +04 41 36"
-            aria-label="Search the sky"
+            placeholder={t('Name or coordinates, e.g. 17 57 48 +04 41 36')}
+            aria-label={t('Search the sky')}
           />
           <button type="submit" className="btn search-go">
-            Go
+            {t('Go')}
           </button>
         </form>
-        <button className="help-btn" onClick={() => setTutorial(tutorialFor(mode))} aria-label="Show the tutorial" title="Tutorial">
+        <button className="help-btn" onClick={() => setTutorial(tutorialFor(mode))} aria-label={t('Show the tutorial')} title={t('Tutorial')}>
           ?
         </button>
       </header>
 
       <nav className="tour" aria-label="Guided tour">
-        <span className="small-label tour-label">Guided tour</span>
+        <span className="small-label tour-label">{t('Guided tour')}</span>
         <span className="tour-legend small-label">
-          <span className="key moves" /> moves <span className="key varies" /> changes brightness
+          <span className="key moves" /> {t('moves')} <span className="key varies" /> {t('changes brightness')}
         </span>
         {TOUR.map((t) => (
           <button
@@ -561,18 +601,18 @@ export default function App() {
                 gaiaRef.current.refresh()
               }}
             />
-            Gaia DR3 stars (ESA){gaiaOn && gaiaStatus ? ` · ${gaiaStatus}` : ''}
+            {t('Gaia DR3 stars (ESA)')}{gaiaOn && gaiaStatus ? ` · ${t(gaiaStatus.key, gaiaStatus.vars)}` : ''}
           </label>
             {gaiaOn && (
               <span className="gaia-legend">
-                <span className="muted">colour BP−RP:</span>
+                <span className="muted">{t('colour BP−RP:')}</span>
                 {GAIA_BINS.map((b) => (
                   <span key={b.label}>
                     <i style={{ borderColor: b.color }} />
                     {b.label}
                   </span>
                 ))}
-                <span className="muted">hotter → cooler · click a star</span>
+                <span className="muted">{t('hotter → cooler · click a star')}</span>
               </span>
             )}
           </div>
@@ -580,39 +620,44 @@ export default function App() {
           {science && gaiaStar && <GaiaStar star={gaiaStar} onClose={() => setGaiaStar(null)} />}
           {simLabel && (
             <div className="sim-label">
-              <span className="sim-year">Year {simLabel.phase === 'close' ? simLabel.year.toFixed(2) : Math.round(simLabel.year)}</span>
+              <span className="sim-year">{t('Year')} {simLabel.phase === 'close' ? simLabel.year.toFixed(2) : Math.round(simLabel.year)}</span>
               {simLabel.phase === 'close' ? (
                 <span>
-                  Close-up, 2 years (view {simLabel.view} wide): {simLabel.name} drifts with its proper motion and wobbles once a year
-                  by its parallax (±{simLabel.wobble.toFixed(simLabel.wobble < 10 ? 2 : 0)} mas), because we watch it from the moving Earth.
+                  {t(
+                    'Close-up, 2 years (view {view} wide): {name} drifts with its proper motion and wobbles once a year by its parallax (±{wobble} mas), because we watch it from the moving Earth.',
+                    { view: simLabel.view, name: simLabel.name, wobble: simLabel.wobble.toFixed(simLabel.wobble < 10 ? 2 : 0) },
+                  )}
                 </span>
               ) : (
                 <span>
-                  {simLabel.years.toLocaleString('en')} years (view {simLabel.view} wide): {simLabel.name} moves{' '}
-                  {simLabel.moved >= 60 ? `${(simLabel.moved / 60).toFixed(1)}′` : `${simLabel.moved.toFixed(1)}″`}; the yearly wobble is
-                  now far too small to see.
+                  {t('{years} years (view {view} wide): {name} moves {moved}; the yearly wobble is now far too small to see.', {
+                    years: simLabel.years.toLocaleString(getLang()),
+                    view: simLabel.view,
+                    name: simLabel.name,
+                    moved: simLabel.moved >= 60 ? `${(simLabel.moved / 60).toFixed(1)}′` : `${simLabel.moved.toFixed(1)}″`,
+                  })}
                 </span>
               )}
               <span className="muted">
-                Simulation from catalogue values (SIMBAD); other stars are shown where they are today.
+                {t('Simulation from catalogue values (SIMBAD); other stars are shown where they are today.')}
               </span>
               {science && (
                 <code className="sim-eq">
                   Δα·cosδ = μα*·Δt + ϖ(X sinα − Y cosα) · Δδ = μδ·Δt + ϖ(X cosα sinδ + Y sinα sinδ − Z cosδ)
                 </code>
               )}
-              <button onClick={clearSim} aria-label="Close the simulation">
+              <button onClick={clearSim} aria-label={t('Close the simulation')}>
                 ×
               </button>
             </div>
           )}
           <span className="sky-layer">
-            {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
+            {skyLayer === 'spherex' ? t('Sky: NASA SPHEREx (all-sky map)') : t('Sky: NASA WISE · zoom in to see SPHEREx')}
           </span>
         </div>
         {activeId && !scrolledDown && (
           <button className="to-panel" onClick={showPanel}>
-            ▼ Time-lapse below
+            {t('▼ Time-lapse below')}
           </button>
         )}
         <aside className="panel" ref={panelRef}>
@@ -637,7 +682,7 @@ export default function App() {
             </>
           ) : (
             <>
-              <h2>Selected spot</h2>
+              <h2>{t('Selected spot')}</h2>
               {selected ? (
                 <dl className="coords">
                   <dt>RA</dt>
@@ -646,16 +691,17 @@ export default function App() {
                   <dd>{selected.dec.toFixed(5)}°</dd>
                 </dl>
               ) : (
-                <p className="hint">Drag and zoom the map, then click any point of the sky — or pick a guided tour.</p>
+                <p className="hint">{t('Drag and zoom the map, then click any point of the sky — or pick a guided tour.')}</p>
               )}
               {selected && <SpotLapse ra={selected.ra} dec={selected.dec} science={science} />}
             </>
           )}
           {status && <p className="status">{status}</p>}
           <p className="credits">
-            Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0
-            with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS).
-            Team SkyShift Murcia · NASA Space Apps Challenge 2026.
+            {t(
+              'Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0 with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS). Team SkyShift Murcia · NASA Space Apps Challenge 2026.',
+            )}
+            {getLang() === 'es' && <span className="credits-lang"> {t('Scientific texts and notes from the team are in English.')}</span>}
           </p>
         </aside>
       </main>
@@ -665,6 +711,8 @@ export default function App() {
           tour={TOUR.map((t) => ({ id: t.id, label: t.label, thumb: thumbOf(t) }))}
           onLeave={onIntroLeave}
           onStart={onIntroStart}
+          lang={lang}
+          onLang={changeLang}
         />
       )}
       {tutorial && <Tutorial steps={tutorial} onClose={() => setTutorial(null)} />}

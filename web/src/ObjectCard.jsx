@@ -4,6 +4,7 @@
  * Texts and numbers come from science/cards/<id>.json, written by the science team (Benjamín, Juan)
  * with a source for every number. The web reads them from GitHub, so edits appear without redeploying.
  */
+import { t } from './i18n.js'
 // The card JSON is loaded by the player (TimeLapse) and passed in. `description` is the text for the
 // current mode from science/cards/descriptions.json (simple in Explore, technical in Science), if any.
 export default function ObjectCard({ card, description, science = false }) {
@@ -13,7 +14,7 @@ export default function ObjectCard({ card, description, science = false }) {
     <section className="card">
       {description && (
         <div className="card-description">
-          <span className="small-label">{science ? 'The system, in detail' : 'The system'}</span>
+          <span className="small-label">{science ? t('The system, in detail') : t('The system')}</span>
           <p>{description}</p>
         </div>
       )}
@@ -23,7 +24,7 @@ export default function ObjectCard({ card, description, science = false }) {
       {card.summary && <p>{card.summary}</p>}
       {card.why_interesting && (
         <p>
-          <strong>Why it matters here: </strong>
+          <strong>{t('Why it matters here: ')}</strong>
           {card.why_interesting}
         </p>
       )}
@@ -39,7 +40,7 @@ export default function ObjectCard({ card, description, science = false }) {
               {f.compare && <span className="fact-compare">{f.compare}</span>}
               {f.source && (
                 <span className="fact-source">
-                  Source:{' '}
+                  {t('Source:')}{' '}
                   {f.source_url ? (
                     <a href={f.source_url} target="_blank" rel="noreferrer">
                       {f.source}
@@ -56,7 +57,7 @@ export default function ObjectCard({ card, description, science = false }) {
 
       {card.papers?.length > 0 && (
         <>
-          <h4>Read the science</h4>
+          <h4>{t('Read the science')}</h4>
           <ul className="papers">
             {card.papers.map((p, k) => (
               <li key={k}>

@@ -13,6 +13,7 @@ import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
 import UpClose, { hasUpClose } from './UpClose.jsx'
 import Parallax, { usedParallax } from './Parallax.jsx'
+import { getLang, t as tr } from './i18n.js'
 import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
@@ -157,8 +158,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     return skyToPixel(frame.predicted.ra_deg, frame.predicted.dec_deg, manifest.grid)
   }, [frame, manifest])
 
-  if (error) return <p className="hint">SPHEREx time-lapse for this object is coming soon.</p>
-  if (!manifest) return <p className="hint">Loading SPHEREx images…</p>
+  if (error) return <p className="hint">{tr('SPHEREx time-lapse for this object is coming soon.')}</p>
+  if (!manifest) return <p className="hint">{tr('Loading SPHEREx images…')}</p>
 
   const first = manifest.frames[0].date
   const last = manifest.frames[manifest.frames.length - 1].date
@@ -166,20 +167,23 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
   // Info tabs: only the ones with real data behind them.
   const tabs = []
-  if (science && kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: 'Motion' })
-  if (science && kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: 'Brightness' })
-  if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
+  if (science && kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: tr('Motion') })
+  if (science && kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: tr('Brightness') })
+  if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: tr('Spectrum') })
   // Description for the current mode (falls back to the other one if only one is written).
   const description = descriptions ? (science ? descriptions.science || descriptions.explore : descriptions.explore || descriptions.science) : null
-  if (!given && Number.isFinite(manifest.target?.parallax_mas)) tabs.push({ key: 'parallax', label: 'Parallax' })
-  if (!given && hasUpClose(cardId ?? id)) tabs.push({ key: 'upclose', label: 'Up close' })
-  if (card || description) tabs.push({ key: 'about', label: 'About' })
+  if (!given && Number.isFinite(manifest.target?.parallax_mas)) tabs.push({ key: 'parallax', label: tr('Parallax') })
+  if (!given && hasUpClose(cardId ?? id)) tabs.push({ key: 'upclose', label: tr('Up close') })
+  if (card || description) tabs.push({ key: 'about', label: tr('About') })
   const activeTab = tabs.find((t) => t.key === tab)?.key ?? tabs[0]?.key
 
   return (
     <div className="timelapse">
       <div className="tl-head">
-        <span className="small-label">SPHEREx time-lapse{manifest.stacked ? ', stacked visits' : ''}</span>
+        <span className="small-label">
+          {tr('SPHEREx time-lapse')}
+          {manifest.stacked ? tr(', stacked visits') : ''}
+        </span>
         {science && (
           <span className="status-meta">
             {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
@@ -190,7 +194,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
       {manifest.frames.length > 1 && (
         <div className="first-last">
           <div className="first-last-row">
-            <Frame src={srcOf(manifest.frames[0], id)} grid={g} frame={manifest.frames[0]} label="First visit" size={148} />
+            <Frame src={srcOf(manifest.frames[0], id)} grid={g} frame={manifest.frames[0]} label={tr('First visit')} size={148} />
             <span className="first-last-arrow" aria-hidden="true">
               →
             </span>
@@ -198,14 +202,14 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
               src={srcOf(manifest.frames[manifest.frames.length - 1], id)}
               grid={g}
               frame={manifest.frames[manifest.frames.length - 1]}
-              label="Latest visit"
+              label={tr('Latest visit')}
               size={148}
             />
           </div>
           <p className="small-label">
-            Real NASA SPHEREx images. North is up; each square is one {g.pixel_scale_arcsec}″ pixel.
+            {tr('Real NASA SPHEREx images. North is up; each square is one {px}″ pixel.', { px: g.pixel_scale_arcsec })}
             {manifest.frames.some((f) => f.measured && Number.isFinite(f.measured.ra_deg))
-              ? ' The cyan marks show where SkyShift measured the object.'
+              ? tr(' The cyan marks show where SkyShift measured the object.')
               : ''}
           </p>
         </div>
@@ -214,16 +218,16 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
       {(difference || (science && falseColor)) && (
         <div className="seg" role="tablist">
           <button className={mode === 'frames' ? 'on' : ''} onClick={() => setMode('frames')}>
-            Frames
+            {tr('Frames')}
           </button>
           {difference && (
             <button className={mode === 'difference' ? 'on' : ''} onClick={() => setMode('difference')}>
-              Difference
+              {tr('Difference')}
             </button>
           )}
           {science && falseColor && (
             <button className={mode === 'false' ? 'on' : ''} onClick={() => setMode('false')}>
-              False colour
+              {tr('False colour')}
             </button>
           )}
         </div>
@@ -239,13 +243,13 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             {falseColor.legend.map((l) => (
               <li key={l.colour}>
                 <span className={`fc-key ${l.colour}`} />
-                {l.colour[0].toUpperCase() + l.colour.slice(1)} = {l.wavelengths_used_um[0].toFixed(2)}–
-                {l.wavelengths_used_um[1].toFixed(2)} µm ({l.detector}) <span className="muted">· {l.images} images</span>
+                {(c => c[0].toUpperCase() + c.slice(1))(tr(l.colour))} = {l.wavelengths_used_um[0].toFixed(2)}–
+                {l.wavelengths_used_um[1].toFixed(2)} µm ({l.detector}) <span className="muted">· {l.images} {tr('images')}</span>
               </li>
             ))}
           </ul>
           <p className="hint">
-            One visit: {falseColor.visit.from} → {falseColor.visit.to}. {falseColor.note}
+            {tr('One visit: {from} → {to}.', { from: falseColor.visit.from, to: falseColor.visit.to })} {falseColor.note}
           </p>
         </>
       ) : mode === 'difference' && difference ? (
@@ -267,7 +271,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
           <p className="hint">
             <span className="diff-key first" /> {difference.visits[0].date} → <span className="diff-key last" />{' '}
-            {difference.visits[difference.visits.length - 1].date}. {difference.how_to_read} Circles: catalogue position.
+            {difference.visits[difference.visits.length - 1].date}. {difference.how_to_read} {tr('Circles: catalogue position.')}
           </p>
         </>
       ) : (
@@ -284,8 +288,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
 
           <div className="tl-controls">
-            <button className="btn tl-play" onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause the time-lapse' : 'Play the time-lapse'}>
-              {playing ? 'Pause' : 'Play'}
+            <button className="btn tl-play" onClick={() => setPlaying((p) => !p)} aria-label={playing ? tr('Pause the time-lapse') : tr('Play the time-lapse')}>
+              {playing ? tr('Pause') : tr('Play')}
             </button>
             <input
               type="range"
@@ -296,12 +300,12 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
                 setPlaying(false)
                 setIndex(Number(e.target.value))
               }}
-              aria-label="Observation date"
+              aria-label={tr('Observation date')}
             />
           </div>
 
           <dl className="coords tl-meta">
-            <dt>Date</dt>
+            <dt>{tr('Date')}</dt>
             <dd>
               {frame.date} <span className="muted">· {index + 1}/{manifest.frames.length}</span>
             </dd>
@@ -317,24 +321,24 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             )}
             {science && frame.stacked_images && (
               <>
-                <dt>Stack</dt>
+                <dt>{tr('Stack')}</dt>
                 <dd>
                   {frame.stacked_images} images · S/N {frame.snr?.toFixed(1)} ·{' '}
-                  <span className={frame.detected ? '' : 'warn'}>{frame.detected ? 'detected' : 'not detected'}</span>
+                  <span className={frame.detected ? '' : 'warn'}>{frame.detected ? tr('detected') : tr('not detected')}</span>
                 </dd>
               </>
             )}
             {science ? (
               <>
-                <dt>Quality</dt>
+                <dt>{tr('Quality')}</dt>
                 <dd>
                   <span className={`status-item ${frame.quality_ok && !frame.measured?.saturated ? 'status-ok' : 'status-warn'}`}>
                     <StarIcon />
                     {frame.measured?.saturated
-                      ? `Saturated${frame.quality_ok ? ' (no bad-pixel flags)' : ' · Flagged'}`
+                      ? `${tr('Saturated')}${frame.quality_ok ? tr(' (no bad-pixel flags)') : ` · ${tr('Flagged')}`}`
                       : frame.quality_ok
-                        ? 'Quality OK'
-                        : 'Flagged'}
+                        ? tr('Quality OK')
+                        : tr('Flagged')}
                   </span>
                   {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
                 </dd>
@@ -342,13 +346,13 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             ) : (
               (!frame.quality_ok || frame.measured?.saturated) && (
                 <>
-                  <dt>Quality</dt>
+                  <dt>{tr('Quality')}</dt>
                   <dd>
                     <span className="status-item status-warn">
                       <StarIcon />
-                      {!frame.quality_ok ? 'Flagged' : 'Saturated'}
+                      {!frame.quality_ok ? tr('Flagged') : tr('Saturated')}
                     </span>{' '}
-                    <span className="status-meta">· details in Science mode</span>
+                    <span className="status-meta">{tr('· details in Science mode')}</span>
                   </dd>
                 </>
               )
@@ -358,7 +362,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           {manifest.frames.some((f) => f.predicted) && (
             <label className="tl-toggle">
               <input type="checkbox" checked={showExpected} onChange={(e) => setShowExpected(e.target.checked)} />
-              Show catalogue position
+              {tr('Show catalogue position')}
             </label>
           )}
         </>
@@ -368,7 +372,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
       {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
         <button className="btn btn-link sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target), usedParallax(cardId ?? id, manifest.target, card))}>
-          ▶ Watch it move: 2 years up close, then {simYears(manifest.target).toLocaleString('en')} years <span className="muted">· simulation</span>
+          {tr('▶ Watch it move: 2 years up close, then {years} years', { years: simYears(manifest.target).toLocaleString(getLang()) })}{' '}
+          <span className="muted">{tr('· simulation')}</span>
         </button>
       )}
 
@@ -394,12 +399,17 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
       <div className="tl-foot">
         <p className="hint small">
-          {manifest.frames.length} images · {first} → {last} · 1 square = 1 SPHEREx pixel ({g.pixel_scale_arcsec}″)
+          {tr('{n} images · {first} → {last} · 1 square = 1 SPHEREx pixel ({px}″)', {
+            n: manifest.frames.length,
+            first,
+            last,
+            px: g.pixel_scale_arcsec,
+          })}
           <br />
           {manifest.data_credit}
         </p>
         <a className="btn btn-primary report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
-          Report a candidate ↗
+          {tr('Report a candidate ↗')}
         </a>
       </div>
     </div>

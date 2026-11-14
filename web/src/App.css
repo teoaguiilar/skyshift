@@ -324,3 +324,20 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .plx-eq { display: flex; flex-direction: column; gap: 4px; }
 .plx-eq code, .sim-eq { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--text); background: var(--panel-2); padding: 3px 6px; }
 .sim-eq { margin-top: 4px; }
+
+/* Click-anywhere: when SPHEREx images cannot be shown */
+.spot-fail { display: flex; flex-direction: column; gap: 10px; }
+.spot-fail .status { margin: 0; line-height: 1.5; }
+.spot-fail-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+/* Language switch (EN / ES) */
+.lang-switch { flex: none; }
+.lang-switch button { padding: 6px 10px; font-size: 13px; }
+.intro-lang { position: fixed; top: 16px; right: 16px; z-index: 2; background: rgba(13, 19, 38, 0.85); }
+.credits-lang { display: block; margin-top: 4px; }
+@media (max-width: 760px) {
+  .mode-switch button { padding: 6px 9px; }
+  .lang-switch button { padding: 6px 7px; font-size: 12px; }
+  .help-btn { width: 30px; height: 30px; }
+  .topbar { gap: 6px; }
+}

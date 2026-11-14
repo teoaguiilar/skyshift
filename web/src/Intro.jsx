@@ -6,6 +6,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { Star, StarIcon } from './Logo.jsx'
+import { t } from './i18n.js'
 
 const INK = '#eef2ff'
 const ICE = '#7fd8ff'
@@ -186,7 +187,7 @@ function BigLogo() {
   )
 }
 
-export default function Intro({ tour = [], onLeave, onStart }) {
+export default function Intro({ tour = [], onLeave, onStart, lang = 'en', onLang }) {
   const [leaving, setLeaving] = useState(false)
   const canvasRef = useRef(null)
   const warpRef = useRef(0)
@@ -217,46 +218,56 @@ export default function Intro({ tour = [], onLeave, onStart }) {
   })
 
   return (
-    <div ref={rootRef} className={`intro${leaving ? ' leaving' : ''}`} role="dialog" aria-modal="true" aria-label="Welcome to SkyShift">
+    <div ref={rootRef} className={`intro${leaving ? ' leaving' : ''}`} role="dialog" aria-modal="true" aria-label={t('Welcome to SkyShift')}>
+      {onLang && (
+        <div className="seg lang-switch intro-lang" role="tablist" aria-label="Language / Idioma">
+          {['en', 'es'].map((l) => (
+            <button key={l} className={lang === l ? 'on' : ''} onClick={() => onLang(l)} role="tab" aria-selected={lang === l}>
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      )}
       <canvas ref={canvasRef} className="intro-sky" aria-hidden="true" />
       <div className="intro-card">
         <BigLogo />
         <p className="intro-tag reveal" style={{ '--d': '2.3s' }}>
-          See the sky move
+          {t('See the sky move')}
         </p>
 
         <p className="intro-lead reveal" style={{ '--d': '2.6s' }}>
-          SPHEREx is a NASA telescope that photographs the whole sky in infrared, again and again. SkyShift lines up those
-          photos by date, so you can see what moves or changes brightness.
+          {t(
+            'SPHEREx is a NASA telescope that photographs the whole sky in infrared, again and again. SkyShift lines up those photos by date, so you can see what moves or changes brightness.',
+          )}
         </p>
 
         <ul className="intro-list reveal" style={{ '--d': '2.85s' }}>
           <li>
             <StarIcon size={12} color="var(--accent)" />
-            Watch nearby stars drift across the sky.
+            {t('Watch nearby stars drift across the sky.')}
           </li>
           <li>
             <StarIcon size={12} color="var(--accent)" />
-            See young and old stars change brightness.
+            {t('See young and old stars change brightness.')}
           </li>
           <li>
             <StarIcon size={12} color="var(--accent)" />
-            Click any point of the sky to see its SPHEREx images.
+            {t('Click any point of the sky to see its SPHEREx images.')}
           </li>
         </ul>
 
         <div className="intro-actions reveal" style={{ '--d': '3.1s' }}>
           <button className="btn btn-primary intro-start" onClick={() => start('explore')} autoFocus>
-            Start
+            {t('Start')}
           </button>
           <button className="btn btn-link intro-science" onClick={() => start('science')}>
-            Or open in Science mode
+            {t('Or open in Science mode')}
           </button>
         </div>
 
         {tour.length > 0 && (
           <div className="intro-objects reveal" style={{ '--d': '3.4s' }}>
-            <span className="small-label">Or jump straight to one of the challenge objects (real SPHEREx images):</span>
+            <span className="small-label">{t('Or jump straight to one of the challenge objects (real SPHEREx images):')}</span>
             <div className="intro-thumbs">
               {tour.map((t) => (
                 <button key={t.id} className="intro-thumb" onClick={() => start('explore', t.id)}>
@@ -269,7 +280,7 @@ export default function Intro({ tour = [], onLeave, onStart }) {
         )}
 
         <p className="intro-foot reveal" style={{ '--d': '3.6s' }}>
-          Data: NASA SPHEREx (IRSA) · ESA Gaia DR3 · Team SkyShift Murcia · NASA Space Apps Challenge 2026
+          {t('Data: NASA SPHEREx (IRSA) · ESA Gaia DR3 · Team SkyShift Murcia · NASA Space Apps Challenge 2026')}
         </p>
       </div>
     </div>

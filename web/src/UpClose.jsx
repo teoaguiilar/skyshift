@@ -8,6 +8,7 @@
  * Sizes and distances are NOT to scale; the caption says so.
  */
 import { useEffect, useRef } from 'react'
+import { t } from './i18n.js'
 
 // How each object is drawn. `basis` says which fact of the card supports the drawing.
 const RECIPES = {
@@ -188,14 +189,17 @@ export default function UpClose({ cardId, card, name }) {
   if (!recipe) return null
   return (
     <figure className="upclose">
-      <canvas ref={canvasRef} className="upclose-canvas" role="img" aria-label={`Artist's impression of ${name}`} />
-      <span className="upclose-tag">Artist's impression · drawn by code written with AI help · not to scale</span>
+      <canvas ref={canvasRef} className="upclose-canvas" role="img" aria-label={t("Artist's impression of {name}", { name })} />
+      <span className="upclose-tag">{t("Artist's impression · drawn by code written with AI help · not to scale")}</span>
       <figcaption className="small-label">
-        {recipe.basis}{' '}
+        {t(recipe.basis)}{' '}
         {temp
-          ? `Colour: the approximate colour of a body at ${temp.text}, the temperature in the science card${Math.min(...temp.values) < 1000 ? ' (below about 1,000 K a body hardly glows in visible light, so it is drawn very dark)' : ''}.`
-          : 'Colour: neutral until the science card gives a temperature.'}
-        {nPlanets > 0 ? ` Planets: ${nPlanets}, as listed in the card (orbits not to scale).` : ''}
+          ? t('Colour: the approximate colour of a body at {temp}, the temperature in the science card{cold}.', {
+              temp: temp.text,
+              cold: Math.min(...temp.values) < 1000 ? t(' (below about 1,000 K a body hardly glows in visible light, so it is drawn very dark)') : '',
+            })
+          : t('Colour: neutral until the science card gives a temperature.')}
+        {nPlanets > 0 ? ` ${t('Planets: {n}, as listed in the card (orbits not to scale).', { n: nPlanets })}` : ''}
       </figcaption>
     </figure>
   )

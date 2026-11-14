@@ -4,6 +4,7 @@
  * Values come from Gaia DR3 (through /api/gaia). The common name, if the star has one, comes from
  * SIMBAD through the CDS Sesame resolver, asked with the Gaia DR3 designation.
  */
+import { t } from './i18n.js'
 import { useEffect, useState } from 'react'
 
 // Colour bins for the map (Gaia BP-RP colour, in magnitudes): bluer = hotter, redder = cooler.
@@ -43,31 +44,31 @@ export default function GaiaStar({ star, onClose }) {
 
   return (
     <div className="star-card" role="dialog" aria-label="Gaia star">
-      <button className="star-close" onClick={onClose} aria-label="Close">
+      <button className="star-close" onClick={onClose} aria-label={t('Close')}>
         ×
       </button>
       <span className="star-id">{star.designation}</span>
       <span className="star-name">
         {known === null
-          ? 'Looking up the name in SIMBAD…'
+          ? t('Looking up the name in SIMBAD…')
           : known === false
-            ? 'SIMBAD did not answer: use the link below'
-            : known || 'No other name in SIMBAD'}
+            ? t('SIMBAD did not answer: use the link below')
+            : known || t('No other name in SIMBAD')}
       </span>
       <dl>
         <dt>G</dt>
         <dd>{fmt(star.G, 2)} mag</dd>
         <dt>BP−RP</dt>
         <dd>{fmt(star.bp_rp, 2)} mag</dd>
-        <dt>Parallax</dt>
+        <dt>{t('Parallax')}</dt>
         <dd>{fmt(star.parallax, 3)} mas</dd>
-        <dt>Motion</dt>
+        <dt>{t('Motion')}</dt>
         <dd>
           {fmt(star.pmra, 1)}, {fmt(star.pmdec, 1)} mas/yr
         </dd>
       </dl>
       <a href={simbad} target="_blank" rel="noreferrer">
-        Open in SIMBAD ↗
+        {t('Open in SIMBAD ↗')}
       </a>
     </div>
   )
