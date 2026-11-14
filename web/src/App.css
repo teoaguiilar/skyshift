@@ -28,8 +28,9 @@
 }
 .tour-btn:hover { border-color: var(--accent); color: var(--accent); }
 .tour-btn.varies { border-style: dashed; }
+.tour-btn.active { border-color: var(--accent); color: var(--accent); }
 
-.stage { display: grid; grid-template-columns: minmax(0, 1fr) 280px; min-height: 0; overflow: hidden; }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 0; overflow: hidden; }
 .map { position: relative; width: 100%; height: 100%; min-width: 0; min-height: 360px; }
 .panel { border-left: 1px solid var(--line); padding: 16px 18px; background: var(--panel); overflow: auto; }
 .panel h2 { margin: 0 0 12px; font-size: 11px; font-family: var(--mono); font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
@@ -38,6 +39,25 @@
 .coords dd { margin: 0; color: var(--accent); }
 .hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .status { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+/* Time-lapse player */
+.timelapse { display: flex; flex-direction: column; gap: 12px; }
+.tl-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.tl-band { color: var(--accent); }
+.tl-view { position: relative; border: 1px solid var(--line); background: #000; max-width: 100%; }
+.tl-view img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+.tl-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.tl-overlay circle, .tl-overlay line { fill: none; stroke: var(--accent); stroke-width: 3; }
+.tl-compass { position: absolute; right: 6px; bottom: 4px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.tl-controls { display: flex; gap: 10px; align-items: center; }
+.tl-controls button { background: var(--accent); color: #111; border: 0; padding: 6px 12px; font-weight: 600; cursor: pointer; min-width: 64px; }
+.tl-controls input[type='range'] { flex: 1; accent-color: var(--accent); }
+.tl-meta { margin: 0; }
+.tl-meta .warn { color: #ffc857; }
+.muted { color: var(--muted); }
+.flags { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
+.tl-toggle { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+.credit { font-size: 11px; color: var(--muted); margin: 0; }
 
 @media (max-width: 760px) {
   .topbar { flex-direction: column; align-items: stretch; }

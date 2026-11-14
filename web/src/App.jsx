@@ -5,15 +5,24 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
+import TimeLapse from './TimeLapse.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
 const TOUR = [
-  { label: "Barnard's Star", query: "Barnard's star", kind: 'moves' },
-  { label: 'Epsilon Indi B', query: 'eps Ind B', kind: 'moves' },
-  { label: 'WISE 0855−0714', query: 'WISE J085510.83-071442.5', kind: 'moves' },
-  { label: 'RW Aurigae', query: 'RW Aur', kind: 'varies' },
-  { label: 'R Draconis', query: 'R Dra', kind: 'varies' },
+// `id` = folder name in data/ (agreed with the data pipeline).
+  { id: 'barnard', label: "Barnard's Star", query: "Barnard's star", kind: 'moves' },
+  { id: 'eps-indi-b', label: 'Epsilon Indi B', query: 'eps Ind B', kind: 'moves' },
+  {
+    id: 'wise-0855',
+    label: 'WISE 0855−0714',
+    query: 'WISE J085510.83-071442.5',
+    kind: 'moves',
+    note: 'This brown dwarf is too faint to see in single SPHEREx images, so its motion is not shown here yet.',
+  },
+  { id: 'rw-aurigae', label: 'RW Aurigae', query: 'RW Aur', kind: 'varies' },
+  // May be replaced by UX Orionis (id 'ux-orionis', query 'UX Ori') — data team decision pending.
+  { id: 'r-draconis', label: 'R Draconis', query: 'R Dra', kind: 'varies' },
 ]
 
 const DEFAULT_FOV = 0.5 // degrees
@@ -44,8 +53,9 @@ function readUrl() {
   return null
 }
 
-function writeUrl(ra, dec, fov) {
+function writeUrl(ra, dec, fov, objectId) {
   const p = new URLSearchParams()
+  if (objectId) p.set('object', objectId)
   p.set('ra', ra.toFixed(5))
   p.set('dec', dec.toFixed(5))
   p.set('fov', fov.toFixed(3))
@@ -69,16 +79,18 @@ export default function App() {
   const [selected, setSelected] = useState(readUrl())
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('')
+  const [activeId, setActiveId] = useState(() => new URLSearchParams(window.location.search).get('object'))
 
   // Select a sky position: marker + URL + panel.
-  function selectSpot(ra, dec) {
+  function selectSpot(ra, dec, fovOverride, objectId = null) {
     const aladin = aladinRef.current
     if (!aladin) return
-    const fov = aladin.getFov()[0]
+    const fov = fovOverride ?? aladin.getFov()[0]
     markerLayerRef.current.removeAll()
     markerLayerRef.current.addSources([A.source(ra, dec)])
-    writeUrl(ra, dec, fov)
+    writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
+    setActiveId(objectId)
   }
 
   useEffect(() => {
@@ -131,17 +143,17 @@ export default function App() {
   }, [])
 
   // Stellarium-like flight: zoom out a bit, glide across the sky, then zoom in.
-  function flyTo(ra, dec, fov = DEFAULT_FOV) {
+  function flyTo(ra, dec, fov = DEFAULT_FOV, objectId = null) {
     const aladin = aladinRef.current
     if (!aladin) return
-    selectSpot(ra, dec)
+    selectSpot(ra, dec, fov, objectId)
     const current = aladin.getFov()[0]
     const glide = () => aladin.animateToRaDec(ra, dec, 1.6, () => aladin.zoomToFoV(fov, 1.4))
     if (current < 20) aladin.zoomToFoV(20, 0.8, glide)
     else glide()
   }
 
-  function goTo(text) {
+  function goTo(text, objectId = null) {
     const aladin = aladinRef.current
     if (!aladin || !text.trim()) return
     const coords = parseCoords(text)
@@ -153,7 +165,7 @@ export default function App() {
     setStatus(`Searching “${text}”…`)
     resolveName(text)
       .then(({ ra, dec }) => {
-        flyTo(ra, dec)
+        flyTo(ra, dec, DEFAULT_FOV, objectId)
         setStatus('')
       })
       .catch(() => setStatus(`“${text}” not found. Try another name or "RA Dec" in degrees.`))
@@ -186,7 +198,7 @@ export default function App() {
       <nav className="tour" aria-label="Guided tour">
         <span className="tour-label">Guided tour</span>
         {TOUR.map((t) => (
-          <button key={t.label} className={`tour-btn ${t.kind}`} onClick={() => goTo(t.query)}>
+          <button key={t.label} className={`tour-btn ${t.kind}${activeId === t.id ? ' active' : ''}`} onClick={() => goTo(t.query, t.id)}>
             {t.label}
           </button>
         ))}
@@ -195,18 +207,30 @@ export default function App() {
       <main className="stage">
         <div ref={mapRef} className="map" />
         <aside className="panel">
-          <h2>Selected spot</h2>
-          {selected ? (
-            <dl className="coords">
-              <dt>RA</dt>
-              <dd>{selected.ra.toFixed(5)}°</dd>
-              <dt>Dec</dt>
-              <dd>{selected.dec.toFixed(5)}°</dd>
-            </dl>
+          {activeId ? (
+            <>
+              <h2>{TOUR.find((t) => t.id === activeId)?.label ?? 'Object'}</h2>
+              <TimeLapse id={activeId} />
+              {TOUR.find((t) => t.id === activeId)?.note && (
+                <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
+              )}
+            </>
           ) : (
-            <p className="hint">Drag and zoom the map, then click any point of the sky.</p>
+            <>
+              <h2>Selected spot</h2>
+              {selected ? (
+                <dl className="coords">
+                  <dt>RA</dt>
+                  <dd>{selected.ra.toFixed(5)}°</dd>
+                  <dt>Dec</dt>
+                  <dd>{selected.dec.toFixed(5)}°</dd>
+                </dl>
+              ) : (
+                <p className="hint">Drag and zoom the map, then click any point of the sky — or pick a guided tour.</p>
+              )}
+              <p className="hint">SPHEREx time-lapses are ready for the guided-tour objects.</p>
+            </>
           )}
-          <p className="hint">SPHEREx images for this spot will appear here.</p>
           {status && <p className="status">{status}</p>}
         </aside>
       </main>
