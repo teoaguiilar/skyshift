@@ -40,6 +40,7 @@
       ],
       "stacked_images": 3,
       "quality_ok": true,
+      "flagged_images": 0,
       "flags": [
         "SOURCE"
       ],
@@ -75,7 +76,8 @@
         4.9821
       ],
       "stacked_images": 21,
-      "quality_ok": false,
+      "quality_ok": true,
+      "flagged_images": 5,
       "flags": [
         "HALO",
         "NONFUNC",
@@ -135,6 +137,7 @@
       ],
       "stacked_images": 21,
       "quality_ok": true,
+      "flagged_images": 0,
       "flags": [
         "SOURCE"
       ],

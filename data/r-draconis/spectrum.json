@@ -1,0 +1,155 @@
+{
+  "object": "r-draconis",
+  "name": "R Dra",
+  "target": {
+    "simbad_id": "V* R Dra",
+    "ra_j2000_deg": 248.16761083295,
+    "dec_j2000_deg": 66.75497941722,
+    "pmra_mas_yr": -20.643,
+    "pmdec_mas_yr": 6.149,
+    "parallax_mas": 1.2509,
+    "source": "SIMBAD via CDS Sesame"
+  },
+  "method": "Aperture photometry (radius 2 px = 12.3 arcsec, background ring 4-7 px) on every SPHEREx image of all six detector arrays; no aperture correction, so absolute fluxes are approximate.",
+  "units": {
+    "wavelength": "micrometre",
+    "flux": "microjansky"
+  },
+  "saturated_images_skipped": 2318,
+  "bad_quality_images_skipped": 0,
+  "binned": [
+    {
+      "wavelength_um": 0.7388,
+      "flux_ujy": 3736361.61,
+      "flux_err_ujy": 668400.39,
+      "n": 2
+    },
+    {
+      "wavelength_um": 0.7481,
+      "flux_ujy": 4544934.69,
+      "flux_err_ujy": null,
+      "n": 1
+    },
+    {
+      "wavelength_um": 0.7586,
+      "flux_ujy": 3630851.57,
+      "flux_err_ujy": null,
+      "n": 1
+    },
+    {
+      "wavelength_um": 0.7808,
+      "flux_ujy": 2750424.7,
+      "flux_err_ujy": 146286.34,
+      "n": 3
+    }
+  ],
+  "points": [
+    {
+      "band": "D1",
+      "mjd": 60982.317549,
+      "wavelength_um": 0.7363,
+      "flux_ujy": 4490579.19,
+      "flux_err_ujy": 940.93,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W45_1A/l2b-v27-2026-247/1/level2_2025W45_1A_0067_1D1_spx_l2b-v27-2026-247.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60957.192949,
+      "wavelength_um": 0.7412,
+      "flux_ujy": 2982144.02,
+      "flux_err_ujy": 612.26,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W41_1A/l2b-v27-2026-241/1/level2_2025W41_1A_0697_2D1_spx_l2b-v27-2026-241.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60964.120068,
+      "wavelength_um": 0.7481,
+      "flux_ujy": 4544934.69,
+      "flux_err_ujy": 1013.63,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "PERSIST",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W42_1A/l2b-v27-2026-243/1/level2_2025W42_1A_0792_2D1_spx_l2b-v27-2026-243.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60957.194442,
+      "wavelength_um": 0.7586,
+      "flux_ujy": 3630851.57,
+      "flux_err_ujy": 853.03,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W41_1A/l2b-v27-2026-241/1/level2_2025W41_1A_0697_3D1_spx_l2b-v27-2026-241.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60957.195934,
+      "wavelength_um": 0.7761,
+      "flux_ujy": 2533442.24,
+      "flux_err_ujy": 513.84,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W41_1A/l2b-v27-2026-241/1/level2_2025W41_1A_0697_4D1_spx_l2b-v27-2026-241.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60965.614508,
+      "wavelength_um": 0.7808,
+      "flux_ujy": 3027433.06,
+      "flux_err_ujy": 652.89,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W42_2A/l2b-v27-2026-243/1/level2_2025W42_2A_0244_1D1_spx_l2b-v27-2026-243.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    },
+    {
+      "band": "D1",
+      "mjd": 60958.688402,
+      "wavelength_um": 0.7831,
+      "flux_ujy": 2750424.7,
+      "flux_err_ujy": 679.22,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SUR_ERROR",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W41_2B/l2b-v27-2026-242/1/level2_2025W41_2B_0269_3D1_spx_l2b-v27-2026-242.fits?center=248.16723430523757,66.7550236812511d&size=0.06"
+    }
+  ],
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}

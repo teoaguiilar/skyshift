@@ -55,6 +55,11 @@ def group_visits(frames, gap_days):
     return visits
 
 
+def bad_count(visit):
+    """Number of images in a visit with flags the Supplement calls unusable."""
+    return sum(bool(set(fo.flag_names(f["flag_value"])) & (fo.BAD_FLAGS | {"UNKNOWN"})) for f in visit)
+
+
 def signal_to_noise(image, x, y, radius=1.5):
     """Rough signal-to-noise of a point source at (x, y) in a background-subtracted image."""
     yy, xx = np.mgrid[0:image.shape[0], 0:image.shape[1]]
@@ -151,7 +156,10 @@ def main():
             "wavelength_um": round(float(np.mean(wls)), 4),
             "wavelength_range_um": [round(min(wls), 4), round(max(wls), 4)],
             "stacked_images": len(visit),
-            "quality_ok": not any(set(fo.flag_names(f["flag_value"])) & (fo.BAD_FLAGS | {"UNKNOWN"}) for f in visit),
+            # The median of many images is robust to a few flagged ones: the visit is OK
+            # when at least half of its images are OK.
+            "quality_ok": bad_count(visit) <= len(visit) / 2,
+            "flagged_images": bad_count(visit),
             "flags": flag_list,
             "predicted": {"ra_deg": float(predicted.ra.deg), "dec_deg": float(predicted.dec.deg)},
             "measured": measured,
