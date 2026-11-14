@@ -106,6 +106,7 @@ function parseCoords(text) {
 
 export default function App() {
   const mapRef = useRef(null)
+  const interactedRef = useRef(false) // set once the user moves the map or picks something
   const aladinRef = useRef(null)
   const markerLayerRef = useRef(null)
   const [selected, setSelected] = useState(readUrl())
@@ -190,10 +191,15 @@ export default function App() {
       // Aladin keeps one callback per event, so every zoom reaction goes here.
       // Guard: during the first seconds, if the base map pushes its own wide default view,
       // put back the view from the link.
-      const guardUntil = Date.now() + 6000
+      // The guard stays on until the user touches the map or uses the search/tour (max 30 s).
+      const guardUntil = Date.now() + 30000
+      const stopGuard = () => (interactedRef.current = true)
+      ;['pointerdown', 'wheel', 'touchstart'].forEach((ev) =>
+        mapRef.current.addEventListener(ev, stopGuard, { passive: true, once: true }),
+      )
       aladin.on('zoomChanged', (fov) => {
         const f = Array.isArray(fov) ? fov[0] : fov
-        if (start && Date.now() < guardUntil && f > start.fov * 5) {
+        if (start && !interactedRef.current && Date.now() < guardUntil && f > start.fov * 5) {
           aladin.gotoRaDec(start.ra, start.dec)
           aladin.setFoV(start.fov)
           return
@@ -208,7 +214,7 @@ export default function App() {
       if (start) markers.addSources([A.source(start.ra, start.dec)])
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
-      const gaiaCat = A.catalog({ name: 'Gaia DR3 stars (moved to 2026.0)', shape: 'circle', color: '#e6e8eb', sourceSize: 12 })
+      const gaiaCat = A.catalog({ name: 'Gaia DR3 stars G<16 (moved to 2026.0)', shape: 'circle', color: 'rgba(230,232,235,0.7)', sourceSize: 10 })
       aladin.addCatalog(gaiaCat)
       let gaiaTimer = null
       let gaiaSeq = 0
@@ -238,7 +244,7 @@ export default function App() {
                 return A.source(sra, sdec, { G: s[4], pmra: s[2], pmdec: s[3] })
               }),
             )
-            setGaiaStatus(`${data.count} stars`)
+            setGaiaStatus(`${data.count} stars, G < 16`)
           } catch {
             if (seq === gaiaSeq) setGaiaStatus('Gaia archive not answering, try later')
           }
@@ -282,6 +288,7 @@ export default function App() {
   function flyTo(ra, dec, fov = DEFAULT_FOV, objectId = null) {
     const aladin = aladinRef.current
     if (!aladin) return
+    interactedRef.current = true
     selectSpot(ra, dec, fov, objectId)
     const current = aladin.getFov()[0]
     const glide = () => aladin.animateToRaDec(ra, dec, 1.6, () => aladin.zoomToFoV(fov, 1.4))

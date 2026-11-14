@@ -6,6 +6,7 @@
  * It only talks to the ESA Gaia Archive TAP service.
  *
  *   GET /api/gaia?ra=269.452&dec=4.693&r=0.2      (r = radius in degrees, max 0.5)
+ *   Brightest 500 stars with G < 16.
  *   -> JSON { ra, dec, r, epoch: 2016.0, count, stars: [[ra, dec, pmra, pmdec, g], ...] }
  *      pmra/pmdec in mas/yr (pmra includes cos(dec)), g = Gaia G magnitude.
  *      Positions are at the Gaia DR3 epoch (2016.0); the web moves them to the
@@ -18,7 +19,8 @@
 
 const TAP_URL = 'https://gea.esac.esa.int/tap-server/tap/sync'
 const TIMEOUT_MS = 9000
-const MAX_STARS = 3000
+const MAX_STARS = 500
+const MAX_G = 16 // only stars brighter than G = 16, so the map stays readable
 
 function fail(res, status, message) {
   res.status(status).json({ error: message })
@@ -36,6 +38,7 @@ export default async function handler(req, res) {
     `SELECT TOP ${MAX_STARS} ra, dec, pmra, pmdec, phot_g_mean_mag ` +
     `FROM gaiadr3.gaia_source ` +
     `WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', ${ra.toFixed(6)}, ${dec.toFixed(6)}, ${r.toFixed(4)})) ` +
+    `AND phot_g_mean_mag < ${MAX_G} ` +
     `ORDER BY phot_g_mean_mag`
   const url = `${TAP_URL}?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=${encodeURIComponent(adql)}`
 
