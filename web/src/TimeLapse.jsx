@@ -55,6 +55,15 @@ function skyToPixel(ra, dec, grid) {
   return { x: w / 2 - dx, y: h / 2 - dy, w, h }
 }
 
+// science/cards/descriptions.json: { "<card id>": { "explore": "...", "science": "..." } }, by Benjamín.
+// Optional: until it is on GitHub (or if it is broken) the About tab simply shows the card without it.
+let descriptionsPromise = null
+const loadDescriptions = () =>
+  (descriptionsPromise ??= fetch(`${CARDS_BASE}/descriptions.json`, { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.json() : {}))
+    .then((d) => (d && typeof d === 'object' ? d : {}))
+    .catch(() => ({})))
+
 const getJson = (url) =>
   fetch(url, { cache: 'no-cache' })
     .then((r) => (r.ok ? r.json() : null))
@@ -80,6 +89,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   const [falseColor, setFalseColor] = useState(null)
   const [spectrum, setSpectrum] = useState(null)
   const [card, setCard] = useState(null)
+  const [descriptions, setDescriptions] = useState(null) // this object's {explore, science}, if any
   const [mode, setMode] = useState('frames') // 'frames' | 'difference' | 'false'
   const [tab, setTab] = useState(null) // info tab under the player
   const timer = useRef(null)
@@ -111,6 +121,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     setFalseColor(null)
     setSpectrum(null)
     setCard(null)
+    setDescriptions(null)
     setMode('frames')
     setTab(null)
     if (given || !id) return
@@ -119,6 +130,10 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     getJson(`${DATA_BASE}/${id}/false_color.json`).then(setFalseColor)
     if (!hideSpectrum) getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
     getJson(`${CARDS_BASE}/${c}.json`).then(setCard)
+    loadDescriptions().then((all) => {
+      const d = all?.[c]
+      if (d && (typeof d.explore === 'string' || typeof d.science === 'string')) setDescriptions(d)
+    })
   }, [id, given, cardId, hideSpectrum])
 
   // False colour is a Science view: back to the frames when switching to Explore.
@@ -152,7 +167,9 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   if (science && kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: 'Motion' })
   if (science && kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: 'Brightness' })
   if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
-  if (card) tabs.push({ key: 'about', label: 'About' })
+  // Description for the current mode (falls back to the other one if only one is written).
+  const description = descriptions ? (science ? descriptions.science || descriptions.explore : descriptions.explore || descriptions.science) : null
+  if (card || description) tabs.push({ key: 'about', label: 'About' })
   const activeTab = tabs.find((t) => t.key === tab)?.key ?? tabs[0]?.key
 
   return (
@@ -360,7 +377,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'spectrum' && <SpectrumChart spectrum={spectrum} note={spectrumNote} />}
-          {activeTab === 'about' && <ObjectCard card={card} />}
+          {activeTab === 'about' && <ObjectCard card={card} description={description} science={science} />}
         </div>
       )}
 

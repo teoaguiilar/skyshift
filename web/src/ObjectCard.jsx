@@ -4,12 +4,21 @@
  * Texts and numbers come from science/cards/<id>.json, written by the science team (Benjamín, Juan)
  * with a source for every number. The web reads them from GitHub, so edits appear without redeploying.
  */
-// The card JSON is loaded by the player (TimeLapse) and passed in.
-export default function ObjectCard({ card }) {
-  if (!card) return null // no card yet: show nothing rather than an empty box
+// The card JSON is loaded by the player (TimeLapse) and passed in. `description` is the text for the
+// current mode from science/cards/descriptions.json (simple in Explore, technical in Science), if any.
+export default function ObjectCard({ card, description, science = false }) {
+  if (!card && !description) return null // nothing yet: show nothing rather than an empty box
 
   return (
     <section className="card">
+      {description && (
+        <div className="card-description">
+          <span className="small-label">{science ? 'The system, in detail' : 'The system'}</span>
+          <p>{description}</p>
+        </div>
+      )}
+      {!card ? null : (
+        <>
       {card.type && <p className="card-type">{card.type}</p>}
       {card.summary && <p>{card.summary}</p>}
       {card.why_interesting && (
@@ -58,6 +67,8 @@ export default function ObjectCard({ card }) {
               </li>
             ))}
           </ul>
+        </>
+      )}
         </>
       )}
     </section>
