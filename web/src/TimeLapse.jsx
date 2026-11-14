@@ -107,7 +107,7 @@ export function ShareButton() {
   )
 }
 
-export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate, hideReport = false, objectName }) {
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate, hideReport = false, objectName, onFrameChange, requestMjd }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -179,6 +179,27 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   }, [playing, manifest, mode])
 
   const frame = manifest?.frames[index]
+
+  // Sky date control (corner of the map): tell it which image is on screen, and follow it when it picks one.
+  useEffect(() => {
+    if (!onFrameChange || !manifest || !frame) return
+    onFrameChange({
+      mjd: frame.mjd,
+      dates: manifest.frames.map((f) => ({ mjd: f.mjd, date: f.date })),
+      target: given ? null : manifest.target,
+      kind,
+    })
+  }, [frame, manifest]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => onFrameChange?.(null), []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!requestMjd || !manifest) return
+    const i = manifest.frames.findIndex((f) => f.mjd === requestMjd.mjd)
+    if (i >= 0) {
+      setPlaying(false)
+      setMode('frames')
+      setIndex(i)
+    }
+  }, [requestMjd]) // eslint-disable-line react-hooks/exhaustive-deps
   const expected = useMemo(() => {
     if (!frame?.predicted || !manifest) return null
     return skyToPixel(frame.predicted.ra_deg, frame.predicted.dec_deg, manifest.grid)

@@ -16,6 +16,7 @@ import { parseCoords } from './coords.js'
 import { getLang, setLang, t, t as tr } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import ObjectCard from './ObjectCard.jsx'
+import DateControl, { mjdToDate, mjdToYear } from './DateControl.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -92,10 +93,11 @@ const SPHEREX_MAX_FOV = 15 // degrees: SPHEREx layer appears below this field of
 // Gaia DR3 stars (ESA), through our /api/gaia function. Off by default.
 const GAIA_MAX_FOV = 1 // degrees: only load stars when zoomed in
 const GAIA_EPOCH = 2016.0
-const SHOW_EPOCH = 2026.0 // middle of the SPHEREx images we show
+// Gaia positions are moved to the "sky date" chosen in the date control (2026.0 until one is chosen).
+const skyEpoch = { year: 2026.0 }
 function moveToEpoch([ra, dec, pmra, pmdec]) {
   if (pmra == null || pmdec == null) return [ra, dec]
-  const dt = SHOW_EPOCH - GAIA_EPOCH
+  const dt = skyEpoch.year - GAIA_EPOCH
   const ddec = (pmdec * dt) / 3.6e6
   const dra = (pmra * dt) / 3.6e6 / Math.cos((dec * Math.PI) / 180)
   return [ra + dra, dec + ddec]
@@ -181,6 +183,12 @@ export default function App() {
   const [gaiaStatus, setGaiaStatus] = useState(null) // {key, vars}, translated when shown
   const [gaiaStar, setGaiaStar] = useState(null) // Gaia star clicked on the map
   const [candidate, setCandidate] = useState(null) // community candidate (approved by the team) clicked on the map
+  // Sky date: the time-lapse reports its image (player); the date control asks for one (requestMjd) or,
+  // with nothing selected, sets a free date (freeMjd). Gaia stars and the moving star follow it.
+  const [player, setPlayer] = useState(null)
+  const [requestMjd, setRequestMjd] = useState(null)
+  const [freeMjd, setFreeMjd] = useState(null)
+  const dateMarkerRef = useRef(null)
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
   const [scrolledDown, setScrolledDown] = useState(false)
@@ -388,6 +396,17 @@ export default function App() {
       simRef.current.marker = A.catalog({ name: 'Simulated position', shape: 'circle', color: '#f5c451', sourceSize: 14 })
       aladin.addCatalog(simRef.current.trail)
       aladin.addCatalog(simRef.current.marker)
+      dateMarkerRef.current = A.catalog({
+        name: 'Position on the sky date',
+        shape: 'cross',
+        color: '#7fd8ff',
+        sourceSize: 18,
+        displayLabel: true,
+        labelColumn: 'label',
+        labelColor: '#7fd8ff',
+        labelFont: '12px Archivo, system-ui, sans-serif',
+      })
+      aladin.addCatalog(dateMarkerRef.current)
       const markers = A.catalog({
         name: 'Selected spot',
         shape: 'circle',
@@ -438,6 +457,20 @@ export default function App() {
             if (!r.ok) throw new Error(r.status)
             const data = await r.json()
             if (seq !== gaiaSeq || !gaiaRef.current.on) return
+            gaiaRef.current.data = data
+            gaiaRef.current.draw()
+            setGaiaStatus({ key: '{count} stars, G < 16', vars: { count: data.count } })
+          } catch {
+            if (seq === gaiaSeq) setGaiaStatus({ key: 'Gaia archive not answering, try later' })
+          }
+        }, 700)
+      }
+      // Draw the last Gaia answer at the current sky date (also called when the date changes).
+      gaiaRef.current.draw = () => {
+        const data = gaiaRef.current.data
+        gaiaCats.forEach((c) => c.removeAll())
+        if (!data || !gaiaRef.current.on) return
+        {
             const byBin = gaiaCats.map(() => [])
             data.stars.forEach((s) => {
               const [sra, sdec] = moveToEpoch(s)
@@ -446,11 +479,7 @@ export default function App() {
               byBin[bin < 0 ? gaiaCats.length - 1 : bin].push(A.source(sra, sdec, star))
             })
             byBin.forEach((list, i) => list.length && gaiaCats[i].addSources(list))
-            setGaiaStatus({ key: '{count} stars, G < 16', vars: { count: data.count } })
-          } catch {
-            if (seq === gaiaSeq) setGaiaStatus({ key: 'Gaia archive not answering, try later' })
-          }
-        }, 700)
+        }
       }
       gaiaRef.current.refresh = refreshGaia
       aladin.on('positionChanged', () => {
@@ -534,6 +563,24 @@ export default function App() {
       cancelled = true
     }
   }, [])
+
+  const skyMjd = player?.mjd ?? freeMjd
+  useEffect(() => {
+    skyEpoch.year = skyMjd ? mjdToYear(skyMjd) : 2026.0
+    gaiaRef.current.draw?.()
+    // The selected moving star, where it is on the sky date (catalogue proper motion + parallax).
+    const cat = dateMarkerRef.current
+    if (!cat) return
+    cat.removeAll()
+    const tg = player?.target
+    if (!skyMjd || player?.kind !== 'moves' || !Number.isFinite(tg?.pmra_mas_yr)) return
+    const year = mjdToYear(skyMjd)
+    const [pe, pn] = parallaxShift(tg.ra_j2000_deg, tg.dec_j2000_deg, Number.isFinite(tg.parallax_mas) ? tg.parallax_mas : 0, year)
+    const cosd = Math.cos((tg.dec_j2000_deg * Math.PI) / 180)
+    const dec = tg.dec_j2000_deg + (tg.pmdec_mas_yr * (year - 2000) + pn) / 3.6e6
+    const ra = tg.ra_j2000_deg + (tg.pmra_mas_yr * (year - 2000) + pe) / 3.6e6 / cosd
+    cat.addSources([A.source(ra, dec, { label: t('Position on {date}', { date: mjdToDate(skyMjd).toISOString().slice(0, 10) }) })])
+  }, [skyMjd, player?.target, player?.kind, lang]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Stellarium-like flight: zoom out a bit, glide across the sky, then zoom in.
   function flyTo(ra, dec, fov = DEFAULT_FOV, objectId = null) {
@@ -701,6 +748,12 @@ export default function App() {
               </button>
             </div>
           )}
+          {!simLabel && <DateControl
+            player={player}
+            value={freeMjd}
+            onPick={(mjd) => setRequestMjd({ mjd, n: Date.now() })}
+            onFree={setFreeMjd}
+          />}
           <span className="sky-layer">
             {skyLayer === 'spherex' ? t('Sky: NASA SPHEREx (all-sky map)') : t('Sky: NASA WISE · zoom in to see SPHEREx')}
           </span>
@@ -726,6 +779,8 @@ export default function App() {
                     spectrumNote={t?.spectrumNote}
                     science={science}
                     objectName={t?.label}
+                    onFrameChange={setPlayer}
+                    requestMjd={requestMjd}
                     onSimulate={(target, years, plx) => simulate(target, years, plx)}
                   />
                 )
@@ -759,7 +814,9 @@ export default function App() {
                   <p className="hint">{t('Or drag and zoom the map and click any point of the sky to see its SPHEREx images.')}</p>
                 </div>
               )}
-              {selected && <SpotLapse ra={selected.ra} dec={selected.dec} science={science} />}
+              {selected && (
+                <SpotLapse ra={selected.ra} dec={selected.dec} science={science} onFrameChange={setPlayer} requestMjd={requestMjd} />
+              )}
             </>
           )}
           {status && <p className="status">{status}</p>}

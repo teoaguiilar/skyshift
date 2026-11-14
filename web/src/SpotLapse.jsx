@@ -115,7 +115,7 @@ function writeChoice(band, size) {
   window.history.replaceState(null, '', `?${p.toString()}`)
 }
 
-export default function SpotLapse({ ra, dec, science = false }) {
+export default function SpotLapse({ ra, dec, science = false, onFrameChange, requestMjd }) {
   const [{ band, size }, setChoice] = useState(readChoice)
   const [manifest, setManifest] = useState(null)
   const [progress, setProgress] = useState({ step: 'search' })
@@ -210,7 +210,7 @@ export default function SpotLapse({ ra, dec, science = false }) {
   } else {
     body = (
       <>
-        <TimeLapse id="spot" manifest={manifest} science={science} hideReport />
+        <TimeLapse id="spot" manifest={manifest} science={science} hideReport onFrameChange={onFrameChange} requestMjd={requestMjd} />
         <p className="hint">
           {t('{n} of {searched} SPHEREx images here were taken at a similar wavelength (±2 %).', {
             n: manifest.frames.length,

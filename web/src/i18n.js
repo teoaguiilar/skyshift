@@ -303,6 +303,14 @@ const ES = {
   'A young star whose light is dimmed by clumps of dust.': 'Una estrella joven cuya luz apagan grumos de polvo.',
   'Or drag and zoom the map and click any point of the sky to see its SPHEREx images.':
     'O arrastra y acerca el mapa y pulsa cualquier punto del cielo para ver sus imágenes de SPHEREx.',
+  'Sky date': 'Fecha del cielo',
+  'Previous image': 'Imagen anterior',
+  'Next image': 'Imagen siguiente',
+  '{n} SPHEREx images · {from} → {to}': '{n} imágenes de SPHEREx · {from} → {to}',
+  'Pick an object or a spot to jump between SPHEREx images': 'Elige un objeto o un punto para saltar entre imágenes de SPHEREx',
+  'The background map combines all SPHEREx images, so it does not change. The date picks the SPHEREx image of the time-lapse, moves the Gaia stars and shows where the star is on that date.':
+    'El mapa de fondo combina todas las imágenes de SPHEREx, así que no cambia. La fecha elige la imagen de SPHEREx de la animación, mueve las estrellas de Gaia y muestra dónde está la estrella en esa fecha.',
+  'Position on {date}': 'Posición el {date}',
   // Tutorial buttons
   Skip: 'Saltar',
   Back: 'Atrás',
