@@ -206,10 +206,23 @@ export default function App() {
   // ---- "Watch it move": the star's path over years, from its catalogue proper motion (simulation).
   const simRef = useRef({ marker: null, trail: null, raf: 0 })
   const [simLabel, setSimLabel] = useState(null)
+  // During the 2-year close-up the view is far smaller than one map pixel, so the sky images would only
+  // show big grey blocks: hide them (black sky) and show them again afterwards.
+  function setSkyHidden(hidden) {
+    const sim = simRef.current
+    sim.dark = hidden
+    try {
+      sim.base?.setOpacity(hidden ? 0 : 1)
+      sim.spherex?.setOpacity(hidden ? 0 : 1)
+    } catch {
+      /* layer not ready yet */
+    }
+  }
   function clearSim() {
     const sim = simRef.current
     cancelAnimationFrame(sim.raf)
     clearTimeout(sim.raf)
+    setSkyHidden(false)
     sim.marker?.removeAll()
     sim.trail?.removeAll()
     setSimLabel(null)
@@ -268,7 +281,14 @@ export default function App() {
         }
         sim.raf = requestAnimationFrame(frame)
       }
-      aladin.animateToRaDec(cra, cdec, 1.2, () => aladin.zoomToFoV(fov, 1.2, run))
+      const close = label.phase === 'close'
+      aladin.animateToRaDec(cra, cdec, 1.2, () => {
+        if (close) setSkyHidden(true) // hide before diving below the map's resolution
+        aladin.zoomToFoV(fov, 1.2, () => {
+          if (!close) setSkyHidden(false) // show the sky again once zoomed back out
+          run()
+        })
+      })
     }
 
     const longRun = () =>
@@ -281,6 +301,7 @@ export default function App() {
     if (!aladin) return
     clearSim()
     setCandidate(null)
+    setGaiaStar(null) // a Gaia card belongs to the previous view
     const fov = fovOverride ?? aladin.getFov()[0]
     markerLayerRef.current.removeAll()
     // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
@@ -348,6 +369,7 @@ export default function App() {
         inertia: true, // the sky keeps gliding after you let go
       })
       aladinRef.current = aladin
+      simRef.current.base = base
       window.skyshiftAladin = aladin // handy for debugging in the browser console
 
       // SPHEREx layer on top of the base map, only when zoomed in. While its (slower) tiles
@@ -361,8 +383,12 @@ export default function App() {
         if (wantSpherex) {
           const layer = A.imageHiPS(SPHEREX_SURVEY, { name: 'SPHEREx DR1 all-sky' })
           aladin.setOverlayImageLayer(layer, 'spherex')
+          simRef.current.spherex = layer
           const pickSlice = (tries = 0) => {
-            if (layer.added) layer.setSliceNumber(SPHEREX_SLICE)
+            if (layer.added) {
+              layer.setSliceNumber(SPHEREX_SLICE)
+              if (simRef.current.dark) layer.setOpacity(0)
+            }
             else if (tries < 50) setTimeout(() => pickSlice(tries + 1), 100)
           }
           pickSlice()
@@ -723,7 +749,8 @@ export default function App() {
                   {t(
                     'Close-up, 2 years (view {view} wide): {name} drifts with its proper motion and wobbles once a year by its parallax (±{wobble} mas), because we watch it from the moving Earth.',
                     { view: simLabel.view, name: simLabel.name, wobble: simLabel.wobble.toFixed(simLabel.wobble < 10 ? 2 : 0) },
-                  )}
+                  )}{' '}
+                  {t('The sky images are hidden: this view is smaller than one pixel of the map.')}
                 </span>
               ) : (
                 <span>

@@ -405,7 +405,26 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
                 </dd>
               </>
             )}
-            {science ? (
+            {frame.stacked_images ? (
+              // Stacked visit (WISE 0855): say how many of the summed images had flags.
+              <>
+                <dt>{tr('Quality')}</dt>
+                <dd>
+                  <span className={`status-item ${frame.quality_ok ? 'status-ok' : 'status-warn'}`}>
+                    <StarIcon />
+                    {!frame.quality_ok
+                      ? tr('Flagged · more than half of the images had flags')
+                      : frame.flagged_images > 0
+                        ? tr('Quality OK · {k} of {n} images had flags ({flags}); the median of the visit is barely affected', {
+                            k: frame.flagged_images,
+                            n: frame.stacked_images,
+                            flags: (frame.flags ?? []).filter((f) => f !== 'SOURCE').join(', '),
+                          })
+                        : tr('Quality OK · none of the {n} images had bad-pixel flags', { n: frame.stacked_images })}
+                  </span>
+                </dd>
+              </>
+            ) : science ? (
               <>
                 <dt>{tr('Quality')}</dt>
                 <dd>
@@ -461,9 +480,9 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'spectrum' && <SpectrumChart spectrum={spectrum} note={spectrumNote} />}
           {activeTab === 'parallax' && (
-            <Parallax target={manifest.target} cardId={cardId ?? id} card={card} name={manifest.name} science={science} />
+            <Parallax target={manifest.target} cardId={cardId ?? id} card={card} name={objectName ?? manifest.name} science={science} />
           )}
-          {activeTab === 'upclose' && <UpClose cardId={cardId ?? id} card={card} name={manifest.name} />}
+          {activeTab === 'upclose' && <UpClose cardId={cardId ?? id} card={card} name={objectName ?? manifest.name} />}
           {activeTab === 'about' && <ObjectCard card={card} description={description} science={science} />}
         </div>
       )}
@@ -490,6 +509,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
               dates: [first, last],
               imageDate: frame.date,
               objectName: objectName ?? manifest.name,
+              kind,
             }}
           />
         )}

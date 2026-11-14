@@ -311,6 +311,13 @@ const ES = {
   'The background map combines all SPHEREx images, so it does not change. The date picks the SPHEREx image of the time-lapse, moves the Gaia stars and shows where the star is on that date.':
     'El mapa de fondo combina todas las imágenes de SPHEREx, así que no cambia. La fecha elige la imagen de SPHEREx de la animación, mueve las estrellas de Gaia y muestra dónde está la estrella en esa fecha.',
   'Position on {date}': 'Posición el {date}',
+  'Flagged · more than half of the images had flags': 'Con avisos · más de la mitad de las imágenes tenían avisos',
+  'Quality OK · {k} of {n} images had flags ({flags}); the median of the visit is barely affected':
+    'Calidad OK · {k} de {n} imágenes tenían avisos ({flags}); la mediana de la visita apenas cambia',
+  'Quality OK · none of the {n} images had bad-pixel flags': 'Calidad OK · ninguna de las {n} imágenes tenía avisos de píxeles malos',
+  'grey = single images (outside the range: cut off)': 'gris = imágenes sueltas (las que se salen del rango, cortadas)',
+  'The sky images are hidden: this view is smaller than one pixel of the map.':
+    'Las imágenes del cielo se ocultan: esta vista es más pequeña que un píxel del mapa.',
   // Tutorial buttons
   Skip: 'Saltar',
   Back: 'Atrás',

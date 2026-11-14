@@ -13,7 +13,7 @@ function scale(v, a, b, A, B) {
   return b === a ? (A + B) / 2 : A + ((v - a) / (b - a)) * (B - A)
 }
 
-function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat }) {
+function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat, yRange }) {
   const ts = [...points.map((p) => p.t), ...(raw || []).map((p) => p.t), ...(line || []).map((p) => p.t)]
   const ys = [
     ...points.flatMap((p) => [p.y, p.lo ?? p.y, p.hi ?? p.y]),
@@ -24,9 +24,15 @@ function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat })
   const t1 = Math.max(...ts)
   let y0 = Math.min(...ys)
   let y1 = Math.max(...ys)
-  const pad = (y1 - y0) * 0.12 || 1
+  let pad = (y1 - y0) * 0.12 || 1
   y0 -= pad
   y1 += pad
+  if (yRange) {
+    // Fixed y range given by the caller (e.g. the spectrum); whatever falls outside is cut off.
+    ;[y0, y1] = yRange
+    pad = 0
+  }
+  const clipId = `clip-${Math.round(Math.random() * 1e9)}`
   const X = (t) => scale(t, t0, t1, PAD.l, W - PAD.r)
   const Y = (y) => scale(y, y0, y1, H - PAD.b, PAD.t)
   const date = xFormat ?? ((mjd) => new Date((mjd - 40587) * 86400000).toISOString().slice(0, 7))
@@ -49,6 +55,12 @@ function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat })
         <text className="tick" x={W - PAD.r} y={H - 8} textAnchor="end">
           {date(t1)}
         </text>
+        <defs>
+          <clipPath id={clipId}>
+            <rect x={PAD.l} y={PAD.t} width={W - PAD.l - PAD.r} height={H - PAD.t - PAD.b} />
+          </clipPath>
+        </defs>
+        <g clipPath={`url(#${clipId})`}>
         {current != null && <line className="now" x1={X(current)} y1={PAD.t} x2={X(current)} y2={H - PAD.b} />}
         {line && line.length > 1 && (
           <polyline className="expected" points={line.map((p) => `${X(p.t)},${Y(p.y)}`).join(' ')} />
@@ -68,6 +80,7 @@ function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat })
         {points.map((p, k) => (
           <circle key={k} className={p.hollow ? 'pt hollow' : 'pt'} cx={X(p.t)} cy={Y(p.y)} r="3.5" />
         ))}
+        </g>
       </svg>
       <figcaption>
         <span>{yLabel}</span>
@@ -186,11 +199,25 @@ const fmtFlux = (v) =>
   Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)} Jy` : Math.abs(v) >= 1e3 ? `${(v / 1e3).toFixed(1)} mJy` : `${v.toFixed(0)} µJy`
 
 // Spectrum: SPHEREx brightness at each wavelength (binned), from data/<object>/spectrum.json.
+// y axis of the spectrum: only from the binned values, percentiles 2 and 98 plus 25 % of that range on
+// each side (as in the pipeline's spectrum.png); single images and error bars outside are cut off.
+const percentile = (sorted, q) => {
+  const i = (sorted.length - 1) * q
+  const lo = Math.floor(i)
+  return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (i - lo)
+}
 export function SpectrumChart({ spectrum, note }) {
   const pts = (spectrum?.binned ?? []).filter((b) => Number.isFinite(b.flux_ujy))
   if (pts.length < 3) return null
+  const sorted = pts.map((b) => b.flux_ujy).sort((a, b) => a - b)
+  const p2 = percentile(sorted, 0.02)
+  const p98 = percentile(sorted, 0.98)
+  const m = (p98 - p2) * 0.25 || Math.abs(p98) * 0.25 || 1
+  const singles = (spectrum.points ?? []).filter((p) => Number.isFinite(p.flux_ujy) && Number.isFinite(p.wavelength_um))
   return (
     <Chart
+      yRange={[p2 - m, p98 + m]}
+      raw={singles.map((p) => ({ t: p.wavelength_um, y: p.flux_ujy }))}
       points={pts.map((b) => ({
         t: b.wavelength_um,
         y: b.flux_ujy,
@@ -203,6 +230,7 @@ export function SpectrumChart({ spectrum, note }) {
       legend={
         <>
           <i className="dot" /> {t('SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.')}
+          {singles.length > 0 && ` ${t('grey = single images (outside the range: cut off)')}.`}
           {spectrum.saturated_images_skipped > 0 && ` ${t('{n} saturated images left out.', { n: spectrum.saturated_images_skipped })}`}
           {note && ` ${note}`}
         </>

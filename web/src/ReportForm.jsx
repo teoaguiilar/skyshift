@@ -25,7 +25,7 @@ export function candidateId(ra, dec) {
 
 // context: { ra, dec, band, wavelength_um?, dates?: [first, last], imageDate?, objectName? }
 export default function ReportForm({ context, onClose }) {
-  const [kind, setKind] = useState('moves')
+  const [kind, setKind] = useState(context.kind === 'varies' ? 'varies' : 'moves') // variable stars: "changes brightness"
   const [name, setName] = useState('')
   const [summary, setSummary] = useState('')
   const [why, setWhy] = useState('')
