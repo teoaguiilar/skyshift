@@ -102,6 +102,16 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('')
   const [skyLayer, setSkyLayer] = useState('base')
+  const panelRef = useRef(null)
+  const [scrolledDown, setScrolledDown] = useState(false)
+  const isPhone = () => window.matchMedia('(max-width: 760px)').matches
+  const showPanel = () => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  useEffect(() => {
+    const onScroll = () => setScrolledDown(window.scrollY > 200)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
   const [activeId, setActiveId] = useState(() => new URLSearchParams(window.location.search).get('object'))
 
   // Select a sky position: marker + URL + panel.
@@ -183,6 +193,8 @@ export default function App() {
             aladin.setFoV(start.fov)
           } else if (linked) {
             goTo(linked.query, linked.id)
+            // On phones the player is below the map: glide down to it once the flight is done.
+            if (isPhone()) setTimeout(showPanel, 4500)
           }
         }, 400)
       }
@@ -271,7 +283,12 @@ export default function App() {
             {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
           </span>
         </div>
-        <aside className="panel">
+        {activeId && !scrolledDown && (
+          <button className="to-panel" onClick={showPanel}>
+            ▼ Time-lapse below
+          </button>
+        )}
+        <aside className="panel" ref={panelRef}>
           {activeId ? (
             <>
               <h2>{TOUR.find((t) => t.id === activeId)?.label ?? 'Object'}</h2>
