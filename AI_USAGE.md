@@ -21,3 +21,5 @@ Every AI tool we use, what for and in which parts. Images and videos generated w
 | 2026-11-14 | Claude (Anthropic) | Pedro | Web charts: position vs time (measured vs catalogue motion) and relative brightness vs time | web/src/Charts.jsx |
 | 2026-11-14 | — | Team | Team ideas (not AI): object cards with paper links and easy comparisons (Sun/Jupiter), QR code for the audience, "Report a candidate" via GitHub Issues, star identification, mythology extra | Product design |
 | 2026-11-14 | Claude (Anthropic) | Antonio | Drafting the demo video script (Spanish voiceover and English on-screen text) from the team's choices: format, slogan, audience, future | Presentation |
+| 2026-11-14 | Claude (Anthropic) | Pedro | Object cards: web component, JSON template and instructions. Card texts and numbers are written by the science team with sources | web/src/ObjectCard.jsx, science/cards/ |
+| 2026-11-14 | Claude (Anthropic) | Teo | Writing the plots against time (one point per visit with error bar; ideas from Juan) | pipeline/plot_time.py, data/<object>/motion.png, data/<object>/lightcurve.png |
