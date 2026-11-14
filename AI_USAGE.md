@@ -18,3 +18,6 @@ Every AI tool we use, what for and in which parts. Images and videos generated w
 | 2026-11-14 | Claude (Anthropic) | Pedro | Web: time-lapse for any clicked spot. Downloads cutouts through Teo's bridge, keeps similar wavelengths (±2 %), aligns them with each image's WCS (TAN-SIP) in the browser | web/src/spherexSpot.js, SpotLapse.jsx |
 | 2026-11-14 | Claude (Anthropic) | Teo | Writing the per-visit stacking script that reveals WISE 0855 (idea suggested in the challenge text) | pipeline/stack_epochs.py, data/wise-0855-stacked/ |
 | 2026-11-14 | Claude (Anthropic) | Teo | Writing the spectrum script (aperture photometry on all SPHEREx detectors) | pipeline/spectrum.py, data/*/spectrum.json |
+| 2026-11-14 | Claude (Anthropic) | Pedro | Web charts: position vs time (measured vs catalogue motion) and relative brightness vs time | web/src/Charts.jsx |
+| 2026-11-14 | — | Team | Team ideas (not AI): object cards with paper links and easy comparisons (Sun/Jupiter), QR code for the audience, "Report a candidate" via GitHub Issues, star identification, mythology extra | Product design |
+| 2026-11-14 | Claude (Anthropic) | Antonio | Drafting the demo video script (Spanish voiceover and English on-screen text) from the team's choices: format, slogan, audience, future | Presentation |
