@@ -32,6 +32,27 @@ MOVERS = {"barnard", "eps-indi-b", "wise-0855-stacked"}  # objects whose motion 
 SKIP = {"wise-0855"}  # too faint in single images: use wise-0855-stacked
 
 
+def visits(frames, gap_days=30):
+    """Group frames (sorted by date) into SPHEREx visits separated by more than gap_days."""
+    frames = sorted(frames, key=lambda f: f["mjd"])
+    groups = [[frames[0]]]
+    for f in frames[1:]:
+        if f["mjd"] - groups[-1][-1]["mjd"] > gap_days:
+            groups.append([])
+        groups[-1].append(f)
+    return groups
+
+
+def summary(values):
+    """Mean and its uncertainty (standard deviation / sqrt(n)); None if a single value."""
+    n = len(values)
+    mean = sum(values) / n
+    if n < 2:
+        return mean, None
+    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / (n - 1))
+    return mean, sd / math.sqrt(n)
+
+
 def usable(frame):
     m = frame.get("measured")
     return m is not None and frame.get("detected", True)
@@ -54,7 +75,15 @@ def plot_motion(manifest, out):
     fig, axes = plt.subplots(2, 1, figsize=(8, 5.5), dpi=120, sharex=True)
     for k, (ax, label) in enumerate(zip(axes, ["RA × cos(Dec)", "Dec"])):
         ax.plot(dates, [p[k] for p in pred], "-", color="C1", lw=2, label="catalogue proper motion")
-        ax.plot(dates, [m[k] for m in meas], "o", color="C0", ms=6, label="measured with SPHEREx")
+        ax.plot(dates, [m[k] for m in meas], ".", color="0.7", ms=5, label="single images")
+        vx, vy, ve = [], [], []
+        for g in visits(frames):
+            vals = [offsets(f["measured"])[k] for f in g]
+            mean, err = summary(vals)
+            vx.append(Time(sum(f["mjd"] for f in g) / len(g), format="mjd").datetime)
+            vy.append(mean)
+            ve.append(err or 0)
+        ax.errorbar(vx, vy, yerr=ve, fmt="o", color="C0", ms=7, capsize=4, label="visit average ± error")
         ax.set_ylabel(f"{label} (arcsec)")
         ax.grid(alpha=0.3)
     axes[0].legend(frameon=False, fontsize=9)
@@ -75,7 +104,16 @@ def plot_lightcurve(manifest, out):
     flux = [f["measured"]["flux_rel"] for f in frames]
     fig, ax = plt.subplots(figsize=(8, 4), dpi=120)
     # Points only: SPHEREx visits are months apart, so we do not know what happens in between.
-    ax.plot(dates, flux, "o", color="C0", ms=6)
+    # Grey: single images. Blue: average of each visit with its uncertainty.
+    ax.plot(dates, flux, ".", color="0.7", ms=5, label="single images")
+    vx, vy, ve = [], [], []
+    for g in visits(frames):
+        mean, err = summary([f["measured"]["flux_rel"] for f in g])
+        vx.append(Time(sum(f["mjd"] for f in g) / len(g), format="mjd").datetime)
+        vy.append(mean)
+        ve.append(err or 0)
+    ax.errorbar(vx, vy, yerr=ve, fmt="o", color="C0", ms=7, capsize=4, label="visit average ± error")
+    ax.legend(frameon=False, fontsize=9)
     ax.set_ylabel("Relative brightness")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.grid(alpha=0.3)
