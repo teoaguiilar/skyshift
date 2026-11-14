@@ -1,0 +1,82 @@
+{
+  "id": "barnard",
+  "name": "Barnard's Star",
+  "type": "Red dwarf star (spectral type M)",
+  "summary": "Barnard's Star is a small, cool red dwarf about 6 light-years away, the closest single star to the Sun. It is too faint to see without a telescope, but it moves across the sky faster than any other known star.",
+  "why_interesting": "Its fast apparent motion makes it the perfect test for SkyShift: in SPHEREx images taken months apart you can watch it change position against the background stars.",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "5.96",
+      "unit": "light-years",
+      "compare": "The light you see from it left the star about 6 years ago.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Proper motion",
+      "value": "10.39",
+      "unit": "arcseconds per year",
+      "compare": "The fastest of any known star: it crosses the width of the full Moon in about 180 years.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Mass",
+      "value": "0.159 ± 0.016",
+      "unit": "× the Sun",
+      "compare": "About one sixth of the Sun's mass.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Size",
+      "value": "0.187",
+      "unit": "× the Sun",
+      "compare": "About one fifth of the Sun's width, roughly twice the size of Jupiter.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Temperature",
+      "value": "3,238 ± 11",
+      "unit": "K (about 2,965 °C)",
+      "compare": "About half as hot as the Sun's surface, which is why it glows red and shines mostly in infrared light.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Age",
+      "value": "10 ± 3",
+      "unit": "billion years",
+      "compare": "About twice as old as the Sun.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Rotation period",
+      "value": "145 ± 15",
+      "unit": "days",
+      "compare": "The Sun turns once in about 25 days; this old star spins almost 6 times slower.",
+      "source": "Byrne et al. (2026), MNRAS, Table 1",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    },
+    {
+      "label": "Planets",
+      "value": "4",
+      "unit": "confirmed planets",
+      "compare": "All four are smaller than Earth.",
+      "source": "Byrne et al. (2026), MNRAS",
+      "source_url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    }
+  ],
+  "papers": [
+    {
+      "title": "The Barnard's Star planetary system: stability, composition, and evolution of four sub-Earth exoplanets",
+      "authors": "Byrne et al. (2026), MNRAS 550",
+      "url": "https://academic.oup.com/mnras/article/550/2/stag1207/8715836"
+    }
+  ],
+  "written_by": "Juan",
+  "reviewed_by": "Juan (science QC), approved by Benjamín"
+}

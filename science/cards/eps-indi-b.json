@@ -1,0 +1,68 @@
+{
+  "id": "eps-indi-b",
+  "name": "Epsilon Indi B",
+  "type": "Pair of brown dwarfs (Ba and Bb, spectral types T1 and T6)",
+  "summary": "Epsilon Indi B is not one object but two brown dwarfs, Ba and Bb, orbiting each other. Together they travel far from the star Epsilon Indi A, and they are the nearest known pair of brown dwarfs. They are so close together that SPHEREx sees them as a single point of light.",
+  "why_interesting": "The pair moves quickly across the sky, so you can see it shift between SPHEREx images taken months apart. Its infrared spectrum shows what the atmosphere of a cool brown dwarf looks like.",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "12.0",
+      "unit": "light-years",
+      "compare": "Measured from its parallax (270.66 milliarcseconds). An older value, measured for the star Epsilon Indi A, gives 11.8 light-years; the small difference does not change anything we show.",
+      "source": "Feng et al. (2019), via SIMBAD",
+      "source_url": "https://uhra.herts.ac.uk/id/eprint/8145/1/stz2912.pdf"
+    },
+    {
+      "label": "Proper motion",
+      "value": "4.68",
+      "unit": "arcseconds per year",
+      "compare": "In half a year it moves more than 2 arcseconds, about a third of a SPHEREx pixel.",
+      "source": "SIMBAD (CDS)",
+      "source_url": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=eps+Ind+B"
+    },
+    {
+      "label": "Mass",
+      "value": "66.92 ± 0.36 (Ba) and 53.25 ± 0.29 (Bb)",
+      "unit": "× Jupiter",
+      "compare": "Weighed by following their orbit around each other for about 10 years, with an error of less than 1%.",
+      "source": "Chen et al. (2022), AJ",
+      "source_url": "https://doi.org/10.3847/1538-3881/ac66d2"
+    },
+    {
+      "label": "Temperature",
+      "value": "1,300-1,385 (Ba) and 880-1,011 (Bb)",
+      "unit": "K",
+      "compare": "Less than a quarter as hot as the Sun's surface. Estimated by fitting two families of models to their light.",
+      "source": "King et al. (2010), A&A",
+      "source_url": "https://doi.org/10.1051/0004-6361/200912981"
+    },
+    {
+      "label": "Age",
+      "value": "about 3.5",
+      "unit": "billion years",
+      "compare": "A bit younger than the Sun (4.6 billion years).",
+      "source": "Chen et al. (2022), AJ",
+      "source_url": "https://doi.org/10.3847/1538-3881/ac66d2"
+    }
+  ],
+  "papers": [
+    {
+      "title": "Epsilon Indi Ba/Bb: the nearest binary brown dwarf",
+      "authors": "McCaughrean et al. (2004), A&A",
+      "url": "https://arxiv.org/abs/astro-ph/0309256"
+    },
+    {
+      "title": "Epsilon Indi Ba, Bb: a detailed study of the nearest known brown dwarfs",
+      "authors": "King et al. (2010), A&A",
+      "url": "https://doi.org/10.1051/0004-6361/200912981"
+    },
+    {
+      "title": "Precise Dynamical Masses of Epsilon Indi Ba and Bb: Evidence of Slowed Cooling at the L/T Transition",
+      "authors": "Chen et al. (2022), AJ",
+      "url": "https://doi.org/10.3847/1538-3881/ac66d2"
+    }
+  ],
+  "written_by": "Juan",
+  "reviewed_by": "Juan (science QC), approved by Benjamín"
+}

@@ -1,0 +1,76 @@
+{
+  "id": "wise-0855",
+  "name": "WISE 0855-0714",
+  "type": "Brown dwarf (spectral class Y), the coldest known",
+  "summary": "WISE 0855-0714 is a brown dwarf: a ball of gas too small to burn like a star. It is the coldest one known, colder than a home freezer, and one of our closest neighbours. It gives off almost no visible light, so it can only be seen in infrared images.",
+  "why_interesting": "It is so faint that it barely shows up in a single SPHEREx image. Adding up the images of each visit makes it appear, and then you can watch it move across the sky in a few months.",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "7.43",
+      "unit": "light-years",
+      "compare": "The fourth-closest known system to the Sun. Measured from its parallax (439.0 ± 2.4 milliarcseconds).",
+      "source": "Kirkpatrick et al. (2021), via SIMBAD",
+      "source_url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=WISE+J085510.83-071442.5"
+    },
+    {
+      "label": "Proper motion",
+      "value": "8.15",
+      "unit": "arcseconds per year",
+      "compare": "In the SPHEREx images, SkyShift sees it move about 3 arcseconds west between November 2025 and April 2026.",
+      "source": "Kirkpatrick et al. (2021), via SIMBAD",
+      "source_url": "https://simbad.cfa.harvard.edu/simbad/sim-id?Ident=WISE+J085510.83-071442.5"
+    },
+    {
+      "label": "Temperature",
+      "value": "225-250",
+      "unit": "K (about -48 to -23 °C)",
+      "compare": "Colder than a home freezer, and much colder than any star. Estimated by fitting models to its light.",
+      "source": "Zapatero Osorio et al. (2016), A&A 592, A80",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628662"
+    },
+    {
+      "label": "Mass",
+      "value": "2-10",
+      "unit": "× Jupiter",
+      "compare": "Only a few times heavier than Jupiter. Estimated from models, not measured directly.",
+      "source": "Zapatero Osorio et al. (2016), A&A 592, A80",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628662"
+    },
+    {
+      "label": "Size",
+      "value": "1.17",
+      "unit": "× Jupiter",
+      "compare": "About the size of Jupiter. This is the radius of the best-fitting model, not a direct measurement.",
+      "source": "Beamín et al. (2014), A&A 570, L8",
+      "source_url": "https://doi.org/10.1051/0004-6361/201424505"
+    },
+    {
+      "label": "Age",
+      "value": "1-12",
+      "unit": "billion years",
+      "compare": "Probably old, but the age is assumed from models, not measured.",
+      "source": "Zapatero Osorio et al. (2016), A&A 592, A80",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628662"
+    }
+  ],
+  "papers": [
+    {
+      "title": "Discovery of a ~250 K Brown Dwarf at 2 pc from the Sun",
+      "authors": "Luhman (2014), ApJL 786, L18",
+      "url": "https://doi.org/10.1088/2041-8205/786/2/L18"
+    },
+    {
+      "title": "Temperature constraints on the coldest brown dwarf known: WISE 0855-0714",
+      "authors": "Beamín et al. (2014), A&A 570, L8",
+      "url": "https://doi.org/10.1051/0004-6361/201424505"
+    },
+    {
+      "title": "Near-infrared photometry of WISE J085510.74-071442.5",
+      "authors": "Zapatero Osorio et al. (2016), A&A 592, A80",
+      "url": "https://doi.org/10.1051/0004-6361/201628662"
+    }
+  ],
+  "written_by": "Juan",
+  "reviewed_by": "Juan (science QC), approved by Benjamín"
+}

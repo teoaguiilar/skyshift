@@ -1,0 +1,36 @@
+{
+  "_note": "Short description of each system and its objects. 'explore' = simple text for everyone; 'science' = same description with technical data. All numbers come from the object cards (science/cards/<id>.json) and the SkyShift measurements; new sources are listed in 'new_sources'. Idea and review: Benjamín (SkyShift Murcia). Draft written with help from Claude (Anthropic); see AI_USAGE.md.",
+  "barnard": {
+    "explore": "Barnard's Star is a single small red star about 6 light-years away, with four planets, all smaller than Earth. It is much smaller and cooler than the Sun, and it is the fastest-moving star in our sky: in SPHEREx images taken months apart you can see it change place.",
+    "science": "Single M-type red dwarf at 5.96 ly (1.828 pc), the closest single star to the Sun. Mass 0.159 ± 0.016 M☉, radius 0.1869 ± 0.0012 R☉, Teff 3,238 ± 11 K, age 10 ± 3 Gyr, rotation period 145 ± 15 d. It hosts four confirmed sub-Earth planets. Its proper motion, 10.39″/yr, is the largest of any known star (Byrne et al. 2026). From SPHEREx positions SkyShift measures −0.56 ± 0.59″/yr in RA·cos Dec and +11.51 ± 1.08″/yr in Dec (catalogue: −0.80 and +10.36″/yr)."
+  },
+  "eps-indi-b": {
+    "explore": "Epsilon Indi is a system about 12 light-years away with a star, Epsilon Indi A, and, far from it, a pair of brown dwarfs, Ba and Bb, that orbit each other. Brown dwarfs are balls of gas too small to burn like stars. The pair is so tight that SPHEREx sees it as a single point of light, moving almost 5 arcseconds a year.",
+    "science": "The ε Indi system at 12.0 ly (parallax 270.66 mas; Feng et al. 2019) contains the star ε Indi A and a pair of T dwarfs, Ba (T1–1.5) and Bb (T6), first resolved by McCaughrean et al. (2004). Dynamical masses from about 10 years of VLT orbit monitoring: 66.92 ± 0.36 and 53.25 ± 0.29 MJup; system age about 3.5 Gyr (Chen et al. 2022). Model temperatures: 1,300–1,385 K (Ba) and 880–1,011 K (Bb) (King et al. 2010). SPHEREx pixels (6.15″) blend Ba and Bb into one source; its proper motion is 4.68″/yr (SIMBAD)."
+  },
+  "wise-0855": {
+    "explore": "WISE 0855-0714 is a lonely brown dwarf, with no star around it, about 7.4 light-years away. It is the coldest one known, colder than a home freezer, and it gives off almost no visible light. In a single SPHEREx image it is almost invisible; adding up the images of each visit makes it appear.",
+    "science": "Isolated Y-class brown dwarf at 7.43 ly (parallax 439.0 ± 2.4 mas; Kirkpatrick et al. 2021), the fourth-closest known system to the Sun. Teff 225–250 K and mass 2–10 MJup for an assumed age of 1–12 Gyr (Zapatero Osorio et al. 2016); model radius 1.17 RJup (Beamín et al. 2014). Proper motion 8.15″/yr. In SPHEREx detector D6 it is detected only by stacking the images of each visit (S/N 17.7); between November 2025 and April 2026 it moved about 3.1″ west (3.6″ predicted, parallax included). Below 3 µm its SPHEREx spectrum is contaminated by a hot background star next to it."
+  },
+  "rw-aurigae": {
+    "explore": "RW Aurigae is a very young system, only about 3 million years old, some 600 light-years away. Its main star has a companion and is surrounded by a disc of gas and dust. Its brightness changes: spots on the spinning star come in and out of view, and sometimes dust blocks its light for months.",
+    "science": "Young system at 603 ± 33 ly whose primary is a classical T Tauri star: 1.34 ± 0.18 M☉, about 1.71 R☉, about 5,040 K, 3 ± 1 Myr. Its brightness varies periodically with rotation (2.64 d, starspots) and irregularly through deep dimmings since 2010, up to 3 magnitudes in V, most likely caused by a hot dusty wind from the inner disc (arXiv:2312.17598). SPHEREx revisits the field every few months, so it samples these changes but cannot follow the 2.64-day cycle. We do not use a catalogue parallax of 15.42 ± 3.69 mas (24% error, inconsistent with this distance)."
+  },
+  "ux-orionis": {
+    "explore": "UX Orionis is a young star, a few million years old, bigger and hotter than the Sun and surrounded by a disc of dust. Clumps of dust in the disc sometimes pass in front of the star and dim it, with no fixed rhythm. SPHEREx caught it getting brighter and then fainter again between visits.",
+    "science": "Young Herbig Ae star, the prototype of the UXor variables, at 1,052 ± 10 ly (Gaia DR3 parallax 3.1004 ± 0.0285 mas). Mass 2.3–2.5 M☉, radius 2.7 R☉, Teff about 8,600 K, age 2–4.8 Myr (Kreplin et al. 2016, who adopted an older distance of 460 pc; we use the newer Gaia DR3 value). Its irregular dimmings come from changes in its circumstellar disc and have no known period. In SPHEREx photometry its relative flux went from about 320 ± 12 to about 500 and back to 365 ± 32 over three visits."
+  },
+  "r-draconis": {
+    "explore": "R Draconis is an aging giant star, far bigger than the Sun, about 2,600 light-years away. It swells and shrinks, and its brightness rises and falls every 246 days, about eight months. In infrared light it is so bright that it overloads the SPHEREx detectors.",
+    "science": "Mira-type pulsating red giant with an M-type spectrum and a period of 246.12 days. Distance 2,607 ± 135 ly from the Gaia DR3 parallax (1.2509 ± 0.0648 mas), which is less reliable for large pulsating giants; Gaia DR2 gave about 2,160 ly. Its core saturates the SPHEREx detectors, so SkyShift does not show its brightness curve or spectrum."
+  },
+  "new_sources": [
+    {
+      "object": "rw-aurigae",
+      "use": "Dimmings since 2010, up to 3 mag in V, hot dusty wind from the inner disc; primary with a companion",
+      "title": "The deep eclipses of RW Aur revisited by long-term photometric and spectroscopic monitoring",
+      "url": "https://arxiv.org/abs/2312.17598",
+      "status": "reviewed"
+    }
+  ]
+}

@@ -9,7 +9,7 @@
       "label": "Distance",
       "value": "603 ± 33",
       "unit": "light-years",
-      "compare": "The light you see left it about 603 years ago.",
+      "compare": "The light you see left it about 600 years ago. We do not use another catalogue parallax (15.42 ± 3.69 milliarcseconds, about 210 light-years): its error is 24% and it disagrees with this distance, probably because RW Aurigae is a double star, which spoils the parallax fit.",
       "source": "Bailer-Jones et al. (2021), cited in the 2023 RW Aur study",
       "source_url": "https://onlinelibrary.wiley.com/doi/10.1002/asna.20230118"
     },
