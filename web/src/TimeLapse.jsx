@@ -8,6 +8,7 @@
  * Every number shown comes from those files; nothing is typed in by hand here.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Bands from './Bands.jsx'
 import { BrightnessChart, PositionChart, FilteredSpectrum, SpectrumChart, byVisit, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
@@ -117,6 +118,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   const [falseColor, setFalseColor] = useState(null)
   const [spectrum, setSpectrum] = useState(null)
   const [spectrumFiltered, setSpectrumFiltered] = useState(null)
+  const [bands, setBands] = useState(null)
   const [card, setCard] = useState(null)
   const [reporting, setReporting] = useState(false)
   const [descriptions, setDescriptions] = useState(null) // this object's {explore, science}, if any
@@ -151,6 +153,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     setFalseColor(null)
     setSpectrum(null)
     setSpectrumFiltered(null)
+    setBands(null)
     setCard(null)
     setDescriptions(null)
     setMode('frames')
@@ -158,6 +161,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     if (given || !id) return
     const c = cardId ?? id
     getJson(`${DATA_BASE}/${id}/difference.json`).then(setDifference)
+    // Bands tab (Science): only if the file exists and looks right.
+    getJson(`${DATA_BASE}/${id}/bands.json`).then((b) => setBands(b?.grid?.width && b.visits?.length ? b : null))
     getJson(`${DATA_BASE}/${id}/false_color.json`).then(setFalseColor)
     if (!hideSpectrum) {
       getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
@@ -222,6 +227,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   if (science && kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: tr('Motion') })
   if (science && kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: tr('Brightness') })
   if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: tr('Spectrum') })
+  if (science && bands) tabs.push({ key: 'bands', label: tr('Bands') })
   // Description for the current mode (falls back to the other one if only one is written).
   const description = descriptions ? (science ? descriptions.science || descriptions.explore : descriptions.explore || descriptions.science) : null
   if (!given && Number.isFinite(manifest.target?.parallax_mas)) tabs.push({ key: 'parallax', label: tr('Parallax') })
@@ -484,6 +490,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'spectrum' && <FilteredSpectrum spectrum={spectrum} filtered={spectrumFiltered} note={spectrumNote} />}
+          {activeTab === 'bands' && <Bands key={id} bands={bands} />}
           {activeTab === 'parallax' && (
             <Parallax target={manifest.target} cardId={cardId ?? id} card={card} name={objectName ?? manifest.name} science={science} />
           )}

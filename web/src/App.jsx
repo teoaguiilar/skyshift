@@ -259,6 +259,8 @@ export default function App() {
   function setSkyHidden(hidden) {
     const sim = simRef.current
     sim.dark = hidden
+    // Black instead of the empty map's grey (most visible on phones).
+    document.querySelector('.map')?.classList.toggle('sky-hidden', hidden)
     try {
       sim.base?.setOpacity(hidden ? 0 : 1)
       sim.spherex?.setOpacity(hidden ? 0 : 1)

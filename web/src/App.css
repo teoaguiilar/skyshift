@@ -457,3 +457,24 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
   .tut-card { max-height: 46vh; overflow-y: auto; }
   .tut-card.tut-top { top: 12px !important; bottom: auto !important; }
 }
+
+/* Bands tab (Science): the six SPHEREx detectors added up in the browser */
+.bands { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.bands-dets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; margin: 0; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius); font-size: 13px; }
+.bands-dets legend { padding: 0 4px; }
+.bands-dets label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.bands-dets label.off { opacity: 0.5; cursor: default; }
+.bands-dets input { accent-color: var(--accent); }
+.bands-view canvas, .bands-view svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bands-view canvas { image-rendering: pixelated; }
+.bands-empty { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--muted); font-size: 13px; }
+.bands-title { margin: 6px 0 0; font-size: 14px; }
+.bands-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.bands-table th, .bands-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+.bands-table th { color: var(--muted); font-weight: 500; }
+@media (max-width: 760px) { .bands-view { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; } }
+
+/* "Watch it move" close-up: sky images hidden (smaller than one map pixel) -> black sky, not grey */
+.map.sky-hidden { background: #000; }
+.map.sky-hidden .aladin-imageCanvas { opacity: 0; }
