@@ -17,3 +17,4 @@ Every AI tool we use, what for and in which parts. Images and videos generated w
 | 2026-11-14 | Claude (Anthropic) | Teo | Translating Juan's variable star research into English for the web (checked by Juan) | science/variable-stars.md |
 | 2026-11-14 | Claude (Anthropic) | Pedro | Web: time-lapse for any clicked spot. Downloads cutouts through Teo's bridge, keeps similar wavelengths (±2 %), aligns them with each image's WCS (TAN-SIP) in the browser | web/src/spherexSpot.js, SpotLapse.jsx |
 | 2026-11-14 | Claude (Anthropic) | Teo | Writing the per-visit stacking script that reveals WISE 0855 (idea suggested in the challenge text) | pipeline/stack_epochs.py, data/wise-0855-stacked/ |
+| 2026-11-14 | Claude (Anthropic) | Teo | Writing the spectrum script (aperture photometry on all SPHEREx detectors) | pipeline/spectrum.py, data/*/spectrum.json |
