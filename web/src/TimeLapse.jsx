@@ -57,7 +57,10 @@ const getJson = (url) =>
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null)
 
-export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote }) {
+// science = false (Explore mode): only the essentials. Science mode adds the measurements
+// (charts, spectrum, wavelength, quality flags). Nothing is hidden that changes what the images mean:
+// a flagged image is still marked as flagged in Explore.
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -128,9 +131,9 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
   // Info tabs: only the ones with real data behind them.
   const tabs = []
-  if (kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: 'Motion' })
-  if (kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: 'Brightness' })
-  if (spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
+  if (science && kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: 'Motion' })
+  if (science && kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: 'Brightness' })
+  if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
   if (card) tabs.push({ key: 'about', label: 'About' })
   const activeTab = tabs.find((t) => t.key === tab)?.key ?? tabs[0]?.key
 
@@ -138,9 +141,11 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     <div className="timelapse">
       <div className="tl-head">
         <span>SPHEREx time-lapse{manifest.stacked ? ' · stacked visits' : ''}</span>
-        <span className="tl-band">
-          {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
-        </span>
+        {science && (
+          <span className="tl-band">
+            {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
+          </span>
+        )}
       </div>
 
       {difference && (
@@ -210,13 +215,17 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             <dd>
               {frame.date} <span className="muted">· {index + 1}/{manifest.frames.length}</span>
             </dd>
-            <dt>λ</dt>
-            <dd>
-              {frame.wavelength_range_um
-                ? `${frame.wavelength_range_um[0].toFixed(2)}–${frame.wavelength_range_um[1].toFixed(2)} µm`
-                : `${frame.wavelength_um.toFixed(3)} µm`}
-            </dd>
-            {frame.stacked_images && (
+            {science && (
+              <>
+                <dt>λ</dt>
+                <dd>
+                  {frame.wavelength_range_um
+                    ? `${frame.wavelength_range_um[0].toFixed(2)}–${frame.wavelength_range_um[1].toFixed(2)} µm`
+                    : `${frame.wavelength_um.toFixed(3)} µm`}
+                </dd>
+              </>
+            )}
+            {science && frame.stacked_images && (
               <>
                 <dt>Stack</dt>
                 <dd>
@@ -225,12 +234,25 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
                 </dd>
               </>
             )}
-            <dt>Quality</dt>
-            <dd className={frame.quality_ok ? '' : 'warn'}>
-              {frame.quality_ok ? 'OK' : 'Flagged'}
-              {frame.measured?.saturated ? ' · saturated' : ''}
-              {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
-            </dd>
+            {science ? (
+              <>
+                <dt>Quality</dt>
+                <dd className={frame.quality_ok ? '' : 'warn'}>
+                  {frame.quality_ok ? 'OK' : 'Flagged'}
+                  {frame.measured?.saturated ? ' · saturated' : ''}
+                  {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
+                </dd>
+              </>
+            ) : (
+              (!frame.quality_ok || frame.measured?.saturated) && (
+                <>
+                  <dt>Quality</dt>
+                  <dd className="warn">
+                    {!frame.quality_ok ? 'Flagged' : 'Saturated'} <span className="muted">· details in Science mode</span>
+                  </dd>
+                </>
+              )
+            )}
           </dl>
 
           {manifest.frames.some((f) => f.predicted) && (

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import TimeLapse from './TimeLapse.jsx'
 import { loadSpot } from './spherexSpot.js'
 
-export default function SpotLapse({ ra, dec }) {
+export default function SpotLapse({ ra, dec, science = false }) {
   const [manifest, setManifest] = useState(null)
   const [progress, setProgress] = useState({ step: 'search' })
   const [state, setState] = useState('loading')
@@ -43,7 +43,7 @@ export default function SpotLapse({ ra, dec }) {
 
   return (
     <>
-      <TimeLapse id="spot" manifest={manifest} />
+      <TimeLapse id="spot" manifest={manifest} science={science} />
       <p className="hint">
         {manifest.frames.length} of {manifest.searched} SPHEREx images here were taken at a similar wavelength (±2 %).
         Something that shifts between dates is only a <strong className="candidate">candidate moving object</strong>, and something that

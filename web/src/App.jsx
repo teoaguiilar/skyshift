@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
+import Intro, { Logo } from './Intro.jsx'
+import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -85,8 +87,30 @@ function readUrl() {
   return null
 }
 
+// Two modes: 'explore' (everybody) and 'science' (adds the measurements). Kept in the URL.
+function readMode() {
+  return new URLSearchParams(window.location.search).get('mode') === 'science' ? 'science' : 'explore'
+}
+function writeMode(mode) {
+  const p = new URLSearchParams(window.location.search)
+  if (mode === 'science') p.set('mode', 'science')
+  else p.delete('mode')
+  const q = p.toString()
+  window.history.replaceState(null, '', q ? `?${q}` : window.location.pathname)
+}
+// A shared link or QR code (object or position) skips the welcome screen.
+const hasDeepLink = () => {
+  const p = new URLSearchParams(window.location.search)
+  return p.has('object') || p.has('ra')
+}
+
+// Full tutorial for each mode (Science adds its own steps before "Two modes").
+const tutorialFor = (mode) =>
+  mode === 'science' ? [...EXPLORE_STEPS.slice(0, 4), ...SCIENCE_STEPS.slice(0, 2), ...EXPLORE_STEPS.slice(4)] : EXPLORE_STEPS
+
 function writeUrl(ra, dec, fov, objectId) {
   const p = new URLSearchParams()
+  if (readMode() === 'science') p.set('mode', 'science')
   if (objectId) p.set('object', objectId)
   p.set('ra', ra.toFixed(5))
   p.set('dec', dec.toFixed(5))
@@ -114,6 +138,11 @@ export default function App() {
   const [status, setStatus] = useState('')
   const [skyLayer, setSkyLayer] = useState('base')
   const [gaiaOn, setGaiaOn] = useState(false)
+  const [mode, setModeState] = useState(readMode)
+  const science = mode === 'science'
+  const [showIntro, setShowIntro] = useState(() => !hasDeepLink())
+  const [tutorial, setTutorial] = useState(null) // list of steps while the tutorial is open
+  const scienceTutSeen = useRef(false)
   const [gaiaStatus, setGaiaStatus] = useState('')
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
@@ -138,6 +167,34 @@ export default function App() {
     writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
     setActiveId(objectId)
+  }
+
+  function setMode(next, { tutorial: withTutorial = true } = {}) {
+    setModeState(next)
+    writeMode(next)
+    if (next === 'explore' && gaiaRef.current.on) {
+      // Gaia is a Science layer: switch it off in Explore.
+      setGaiaOn(false)
+      gaiaRef.current.on = false
+      gaiaRef.current.refresh()
+    }
+    // First visit to Science: show its extra steps (after the new elements are on screen).
+    if (next === 'science' && withTutorial && !scienceTutSeen.current) {
+      scienceTutSeen.current = true
+      setTimeout(() => setTutorial(SCIENCE_STEPS), 80)
+    }
+  }
+
+  // Welcome screen: while it fades, the map dives in a little.
+  function onIntroLeave() {
+    const aladin = aladinRef.current
+    if (aladin && !interactedRef.current) aladin.zoomToFoV(60, 1.6)
+  }
+  function onIntroStart(startMode) {
+    setShowIntro(false)
+    if (startMode === 'science') scienceTutSeen.current = true
+    setMode(startMode, { tutorial: false })
+    setTimeout(() => setTutorial(tutorialFor(startMode)), 250)
   }
 
   useEffect(() => {
@@ -318,10 +375,16 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-name">
-            Sky<span className="shift">Shift</span>
-          </span>
+          <Logo size={30} />
           <span className="brand-tag">see the sky move</span>
+        </div>
+        <div className="seg mode-switch" role="tablist" aria-label="Mode">
+          <button className={!science ? 'on' : ''} onClick={() => setMode('explore')} role="tab" aria-selected={!science}>
+            Explore
+          </button>
+          <button className={science ? 'on' : ''} onClick={() => setMode('science')} role="tab" aria-selected={science}>
+            Science
+          </button>
         </div>
         <form
           className="search"
@@ -338,6 +401,9 @@ export default function App() {
           />
           <button type="submit">Go</button>
         </form>
+        <button className="help-btn" onClick={() => setTutorial(tutorialFor(mode))} aria-label="Show the tutorial" title="Tutorial">
+          ?
+        </button>
       </header>
 
       <nav className="tour" aria-label="Guided tour">
@@ -355,6 +421,7 @@ export default function App() {
       <main className="stage">
         <div className="map-wrap">
           <div ref={mapRef} className="map" />
+          {science && (
           <label className="gaia-toggle">
             <input
               type="checkbox"
@@ -367,6 +434,7 @@ export default function App() {
             />
             Gaia DR3 stars (ESA){gaiaOn && gaiaStatus ? ` · ${gaiaStatus}` : ''}
           </label>
+          )}
           <span className="sky-layer">
             {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
           </span>
@@ -390,6 +458,7 @@ export default function App() {
                     note={t?.note}
                     hideSpectrum={t?.hideSpectrum}
                     spectrumNote={t?.spectrumNote}
+                    science={science}
                   />
                 )
               })()}
@@ -407,7 +476,7 @@ export default function App() {
               ) : (
                 <p className="hint">Drag and zoom the map, then click any point of the sky — or pick a guided tour.</p>
               )}
-              {selected && <SpotLapse ra={selected.ra} dec={selected.dec} />}
+              {selected && <SpotLapse ra={selected.ra} dec={selected.dec} science={science} />}
             </>
           )}
           {status && <p className="status">{status}</p>}
@@ -418,6 +487,9 @@ export default function App() {
           </p>
         </aside>
       </main>
+
+      {showIntro && <Intro onLeave={onIntroLeave} onStart={onIntroStart} />}
+      {tutorial && <Tutorial steps={tutorial} onClose={() => setTutorial(null)} />}
     </div>
   )
 }

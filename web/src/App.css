@@ -4,7 +4,8 @@
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 12px 20px; border-bottom: 1px solid var(--line);
 }
-.brand { display: flex; align-items: baseline; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; flex: none; }
+.logo { display: block; width: auto; }
 .brand-name { font-weight: 700; letter-spacing: 0.02em; font-size: 19px; }
 .brand-name .shift { color: var(--accent); }
 .candidate { color: var(--warn); }
@@ -142,3 +143,67 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); cursor: pointer; }
 }
 .panel > .chart { margin-top: 12px; }
+
+/* Explore / Science switch and help button in the top bar */
+.mode-switch { flex: none; }
+.mode-switch button { padding: 6px 14px; }
+.topbar .search { margin-left: auto; }
+.help-btn { flex: none; width: 34px; height: 34px; border: 1px solid var(--line); background: transparent; color: var(--muted);
+  font-family: var(--mono); font-size: 15px; cursor: pointer; }
+.help-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Welcome screen: the live map shows, blurred, behind it */
+.intro { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; overflow: auto;
+  background: rgba(7, 8, 10, 0.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background 0.9s ease, backdrop-filter 0.9s ease; }
+.intro-card { max-width: 540px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px;
+  animation: intro-in 0.8s ease-out both; transition: opacity 0.6s ease, transform 0.9s cubic-bezier(0.5, 0, 0.75, 0), filter 0.6s ease; }
+.intro-tag { margin: -4px 0 4px; font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.16em; }
+.intro-lead { margin: 0; font-size: 17px; line-height: 1.55; color: var(--text); }
+.intro-list { list-style: none; margin: 4px 0 6px; padding: 0; display: flex; flex-direction: column; gap: 9px; text-align: left; font-size: 14px; color: var(--muted); }
+.intro-list li { display: flex; align-items: center; gap: 12px; }
+.intro-ico { flex: none; width: 22px; height: 12px; border: 1px solid var(--muted); }
+.intro-ico.varies { border-style: dashed; }
+.intro-ico.click { width: 12px; height: 12px; margin: 0 5px; border-radius: 50%; border-color: var(--accent); }
+.intro-start { margin-top: 6px; background: var(--accent); color: #111; border: 0; padding: 12px 44px; font-weight: 700; font-size: 16px;
+  letter-spacing: 0.04em; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.intro-start:hover, .intro-start:focus-visible { transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(255, 122, 61, 0.25); outline: none; }
+.intro-science { background: none; border: 0; color: var(--muted); font-family: var(--mono); font-size: 12px; cursor: pointer; text-decoration: underline;
+  text-underline-offset: 3px; }
+.intro-science:hover { color: var(--accent); }
+.intro-foot { margin: 10px 0 0; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.6; }
+.intro.leaving { background: rgba(7, 8, 10, 0); backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); pointer-events: none; }
+.intro.leaving .intro-card { opacity: 0; transform: scale(1.25); filter: blur(6px); }
+@keyframes intro-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* Logo: a small dot travels from the first position (blue) to the last one (red) */
+.logo.animated .logo-travel { animation: logo-travel 2.6s ease-in-out infinite; }
+@keyframes logo-travel {
+  0%, 15% { transform: translate(0, 0); opacity: 0; }
+  25% { opacity: 1; }
+  75% { opacity: 1; }
+  85%, 100% { transform: translate(28px, -16px); opacity: 0; }
+}
+
+/* Tutorial: spotlight on one element + a card */
+.tut { position: fixed; inset: 0; z-index: 90; }
+.tut-spot { position: fixed; border: 2px solid var(--accent); box-shadow: 0 0 0 9999px rgba(7, 8, 10, 0.72); pointer-events: none;
+  transition: top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease; }
+.tut-card { position: fixed; background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--accent); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); animation: intro-in 0.3s ease-out both; }
+.tut-card h3 { margin: 0; font-size: 15px; letter-spacing: 0.02em; }
+.tut-card p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text); }
+.tut-count { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.tut-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+.tut-actions button { border: 1px solid var(--line); background: transparent; padding: 6px 12px; font-family: var(--mono); font-size: 12px; cursor: pointer; }
+.tut-skip { margin-right: auto; color: var(--muted); border-color: transparent !important; padding-left: 0 !important; }
+.tut-actions .tut-next { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
+
+@media (max-width: 760px) {
+  .topbar { flex-wrap: wrap; flex-direction: row; }
+  .topbar .search { order: 5; flex: 1 1 100%; margin-left: 0; }
+  .mode-switch { margin-left: auto; }
+  .brand-tag { display: none; }
+  .intro-lead { font-size: 15px; }
+  .tut-card { left: 12px !important; right: 12px; width: auto !important; top: auto !important; bottom: 12px; transform: none !important; }
+}
