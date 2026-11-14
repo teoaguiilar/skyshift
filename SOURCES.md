@@ -19,6 +19,9 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | AAVSO International Variable Star Index (VSX) | Type, brightness range and period of RW Aur, R Dra and UX Ori | https://vsx.aavso.org | See acknowledgements below |
 | Papers on RW Aur and UX Ori cited by Juan | Background of the variable stars | see science/variable-stars.md | Cited |
 | Two Micron All Sky Survey (2MASS), via SIMBAD | J magnitudes of the variable stars | https://irsa.ipac.caltech.edu/Missions/2mass.html | See acknowledgements below |
+| React and React DOM | Web app user interface | https://react.dev | MIT |
+| Vite, @vitejs/plugin-react and oxlint | Build and lint tools of the web app | https://vite.dev | MIT |
+| Vercel | Hosting of the web app and of the IRSA bridge function | https://vercel.com | Hosting service (free plan) |
 
 ## Acknowledgements
 
