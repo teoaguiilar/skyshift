@@ -4,6 +4,7 @@
  * Reads data/<id>/manifest.json + PNG frames produced by pipeline/fetch_object.py (Teo).
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { BrightnessChart, PositionChart } from './Charts.jsx'
 
 // Data lives in the public GitHub repo, so new frames appear without redeploying the web.
 const DATA_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
@@ -23,7 +24,7 @@ function skyToPixel(ra, dec, grid) {
   return { x: w / 2 - dx, y: h / 2 - dy, w, h }
 }
 
-export default function TimeLapse({ id, manifest: given }) {
+export default function TimeLapse({ id, manifest: given, kind }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -148,6 +149,9 @@ export default function TimeLapse({ id, manifest: given }) {
         Show expected position (catalogue proper motion)
       </label>
       )}
+
+      {kind === 'moves' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
+      {kind === 'varies' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
 
       <p className="hint">
         {manifest.frames.length} images from {first} to {last}. Each square is one SPHEREx pixel (6.15″).

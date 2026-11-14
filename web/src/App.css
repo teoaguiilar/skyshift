@@ -46,6 +46,20 @@
 .hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .status { font-family: var(--mono); font-size: 12px; color: var(--accent); }
 
+/* Charts */
+.chart { margin: 0; border: 1px solid var(--line); padding: 6px 6px 8px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .axis { stroke: var(--line); }
+.chart .tick { fill: var(--muted); font-family: var(--mono); font-size: 9px; }
+.chart .now { stroke: var(--muted); stroke-dasharray: 2 3; }
+.chart .expected { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.chart .pt { fill: var(--accent); }
+.chart .pt.hollow { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.chart figcaption { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.chart figcaption > span:first-child { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text); }
+.chart .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 3px; }
+.chart .dash { display: inline-block; width: 14px; border-top: 2px dashed var(--muted); margin: 0 3px 3px 8px; }
+
 /* Time-lapse player */
 .timelapse { display: flex; flex-direction: column; gap: 12px; }
 .tl-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }

@@ -246,7 +246,7 @@ export default function App() {
           {activeId ? (
             <>
               <h2>{TOUR.find((t) => t.id === activeId)?.label ?? 'Object'}</h2>
-              <TimeLapse id={activeId} />
+              <TimeLapse id={activeId} kind={TOUR.find((t) => t.id === activeId)?.kind} />
               {TOUR.find((t) => t.id === activeId)?.note && (
                 <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
               )}
