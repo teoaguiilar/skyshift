@@ -21,8 +21,14 @@ const TOUR = [
     note: 'This brown dwarf is too faint to see in single SPHEREx images, so its motion is not shown here yet.',
   },
   { id: 'rw-aurigae', label: 'RW Aurigae', query: 'RW Aur', kind: 'varies' },
-  // May be replaced by UX Orionis (id 'ux-orionis', query 'UX Ori') — data team decision pending.
-  { id: 'r-draconis', label: 'R Draconis', query: 'R Dra', kind: 'varies' },
+  {
+    id: 'r-draconis',
+    label: 'R Draconis',
+    query: 'R Dra',
+    kind: 'varies',
+    note: 'R Draconis is so bright that it saturates SPHEREx in every image, so its brightness changes cannot be measured with this method.',
+  },
+  { id: 'ux-orionis', label: 'UX Orionis', query: 'UX Ori', kind: 'varies' },
 ]
 
 const DEFAULT_FOV = 0.5 // degrees
