@@ -1,0 +1,50 @@
+{
+  "id": "barnard",
+  "name": "Barnard's Star",
+  "type": "WRITE: kind of object, e.g. red dwarf star / brown dwarf / young variable star",
+  "summary": "WRITE: 2-3 simple sentences in English that anyone can understand.",
+  "why_interesting": "WRITE: 1-2 sentences on why it matters for this challenge (motion or brightness changes seen by SPHEREx).",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "WRITE number",
+      "unit": "light-years",
+      "compare": "WRITE: easy comparison, e.g. 'The light you see left it about N years ago.'",
+      "source": "WRITE: catalogue or paper, e.g. Gaia DR3 (parallax)",
+      "source_url": "WRITE: link to the source"
+    },
+    {
+      "label": "Mass",
+      "value": "WRITE number",
+      "unit": "x the Sun (stars) or x Jupiter (brown dwarfs)",
+      "compare": "WRITE: easy comparison",
+      "source": "WRITE",
+      "source_url": "WRITE"
+    },
+    {
+      "label": "Size",
+      "value": "WRITE number",
+      "unit": "x the Sun or x Jupiter",
+      "compare": "WRITE",
+      "source": "WRITE",
+      "source_url": "WRITE"
+    },
+    {
+      "label": "Temperature",
+      "value": "WRITE number",
+      "unit": "°C",
+      "compare": "WRITE: e.g. 'about half as hot as the Sun's surface'",
+      "source": "WRITE",
+      "source_url": "WRITE"
+    }
+  ],
+  "papers": [
+    {
+      "title": "WRITE: title of a real paper about this object",
+      "authors": "WRITE: First author et al. (year)",
+      "url": "WRITE: link, e.g. https://ui.adsabs.harvard.edu/abs/..."
+    }
+  ],
+  "written_by": "WRITE: Benjamín or Juan",
+  "reviewed_by": "WRITE: who checked it"
+}

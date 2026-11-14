@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
+import ObjectCard from './ObjectCard.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -16,6 +17,7 @@ const TOUR = [
   { id: 'eps-indi-b', label: 'Epsilon Indi B', query: 'eps Ind B', kind: 'moves' },
   {
     id: 'wise-0855-stacked',
+    card: 'wise-0855',
     label: 'WISE 0855−0714',
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
@@ -250,6 +252,7 @@ export default function App() {
               {TOUR.find((t) => t.id === activeId)?.note && (
                 <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
               )}
+              <ObjectCard id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
             </>
           ) : (
             <>
