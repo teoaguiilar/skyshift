@@ -22,7 +22,11 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | React and React DOM | Web app user interface | https://react.dev | MIT |
 | Vite, @vitejs/plugin-react and oxlint | Build and lint tools of the web app | https://vite.dev | MIT |
 | Vercel | Hosting of the web app and of the IRSA bridge function | https://vercel.com | Hosting service (free plan) |
-| ESA Gaia DR3 (Gaia Collaboration 2023), via ESA Gaia Archive TAP | Optional star layer on the map, moved to 2026.0 with proper motion | https://gea.esac.esa.int/archive/ | ESA/Gaia/DPAC, CC BY-SA 3.0 IGO |
+| ESA Gaia DR3 — Gaia Collaboration (2022), Gaia DR3 v1.1, doi:10.5270/esa-qa4lep3 — via the ESA Gaia Archive TAP | Optional star layer on the map, positions moved to 2026.0 with their proper motion; distances of UX Ori and R Dra in the object cards (Gaia DR3 parallaxes, via SIMBAD) | https://gea.esac.esa.int/archive/ | Open and free to use with credit to "ESA/Gaia/DPAC" (https://www.cosmos.esa.int/web/gaia-users/license) |
+| "SPHEREx: NASA's Near-Infrared Spectrophotometric All-Sky Survey" (arXiv:2404.11017), Table 2 | SPHEREx detector wavelength ranges (D1–D6) shown in the web | https://arxiv.org/abs/2404.11017 | arXiv paper (cited, values only) |
+| ESA (1997), The Hipparcos and Tycho Catalogues, Vol. 1, Sect. 1.5.3 | ICRS to Galactic rotation matrix (galactic coordinates in the web) | https://www.cosmos.esa.int/web/hipparcos/catalogues | Cited (standard constants) |
+| Michroma font, by Vernon Adams | Brand typography | https://fonts.google.com/specimen/Michroma | SIL Open Font License 1.1, served from Google Fonts |
+| Archivo font, by Omnibus-Type | Brand typography | https://fonts.google.com/specimen/Archivo | SIL Open Font License 1.1, served from Google Fonts |
 
 ## Acknowledgements
 
