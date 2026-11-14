@@ -1,0 +1,32 @@
+{
+  "object": "barnard",
+  "name": "Barnard's Star",
+  "band": "D2",
+  "all_wavelengths": false,
+  "file": "difference.png",
+  "how_to_read": "Last visit minus first visit. Red = brighter now, blue = brighter before. Objects that did not move cancel out; a moving object leaves a blue spot (where it was) next to a red spot (where it is now).",
+  "pixel_note": "Pixel (0,0) is the bottom-left sky pixel; each sky pixel is 10x10 PNG pixels; north is up and east is left, as in the frames.",
+  "visits": [
+    {
+      "visit": "first",
+      "date": "2025-08-28",
+      "mjd": 60915.1940435,
+      "images": 2,
+      "predicted_pixel": {
+        "x": 16.96616645522412,
+        "y": 16.56264975739507
+      }
+    },
+    {
+      "visit": "last",
+      "date": "2026-09-22",
+      "mjd": 61305.628021,
+      "images": 1,
+      "predicted_pixel": {
+        "x": 17.105501210609084,
+        "y": 18.363764286266054
+      }
+    }
+  ],
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}

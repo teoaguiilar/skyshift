@@ -1,0 +1,32 @@
+{
+  "object": "eps-indi-b",
+  "name": "eps Ind B",
+  "band": "D2",
+  "all_wavelengths": false,
+  "file": "difference.png",
+  "how_to_read": "Last visit minus first visit. Red = brighter now, blue = brighter before. Objects that did not move cancel out; a moving object leaves a blue spot (where it was) next to a red spot (where it is now).",
+  "pixel_note": "Pixel (0,0) is the bottom-left sky pixel; each sky pixel is 10x10 PNG pixels; north is up and east is left, as in the frames.",
+  "visits": [
+    {
+      "visit": "first",
+      "date": "2025-10-10",
+      "mjd": 60958.781588,
+      "images": 8,
+      "predicted_pixel": {
+        "x": 17.090837436269954,
+        "y": 17.056177681109055
+      }
+    },
+    {
+      "visit": "last",
+      "date": "2026-09-29",
+      "mjd": 61312.965189333336,
+      "images": 3,
+      "predicted_pixel": {
+        "x": 16.462681882563437,
+        "y": 16.667699936269234
+      }
+    }
+  ],
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}

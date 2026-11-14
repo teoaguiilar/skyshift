@@ -1,0 +1,32 @@
+{
+  "object": "wise-0855-stacked",
+  "name": "WISE J085510.83-071442.5",
+  "band": "D6",
+  "all_wavelengths": true,
+  "file": "difference.png",
+  "how_to_read": "Last visit minus first visit. Red = brighter now, blue = brighter before. Objects that did not move cancel out; a moving object leaves a blue spot (where it was) next to a red spot (where it is now).",
+  "pixel_note": "Pixel (0,0) is the bottom-left sky pixel; each sky pixel is 10x10 PNG pixels; north is up and east is left, as in the frames.",
+  "visits": [
+    {
+      "visit": "first",
+      "date": "2025-05-05",
+      "mjd": 60800.745329,
+      "images": 3,
+      "predicted_pixel": {
+        "x": 16.243239284720826,
+        "y": 16.93718940353822
+      }
+    },
+    {
+      "visit": "last",
+      "date": "2026-04-27",
+      "mjd": 61157.929368666664,
+      "images": 21,
+      "predicted_pixel": {
+        "x": 17.534980318056625,
+        "y": 17.044402982585705
+      }
+    }
+  ],
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}
