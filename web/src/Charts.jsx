@@ -3,6 +3,7 @@
  * Code written with help from Claude (Anthropic), reviewed by the SkyShift Murcia team. See AI_USAGE.md.
  * Data: the `measured` / `predicted` fields of data/<object>/manifest.json (pipeline by Teo).
  */
+import { useState } from 'react'
 import { t } from './i18n.js'
 
 const W = 340
@@ -199,25 +200,12 @@ const fmtFlux = (v) =>
   Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)} Jy` : Math.abs(v) >= 1e3 ? `${(v / 1e3).toFixed(1)} mJy` : `${v.toFixed(0)} µJy`
 
 // Spectrum: SPHEREx brightness at each wavelength (binned), from data/<object>/spectrum.json.
-// y axis of the spectrum: only from the binned values, percentiles 2 and 98 plus 25 % of that range on
-// each side (as in the pipeline's spectrum.png); single images and error bars outside are cut off.
-const percentile = (sorted, q) => {
-  const i = (sorted.length - 1) * q
-  const lo = Math.floor(i)
-  return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (i - lo)
-}
-export function SpectrumChart({ spectrum, note }) {
+export function SpectrumChart({ spectrum, note, filtered = false }) {
   const pts = (spectrum?.binned ?? []).filter((b) => Number.isFinite(b.flux_ujy))
   if (pts.length < 3) return null
-  const sorted = pts.map((b) => b.flux_ujy).sort((a, b) => a - b)
-  const p2 = percentile(sorted, 0.02)
-  const p98 = percentile(sorted, 0.98)
-  const m = (p98 - p2) * 0.25 || Math.abs(p98) * 0.25 || 1
-  const singles = (spectrum.points ?? []).filter((p) => Number.isFinite(p.flux_ujy) && Number.isFinite(p.wavelength_um))
+  const range = spectrum.filter?.range_um
   return (
     <Chart
-      yRange={[p2 - m, p98 + m]}
-      raw={singles.map((p) => ({ t: p.wavelength_um, y: p.flux_ujy }))}
       points={pts.map((b) => ({
         t: b.wavelength_um,
         y: b.flux_ujy,
@@ -226,15 +214,56 @@ export function SpectrumChart({ spectrum, note }) {
       }))}
       xFormat={(um) => `${um.toFixed(2)} µm`}
       yFormat={fmtFlux}
-      yLabel={t('Spectrum: brightness at each colour (SPHEREx, 0.75–5 µm)')}
+      yLabel={
+        filtered && range
+          ? t('Spectrum, filtered: only {a}–{b} µm (SPHEREx)', { a: range[0].toFixed(1), b: range[1].toFixed(1) })
+          : t('Spectrum: brightness at each colour (SPHEREx, 0.75–5 µm)')
+      }
       legend={
         <>
           <i className="dot" /> {t('SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.')}
-          {singles.length > 0 && ` ${t('grey = single images (outside the range: cut off)')}.`}
           {spectrum.saturated_images_skipped > 0 && ` ${t('{n} saturated images left out.', { n: spectrum.saturated_images_skipped })}`}
           {note && ` ${note}`}
         </>
       }
     />
+  )
+}
+
+// "Filtering" (WISE 0855): keeps only the long wavelengths, where the cold brown dwarf shines and the
+// hot background star next to it matters less. Data: data/<obj>/spectrum_filtered.json (Teo, idea of Benjamín).
+export function FilteredSpectrum({ spectrum, filtered, note }) {
+  const [on, setOn] = useState(false)
+  const f = filtered?.filter
+  if (!f || !(filtered.binned?.length > 2)) return <SpectrumChart spectrum={spectrum} note={note} />
+  const medians = Object.entries(f.median_flux_ujy ?? {})
+  return (
+    <div className="filtered-spectrum">
+      <div className="seg small" role="group" aria-label={t('Spectrum view')}>
+        <button className={on ? '' : 'on'} onClick={() => setOn(false)}>
+          {t('All wavelengths')}
+        </button>
+        <button className={on ? 'on' : ''} onClick={() => setOn(true)}>
+          {t('Filtering: {a}–{b} µm', { a: f.range_um[0].toFixed(1), b: f.range_um[1].toFixed(1) })}
+        </button>
+      </div>
+      {on ? <SpectrumChart spectrum={filtered} filtered note={note} /> : <SpectrumChart spectrum={spectrum} note={note} />}
+      {on && (
+        <div className="filter-info">
+          <p>{f.why}</p>
+          <p className="muted">
+            {t('Detectors {d} · {k} images kept, {l} left out.', {
+              d: (f.detectors ?? []).join(', '),
+              k: f.kept_images,
+              l: f.left_out_images,
+            })}
+            {medians.length > 0 &&
+              ` ${t('Median brightness')}: ${medians
+                .map(([band, v]) => `${band.replace('_um', ' µm').replace('-', '–')} → ${fmtFlux(v)}`)
+                .join(' · ')}.`}
+          </p>
+        </div>
+      )}
+    </div>
   )
 }

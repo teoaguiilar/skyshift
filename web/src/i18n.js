@@ -316,6 +316,12 @@ const ES = {
     'Calidad OK · {k} de {n} imágenes tenían avisos ({flags}); la mediana de la visita apenas cambia',
   'Quality OK · none of the {n} images had bad-pixel flags': 'Calidad OK · ninguna de las {n} imágenes tenía avisos de píxeles malos',
   'grey = single images (outside the range: cut off)': 'gris = imágenes sueltas (las que se salen del rango, cortadas)',
+  'Spectrum, filtered: only {a}–{b} µm (SPHEREx)': 'Espectro filtrado: solo {a}–{b} µm (SPHEREx)',
+  'Spectrum view': 'Vista del espectro',
+  'All wavelengths': 'Todas las longitudes de onda',
+  'Filtering: {a}–{b} µm': 'Filtrado: {a}–{b} µm',
+  'Detectors {d} · {k} images kept, {l} left out.': 'Detectores {d} · {k} imágenes usadas, {l} descartadas.',
+  'Median brightness': 'Brillo mediano',
   'The sky images are hidden: this view is smaller than one pixel of the map.':
     'Las imágenes del cielo se ocultan: esta vista es más pequeña que un píxel del mapa.',
   // Tutorial buttons

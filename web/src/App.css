@@ -421,3 +421,9 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .date-foot { font-size: 11px; }
 .star-card { bottom: 150px; }
 @media (max-width: 760px) { .date-ctl { width: auto; right: 10px; bottom: 30px; } }
+
+/* Spectrum "Filtering" (WISE 0855) */
+.filtered-spectrum .seg { margin-bottom: 10px; }
+.filter-info { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2); font-size: 13px; line-height: 1.5; }
+.filter-info p { margin: 0 0 6px; }
+.filter-info p:last-child { margin-bottom: 0; }

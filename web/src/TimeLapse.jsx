@@ -8,7 +8,7 @@
  * Every number shown comes from those files; nothing is typed in by hand here.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BrightnessChart, PositionChart, SpectrumChart, byVisit, hasBrightness, hasPosition } from './Charts.jsx'
+import { BrightnessChart, PositionChart, FilteredSpectrum, SpectrumChart, byVisit, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
 import UpClose, { hasUpClose } from './UpClose.jsx'
@@ -116,6 +116,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   const [difference, setDifference] = useState(null)
   const [falseColor, setFalseColor] = useState(null)
   const [spectrum, setSpectrum] = useState(null)
+  const [spectrumFiltered, setSpectrumFiltered] = useState(null)
   const [card, setCard] = useState(null)
   const [reporting, setReporting] = useState(false)
   const [descriptions, setDescriptions] = useState(null) // this object's {explore, science}, if any
@@ -149,6 +150,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     setDifference(null)
     setFalseColor(null)
     setSpectrum(null)
+    setSpectrumFiltered(null)
     setCard(null)
     setDescriptions(null)
     setMode('frames')
@@ -157,7 +159,10 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     const c = cardId ?? id
     getJson(`${DATA_BASE}/${id}/difference.json`).then(setDifference)
     getJson(`${DATA_BASE}/${id}/false_color.json`).then(setFalseColor)
-    if (!hideSpectrum) getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
+    if (!hideSpectrum) {
+      getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
+      getJson(`${DATA_BASE}/${c}/spectrum_filtered.json`).then(setSpectrumFiltered)
+    }
     getJson(`${CARDS_BASE}/${c}.json`).then(setCard)
     loadDescriptions().then((all) => {
       const d = all?.[c]
@@ -478,7 +483,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
           {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
-          {activeTab === 'spectrum' && <SpectrumChart spectrum={spectrum} note={spectrumNote} />}
+          {activeTab === 'spectrum' && <FilteredSpectrum spectrum={spectrum} filtered={spectrumFiltered} note={spectrumNote} />}
           {activeTab === 'parallax' && (
             <Parallax target={manifest.target} cardId={cardId ?? id} card={card} name={objectName ?? manifest.name} science={science} />
           )}
