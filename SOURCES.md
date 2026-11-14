@@ -7,6 +7,9 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | SPHEREx data (NASA), via NASA/IPAC Infrared Science Archive (IRSA) | Images of the test objects | https://irsa.ipac.caltech.edu/ | See acknowledgements below (SPHEREx-specific credit: to be checked) |
 | Gaia DR3 (ESA) | Positions and proper motions of fast-moving stars | https://www.cosmos.esa.int/web/gaia/dr3 | See acknowledgements below |
 | NASA Space Apps Challenge 2026: "Planet X and SPHEREx" | Challenge description and resources | https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/ | — |
+| Aladin Lite v3 by CDS, Université de Strasbourg | Interactive sky map in the web app | https://aladin.cds.unistra.fr | LGPL-3.0-or-later. Aladin logo and link kept intact, as its terms ask |
+| AllWISE colour HiPS, P/allWISE/color, served by CDS | Infrared background map of the sky | https://cds.unistra.fr | Data: NASA WISE/NEOWISE, NASA/JPL-Caltech/UCLA |
+| CDS Sesame name resolver | Turns object names into coordinates | https://cds.unistra.fr/cgi-bin/Sesame | Service of CDS, Université de Strasbourg |
 
 ## Acknowledgements
 
