@@ -2,12 +2,13 @@
 
 Research by Juan Torres (SkyShift Murcia), 14 November 2026. English translation of his notes, for the object panels of the web app. The "What SPHEREx shows" lines are the team's own measurements from `data/` and `science/csv/`.
 
-Magnitudes are in the visible V band. Bigger magnitude means fainter. SPHEREx sees infrared light (around 1.2 to 1.5 microns for these stars), where the changes are usually smaller than in visible light, so the two ranges cannot be compared directly.
+Brightness ranges are in the visible V band (AAVSO VSX). Bigger magnitude means fainter. SPHEREx sees infrared light (around 1.2 to 1.5 microns for these stars), where the changes are usually smaller than in visible light, so the two ranges cannot be compared directly. As an infrared reference we also give the J magnitude (1.25 microns, close to what SPHEREx measures) from the 2MASS survey: a single measurement, not a range.
 
 ## RW Aurigae (RW Aur)
 
 - **Type:** classical T Tauri star, a young star.
 - **Brightness range (V):** 9.2 (brightest) to 13.6 (faintest), a difference of 4.4 magnitudes.
+- **Infrared brightness (2MASS J):** 8.378.
 - **Period:** 2.64 days.
 - **Periodic or irregular?** Both. It varies periodically with its rotation (2.64 days), and it also has irregular dimming episodes, such as the one in 2010–2011 that lasted about 180 days. These episodes follow no known period.
 - **Why does its brightness change?** As the star rotates, spots on its surface come in and out of view. On top of that, dust in the disc around the star sometimes blocks its visible light as seen from Earth.
@@ -18,6 +19,7 @@ Magnitudes are in the visible V band. Bigger magnitude means fainter. SPHEREx se
 
 - **Type:** Mira variable, a pulsating red giant.
 - **Brightness range (V):** 6.7 (brightest) to 13.2 (faintest), a difference of 6.5 magnitudes.
+- **Infrared brightness (2MASS J):** 3.71, about 75 to 100 times brighter than RW Aurigae or UX Orionis at this wavelength. That is why it saturates SPHEREx.
 - **Period:** 246.12 days.
 - **Periodic or irregular?** Periodic.
 - **Why does its brightness change?** The giant star pulsates: it swells and shrinks.
@@ -29,6 +31,7 @@ Magnitudes are in the visible V band. Bigger magnitude means fainter. SPHEREx se
 
 - **Type:** UXor, a young star with a dusty disc.
 - **Brightness range (V):** 9.4 (brightest) to 12.7 (faintest), a difference of 3.3 magnitudes.
+- **Infrared brightness (2MASS J):** 8.707.
 - **Period:** none known.
 - **Periodic or irregular?** Irregular.
 - **Why does its brightness change?** The star is surrounded by a disc of gas and dust whose structure changes, which can block its visible light for a while.
@@ -43,5 +46,6 @@ Magnitudes are in the visible V band. Bigger magnitude means fainter. SPHEREx se
 - AAVSO, Mira variables and period changes: https://archive.aavso.org/mira-variables-period-changes
 - AAVSO VSX, UX Ori: https://vsx.aavso.org/index.php?view=detail.top&oid=23100
 - UX Ori: https://iopscience.iop.org/article/10.1086/378400/pdf
+- J magnitudes: Two Micron All Sky Survey (2MASS), via SIMBAD (CDS). 2MASS is a joint project of the University of Massachusetts and IPAC/Caltech, funded by NASA and the NSF.
 
 Translation from Spanish written with help from Claude (Anthropic) and checked by Juan. See `AI_USAGE.md`.
