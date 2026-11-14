@@ -5,7 +5,10 @@
   padding: 12px 20px; border-bottom: 1px solid var(--line);
 }
 .brand { display: flex; align-items: baseline; gap: 12px; }
-.brand-name { font-weight: 600; letter-spacing: 0.04em; font-size: 18px; }
+.brand-name { font-weight: 700; letter-spacing: 0.02em; font-size: 19px; }
+.brand-name .shift { color: var(--accent); }
+.candidate { color: var(--warn); }
+.credits { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
 .brand-tag { font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
 
 .search { display: flex; gap: 0; min-width: 0; flex: 0 1 420px; }
@@ -35,6 +38,9 @@
 
 .stage { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 0; overflow: hidden; }
 .map-wrap { position: relative; min-width: 0; min-height: 0; }
+.gaia-toggle { position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 6px; align-items: center; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; color: var(--text); background: rgba(7, 8, 10, 0.75); padding: 4px 8px; border: 1px solid var(--line); }
+.gaia-toggle input { accent-color: var(--accent); }
 .sky-layer { position: absolute; left: 50%; transform: translateX(-50%); bottom: 10px; z-index: 20; pointer-events: none;
   font-family: var(--mono); font-size: 11px; color: var(--muted); background: rgba(7, 8, 10, 0.7); padding: 3px 8px; border: 1px solid var(--line); }
 .map { position: relative; width: 100%; height: 100%; min-width: 0; min-height: 360px; }
@@ -64,11 +70,11 @@
 .tl-modes { display: flex; gap: 0; }
 .tl-modes button { flex: 1; background: transparent; border: 1px solid var(--line); padding: 5px 10px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .tl-modes button.on { border-color: var(--accent); color: var(--accent); }
-.tl-overlay circle.diff-first { fill: none; stroke: #4aa3ff; stroke-width: 3; }
-.tl-overlay circle.diff-last { fill: none; stroke: #ff4a4a; stroke-width: 3; }
+.tl-overlay circle.diff-first { fill: none; stroke: var(--before); stroke-width: 3; }
+.tl-overlay circle.diff-last { fill: none; stroke: var(--after); stroke-width: 3; }
 .diff-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 2px solid; vertical-align: -1px; }
-.diff-key.first { border-color: #4aa3ff; }
-.diff-key.last { border-color: #ff4a4a; }
+.diff-key.first { border-color: var(--before); }
+.diff-key.last { border-color: var(--after); }
 
 /* Charts */
 .chart { margin: 0; border: 1px solid var(--line); padding: 6px 6px 8px; }
@@ -99,10 +105,13 @@
 .tl-controls button { background: var(--accent); color: #111; border: 0; padding: 6px 12px; font-weight: 600; cursor: pointer; min-width: 64px; }
 .tl-controls input[type='range'] { flex: 1; accent-color: var(--accent); }
 .tl-meta { margin: 0; }
-.tl-meta .warn { color: #ffc857; }
+.tl-meta .warn { color: var(--warn); }
 .muted { color: var(--muted); }
 .flags { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
 .tl-toggle { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+.report { display: inline-block; align-self: flex-start; border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; text-decoration: none; font-family: var(--mono); font-size: 12px; }
+.report:hover { background: var(--accent); color: #111; }
+.hint.small { font-size: 11px; margin: -4px 0 0; }
 .credit { font-size: 11px; color: var(--muted); margin: 0; }
 
 /* "Time-lapse below" button: phones only */

@@ -46,8 +46,8 @@ export default function SpotLapse({ ra, dec }) {
       <TimeLapse id="spot" manifest={manifest} />
       <p className="hint">
         {manifest.frames.length} of {manifest.searched} SPHEREx images here were taken at a similar wavelength (±2 %).
-        Something that shifts between dates is only a <strong>candidate moving object</strong>, and something that
-        changes brightness only a <strong>candidate variable</strong>, until it is checked against other data.
+        Something that shifts between dates is only a <strong className="candidate">candidate moving object</strong>, and something that
+        changes brightness only a <strong className="candidate">candidate variable</strong>, until it is checked against other data.
       </p>
     </>
   )

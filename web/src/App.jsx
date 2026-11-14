@@ -54,6 +54,18 @@ const SPHEREX_SURVEY = 'https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_
 const SPHEREX_SLICE = 30
 const SPHEREX_MAX_FOV = 15 // degrees: SPHEREx layer appears below this field of view
 
+// Gaia DR3 stars (ESA), through our /api/gaia function. Off by default.
+const GAIA_MAX_FOV = 1 // degrees: only load stars when zoomed in
+const GAIA_EPOCH = 2016.0
+const SHOW_EPOCH = 2026.0 // middle of the SPHEREx images we show
+function moveToEpoch([ra, dec, pmra, pmdec]) {
+  if (pmra == null || pmdec == null) return [ra, dec]
+  const dt = SHOW_EPOCH - GAIA_EPOCH
+  const ddec = (pmdec * dt) / 3.6e6
+  const dra = (pmra * dt) / 3.6e6 / Math.cos((dec * Math.PI) / 180)
+  return [ra + dra, dec + ddec]
+}
+
 // Name -> coordinates with the CDS Sesame resolver (SIMBAD, NED, VizieR).
 async function resolveName(name) {
   const r = await fetch(`https://cds.unistra.fr/cgi-bin/nph-sesame/-oxp/SNV?${encodeURIComponent(name)}`)
@@ -102,6 +114,9 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('')
   const [skyLayer, setSkyLayer] = useState('base')
+  const [gaiaOn, setGaiaOn] = useState(false)
+  const [gaiaStatus, setGaiaStatus] = useState('')
+  const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
   const [scrolledDown, setScrolledDown] = useState(false)
   const isPhone = () => window.matchMedia('(max-width: 760px)').matches
@@ -173,12 +188,56 @@ export default function App() {
         }
       }
       updateLayers(aladin.getFov()[0])
-      aladin.on('zoomChanged', (fov) => updateLayers(Array.isArray(fov) ? fov[0] : fov))
+      // Aladin keeps one callback per event, so every zoom reaction goes here.
+      aladin.on('zoomChanged', (fov) => {
+        updateLayers(Array.isArray(fov) ? fov[0] : fov)
+        if (gaiaRef.current.on) gaiaRef.current.refresh()
+      })
 
       const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#ff7a3d', sourceSize: 24 })
       aladin.addCatalog(markers)
       markerLayerRef.current = markers
       if (start) markers.addSources([A.source(start.ra, start.dec)])
+
+      // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
+      const gaiaCat = A.catalog({ name: 'Gaia DR3 stars (moved to 2026.0)', shape: 'circle', color: '#e6e8eb', sourceSize: 12 })
+      aladin.addCatalog(gaiaCat)
+      let gaiaTimer = null
+      let gaiaSeq = 0
+      const refreshGaia = () => {
+        clearTimeout(gaiaTimer)
+        gaiaTimer = setTimeout(async () => {
+          gaiaCat.removeAll()
+          if (!gaiaRef.current.on) return setGaiaStatus('')
+          const fov = aladin.getFov()[0]
+          if (fov > GAIA_MAX_FOV) return setGaiaStatus('zoom in to load')
+          const [ra, dec] = aladin.getRaDec()
+          const seq = ++gaiaSeq
+          setGaiaStatus('loading…')
+          try {
+            const ctrl = new AbortController()
+            const t = setTimeout(() => ctrl.abort(), 12000) // never hang the page
+            const r = await fetch(`/api/gaia?ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}&r=${Math.min(fov * 0.75, 0.5).toFixed(3)}`, {
+              signal: ctrl.signal,
+            })
+            clearTimeout(t)
+            if (!r.ok) throw new Error(r.status)
+            const data = await r.json()
+            if (seq !== gaiaSeq || !gaiaRef.current.on) return
+            gaiaCat.addSources(
+              data.stars.map((s) => {
+                const [sra, sdec] = moveToEpoch(s)
+                return A.source(sra, sdec, { G: s[4], pmra: s[2], pmdec: s[3] })
+              }),
+            )
+            setGaiaStatus(`${data.count} stars`)
+          } catch {
+            if (seq === gaiaSeq) setGaiaStatus('Gaia archive not answering, try later')
+          }
+        }, 700)
+      }
+      gaiaRef.current.refresh = refreshGaia
+      aladin.on('positionChanged', () => gaiaRef.current.on && refreshGaia())
 
       // A link with only ?object=<id> (e.g. the QR code) flies straight to that object.
       const linkedId = new URLSearchParams(window.location.search).get('object')
@@ -244,7 +303,9 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-name">SkyShift</span>
+          <span className="brand-name">
+            Sky<span className="shift">Shift</span>
+          </span>
           <span className="brand-tag">see the sky move</span>
         </div>
         <form
@@ -279,6 +340,18 @@ export default function App() {
       <main className="stage">
         <div className="map-wrap">
           <div ref={mapRef} className="map" />
+          <label className="gaia-toggle">
+            <input
+              type="checkbox"
+              checked={gaiaOn}
+              onChange={(e) => {
+                setGaiaOn(e.target.checked)
+                gaiaRef.current.on = e.target.checked
+                gaiaRef.current.refresh()
+              }}
+            />
+            Gaia DR3 stars (ESA){gaiaOn && gaiaStatus ? ` · ${gaiaStatus}` : ''}
+          </label>
           <span className="sky-layer">
             {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
           </span>
@@ -321,6 +394,11 @@ export default function App() {
             </>
           )}
           {status && <p className="status">{status}</p>}
+          <p className="credits">
+            Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0
+            with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS).
+            Team SkyShift Murcia · NASA Space Apps Challenge 2026.
+          </p>
         </aside>
       </main>
     </div>

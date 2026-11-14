@@ -10,6 +10,29 @@ import { BrightnessChart, PositionChart } from './Charts.jsx'
 const DATA_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 const VIEW_SIZE = 340 // px on screen
 
+// "Report a candidate": opens a pre-filled GitHub Issue. No personal data is collected by SkyShift;
+// the discussion happens in the Issue comments and the team moderates it.
+const ISSUES_URL = 'https://github.com/teoaguiilar/skyshift/issues/new'
+function reportUrl(manifest, frame) {
+  const g = manifest.grid
+  const first = manifest.frames[0].date
+  const last = manifest.frames[manifest.frames.length - 1].date
+  const body = [
+    `**Where:** RA ${g.center_ra_deg.toFixed(5)}°, Dec ${g.center_dec_deg.toFixed(5)}° (${manifest.name})`,
+    `**SPHEREx data:** band ${manifest.band}, about ${Number(manifest.wavelength_um).toFixed(2)} µm, ${manifest.frames.length} images from ${first} to ${last}`,
+    `**Image I was looking at:** ${frame.date}`,
+    `**Link:** ${window.location.href}`,
+    '',
+    '**What do you see?** (something that moves between dates, or changes brightness)',
+    '',
+    '**Evidence:** (which dates/images show it; did you check Gaia DR3, SIMBAD or another catalogue?)',
+    '',
+    '_Please do not include personal data. A candidate is not a discovery until it is checked._',
+  ].join('\n')
+  const q = new URLSearchParams({ title: `Candidate near RA ${g.center_ra_deg.toFixed(3)}, Dec ${g.center_dec_deg.toFixed(3)}`, body })
+  return `${ISSUES_URL}?${q.toString()}`
+}
+
 // Frames from data/ have a file name; frames built in the browser carry their own image (src).
 const srcOf = (f, id) => f.src ?? `${DATA_BASE}/${id}/${f.file}`
 
@@ -212,6 +235,11 @@ export default function TimeLapse({ id, manifest: given, kind }) {
         {manifest.frames.length} images from {first} to {last}. Each square is one SPHEREx pixel (6.15″).
       </p>
       <p className="credit">{manifest.data_credit}</p>
+
+      <a className="report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
+        Report a candidate ↗
+      </a>
+      <p className="hint small">Opens a pre-filled public report on GitHub (free account needed). The team reviews every report.</p>
     </div>
   )
 }
