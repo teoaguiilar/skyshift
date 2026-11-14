@@ -24,3 +24,5 @@ Every AI tool we use, what for and in which parts. Images and videos generated w
 | 2026-11-14 | Claude (Anthropic) | Pedro | Object cards: web component, JSON template and instructions. Card texts and numbers are written by the science team with sources | web/src/ObjectCard.jsx, science/cards/ |
 | 2026-11-14 | Claude (Anthropic) | Teo | Writing the plots against time (one point per visit with error bar; ideas from Juan) | pipeline/plot_time.py, data/<object>/motion.png, data/<object>/lightcurve.png |
 | 2026-11-14 | Claude (Anthropic) | Pedro | Web spectrum panel reading data/*/spectrum.json | web/src/SpectrumPanel.jsx, SpectrumChart in web/src/Charts.jsx |
+| 2026-11-14 | Claude (Anthropic) | Pedro | Web: Gaia DR3 layer and its bridge (ESA Gaia Archive TAP, positions moved to 2026.0 with proper motion); "Report a candidate" button (pre-filled GitHub Issue); brand-manual colours and favicon | web/api/gaia.js and web app code |
+| 2026-11-14 | Claude (Anthropic) | Antonio | Drafting the one-page brand guide (colours taken from the existing web, SVG logo draft used for the favicon) | Brand guide, favicon |
