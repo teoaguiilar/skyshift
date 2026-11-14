@@ -63,3 +63,4 @@ Every AI tool we use, what for and in which parts. Images and videos generated w
 | 2026-11-15 | Claude (Anthropic) | Pedro | Web: "Bands" tab with per-detector stacks summed in the browser and motion per detector (idea of Benjamín, data by Teo). Reviewed by the team | web/src/Bands.jsx |
 | 2026-11-15 | Claude (Anthropic) | Pedro | Web: black sky instead of grey during the "Watch it move" close-up (sky images hidden below map resolution). Reviewed by the team | Web app code |
 | 2026-11-15 | Claude (Anthropic) | Pedro | Web: Spanish translation of the guided-tour notes; guided-tour thumbnails preloaded during the welcome screen. Reviewed by the team | Web app code |
+| 2026-11-15 | Claude (Anthropic) | Pedro | Web: time-lapse and Parallax animation no longer start on their own; pause button for "Watch it move" and the Parallax animation; WISE 0855 opens in false colour (thumbnail and first view), idea of Benjamín. Reviewed by the team | Web app code |
