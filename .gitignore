@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SkyShift: never commit raw SPHEREx files or caches
+*.fits
+*.fits.gz
+cache/
+raw/
+.DS_Store
+.env
