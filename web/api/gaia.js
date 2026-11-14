@@ -7,8 +7,10 @@
  *
  *   GET /api/gaia?ra=269.452&dec=4.693&r=0.2      (r = radius in degrees, max 0.5)
  *   Brightest 500 stars with G < 16.
- *   -> JSON { ra, dec, r, epoch: 2016.0, count, stars: [[ra, dec, pmra, pmdec, g], ...] }
- *      pmra/pmdec in mas/yr (pmra includes cos(dec)), g = Gaia G magnitude.
+ *   -> JSON { ra, dec, r, epoch: 2016.0, count,
+ *             stars: [[ra, dec, pmra, pmdec, g, bp_rp, parallax, designation], ...] }
+ *      pmra/pmdec in mas/yr (pmra includes cos(dec)), g = Gaia G magnitude, bp_rp = BP-RP colour (mag),
+ *      parallax in mas, designation = "Gaia DR3 <source_id>" (a string: source_id does not fit in a JS number).
  *      Positions are at the Gaia DR3 epoch (2016.0); the web moves them to the
  *      SPHEREx epoch using the proper motion.
  *
@@ -35,7 +37,7 @@ export default async function handler(req, res) {
   }
 
   const adql =
-    `SELECT TOP ${MAX_STARS} ra, dec, pmra, pmdec, phot_g_mean_mag ` +
+    `SELECT TOP ${MAX_STARS} ra, dec, pmra, pmdec, phot_g_mean_mag, bp_rp, parallax, designation ` +
     `FROM gaiadr3.gaia_source ` +
     `WHERE 1 = CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', ${ra.toFixed(6)}, ${dec.toFixed(6)}, ${r.toFixed(4)})) ` +
     `AND phot_g_mean_mag < ${MAX_G} ` +
@@ -48,7 +50,9 @@ export default async function handler(req, res) {
     const r2 = await fetch(url, { signal: ctrl.signal })
     if (!r2.ok) return fail(res, 502, `Gaia archive answered ${r2.status}`)
     const json = await r2.json()
-    const stars = (json.data || []).map((row) => row.map((v) => (v === null ? null : Number(v))))
+    const stars = (json.data || []).map((row) =>
+      row.map((v, i) => (v === null ? null : i === 7 ? String(v) : Number(v))),
+    )
     res.setHeader('Cache-Control', 'public, s-maxage=86400')
     res.status(200).json({ ra, dec, r, epoch: 2016.0, count: stars.length, stars })
   } catch (e) {

@@ -11,6 +11,7 @@ import Intro, { Logo } from './Intro.jsx'
 import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
 import { parseCoords } from './coords.js'
+import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -140,6 +141,7 @@ export default function App() {
   const scienceTutSeen = useRef(false)
   const cooHub = useRef({ cursor: () => {}, view: () => {} }).current // feeds the Science coordinate bar
   const [gaiaStatus, setGaiaStatus] = useState('')
+  const [gaiaStar, setGaiaStar] = useState(null) // Gaia star clicked on the map
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
   const [scrolledDown, setScrolledDown] = useState(false)
@@ -168,6 +170,7 @@ export default function App() {
   function setMode(next, { tutorial: withTutorial = true } = {}) {
     setModeState(next)
     writeMode(next)
+    if (next === 'explore') setGaiaStar(null)
     if (next === 'explore' && gaiaRef.current.on) {
       // Gaia is a Science layer: switch it off in Explore.
       setGaiaOn(false)
@@ -268,15 +271,23 @@ export default function App() {
       if (start) markers.addSources([A.source(start.ra, start.dec)])
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
-      const gaiaCat = A.catalog({ name: 'Gaia DR3 stars G<16 (moved to 2026.0)', shape: 'circle', color: 'rgba(230,232,235,0.7)', sourceSize: 10 })
-      aladin.addCatalog(gaiaCat)
+      // One layer per colour bin (BP-RP), plus one for stars without a measured colour.
+      const gaiaCats = [...GAIA_BINS.map((b) => b.color), GAIA_NO_COLOUR].map((color, i) => {
+        const cat = A.catalog({ name: `Gaia DR3 G<16, moved to 2026.0 (${i})`, shape: 'circle', color, sourceSize: 10 })
+        aladin.addCatalog(cat)
+        return cat
+      })
+      const gaiaCat = { removeAll: () => gaiaCats.forEach((c) => c.removeAll()) }
       let gaiaTimer = null
       let gaiaSeq = 0
       const refreshGaia = () => {
         clearTimeout(gaiaTimer)
         gaiaTimer = setTimeout(async () => {
           gaiaCat.removeAll()
-          if (!gaiaRef.current.on) return setGaiaStatus('')
+          if (!gaiaRef.current.on) {
+            setGaiaStar(null)
+            return setGaiaStatus('')
+          }
           const fov = aladin.getFov()[0]
           if (fov > GAIA_MAX_FOV) return setGaiaStatus('zoom in to load')
           const [ra, dec] = aladin.getRaDec()
@@ -292,12 +303,14 @@ export default function App() {
             if (!r.ok) throw new Error(r.status)
             const data = await r.json()
             if (seq !== gaiaSeq || !gaiaRef.current.on) return
-            gaiaCat.addSources(
-              data.stars.map((s) => {
-                const [sra, sdec] = moveToEpoch(s)
-                return A.source(sra, sdec, { G: s[4], pmra: s[2], pmdec: s[3] })
-              }),
-            )
+            const byBin = gaiaCats.map(() => [])
+            data.stars.forEach((s) => {
+              const [sra, sdec] = moveToEpoch(s)
+              const bin = binFor(s[5])
+              const star = { G: s[4], pmra: s[2], pmdec: s[3], bp_rp: s[5], parallax: s[6], designation: s[7] }
+              byBin[bin < 0 ? gaiaCats.length - 1 : bin].push(A.source(sra, sdec, star))
+            })
+            byBin.forEach((list, i) => list.length && gaiaCats[i].addSources(list))
             setGaiaStatus(`${data.count} stars, G < 16`)
           } catch {
             if (seq === gaiaSeq) setGaiaStatus('Gaia archive not answering, try later')
@@ -310,6 +323,10 @@ export default function App() {
         if (gaiaRef.current.on) refreshGaia()
       })
       aladin.on('mouseMove', (d) => cooHub.cursor(d))
+      // Click on a Gaia star: show its card (name, colour, parallax, motion).
+      aladin.on('objectClicked', (obj) => {
+        if (obj?.data?.designation) setGaiaStar(obj.data)
+      })
 
       // A link with only ?object=<id> (e.g. the QR code) flies straight to that object.
       const linkedId = new URLSearchParams(window.location.search).get('object')
@@ -424,7 +441,8 @@ export default function App() {
           <div ref={mapRef} className="map" onMouseLeave={() => cooHub.cursor(null)} />
           {science && <CooBar aladinRef={aladinRef} hub={cooHub} />}
           {science && (
-          <label className="gaia-toggle">
+          <div className="gaia-toggle">
+          <label>
             <input
               type="checkbox"
               checked={gaiaOn}
@@ -436,7 +454,21 @@ export default function App() {
             />
             Gaia DR3 stars (ESA){gaiaOn && gaiaStatus ? ` · ${gaiaStatus}` : ''}
           </label>
+            {gaiaOn && (
+              <span className="gaia-legend">
+                <span className="muted">colour BP−RP:</span>
+                {GAIA_BINS.map((b) => (
+                  <span key={b.label}>
+                    <i style={{ borderColor: b.color }} />
+                    {b.label}
+                  </span>
+                ))}
+                <span className="muted">hotter → cooler · click a star</span>
+              </span>
+            )}
+          </div>
           )}
+          {science && gaiaStar && <GaiaStar star={gaiaStar} onClose={() => setGaiaStar(null)} />}
           <span className="sky-layer">
             {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
           </span>

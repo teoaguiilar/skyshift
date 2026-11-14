@@ -44,7 +44,7 @@ export const SCIENCE_STEPS = [
   {
     target: '.gaia-toggle',
     title: 'Gaia DR3 stars (ESA)',
-    text: 'Draws Gaia DR3 stars brighter than G = 16 on the map, moved from 2016 to 2026 with their own motion. Zoom in below 1° to load them.',
+    text: 'Draws Gaia DR3 stars brighter than G = 16 on the map, moved from 2016 to 2026 with their own motion. Zoom in below 1° to load them. Each circle is coloured by the star’s measured colour (BP−RP): bluer stars are hotter, redder ones cooler (dust also makes stars look redder). Click a star to see its Gaia DR3 name, its other name in SIMBAD if it has one, and its measurements.',
   },
   {
     target: '.coo-bar',
