@@ -207,3 +207,16 @@
   .intro-lead { font-size: 15px; }
   .tut-card { left: 12px !important; right: 12px; width: auto !important; top: auto !important; bottom: 12px; transform: none !important; }
 }
+
+/* "Click anywhere": detector and field-of-view pickers */
+.spot-pickers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.spot-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; }
+.spot-label { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.spot-pickers .hint.small { margin: 0; }
+
+/* False-colour view: legend (these swatches show the false colours themselves) */
+.fc-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-family: var(--mono); font-size: 12px; }
+.fc-key { display: inline-block; width: 10px; height: 10px; margin-right: 8px; vertical-align: -1px; }
+.fc-key.red { background: #ff3030; }
+.fc-key.green { background: #30d040; }
+.fc-key.blue { background: #3060ff; }

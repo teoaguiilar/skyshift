@@ -2,7 +2,8 @@
  * SkyShift — SPHEREx time-lapse player for one object (or for any clicked spot).
  * Code written with help from Claude (Anthropic), reviewed by the SkyShift Murcia team. See AI_USAGE.md.
  * Reads, from the public GitHub repo (pipeline by Teo, texts by the science team):
- *   data/<id>/manifest.json + PNG frames, data/<id>/difference.json, data/<card>/spectrum.json,
+ *   data/<id>/manifest.json + PNG frames, data/<id>/difference.json, data/<id>/false_color.json,
+ *   data/<card>/spectrum.json,
  *   science/cards/<card>.json.
  * Every number shown comes from those files; nothing is typed in by hand here.
  */
@@ -67,9 +68,10 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   const [playing, setPlaying] = useState(true)
   const [showExpected, setShowExpected] = useState(false)
   const [difference, setDifference] = useState(null)
+  const [falseColor, setFalseColor] = useState(null)
   const [spectrum, setSpectrum] = useState(null)
   const [card, setCard] = useState(null)
-  const [mode, setMode] = useState('frames') // 'frames' | 'difference'
+  const [mode, setMode] = useState('frames') // 'frames' | 'difference' | 'false'
   const [tab, setTab] = useState(null) // info tab under the player
   const timer = useRef(null)
 
@@ -97,6 +99,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   // Extras made by the pipeline and the science team (each one optional).
   useEffect(() => {
     setDifference(null)
+    setFalseColor(null)
     setSpectrum(null)
     setCard(null)
     setMode('frames')
@@ -104,9 +107,15 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     if (given || !id) return
     const c = cardId ?? id
     getJson(`${DATA_BASE}/${id}/difference.json`).then(setDifference)
+    getJson(`${DATA_BASE}/${id}/false_color.json`).then(setFalseColor)
     if (!hideSpectrum) getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
     getJson(`${CARDS_BASE}/${c}.json`).then(setCard)
   }, [id, given, cardId, hideSpectrum])
+
+  // False colour is a Science view: back to the frames when switching to Explore.
+  useEffect(() => {
+    if (!science) setMode((m) => (m === 'false' ? 'frames' : m))
+  }, [science])
 
   useEffect(() => {
     clearInterval(timer.current)
@@ -148,18 +157,44 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
         )}
       </div>
 
-      {difference && (
+      {(difference || (science && falseColor)) && (
         <div className="seg" role="tablist">
           <button className={mode === 'frames' ? 'on' : ''} onClick={() => setMode('frames')}>
             Frames
           </button>
-          <button className={mode === 'difference' ? 'on' : ''} onClick={() => setMode('difference')}>
-            Difference
-          </button>
+          {difference && (
+            <button className={mode === 'difference' ? 'on' : ''} onClick={() => setMode('difference')}>
+              Difference
+            </button>
+          )}
+          {science && falseColor && (
+            <button className={mode === 'false' ? 'on' : ''} onClick={() => setMode('false')}>
+              False colour
+            </button>
+          )}
         </div>
       )}
 
-      {mode === 'difference' && difference ? (
+      {mode === 'false' && science && falseColor ? (
+        <>
+          <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
+            <img src={`${DATA_BASE}/${id}/${falseColor.file}`} alt={`${manifest.name}: SPHEREx infrared in false colour`} />
+            <span className="tl-compass">N ↑ · E ←</span>
+          </div>
+          <ul className="fc-legend">
+            {falseColor.legend.map((l) => (
+              <li key={l.colour}>
+                <span className={`fc-key ${l.colour}`} />
+                {l.colour[0].toUpperCase() + l.colour.slice(1)} = {l.wavelengths_used_um[0].toFixed(2)}–
+                {l.wavelengths_used_um[1].toFixed(2)} µm ({l.detector}) <span className="muted">· {l.images} images</span>
+              </li>
+            ))}
+          </ul>
+          <p className="hint">
+            One visit: {falseColor.visit.from} → {falseColor.visit.to}. {falseColor.note}
+          </p>
+        </>
+      ) : mode === 'difference' && difference ? (
         <>
           <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
             <img src={`${DATA_BASE}/${id}/${difference.file}`} alt={`${manifest.name}: last SPHEREx visit minus the first one`} />

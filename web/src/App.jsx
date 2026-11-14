@@ -110,8 +110,11 @@ const tutorialFor = (mode) =>
 
 function writeUrl(ra, dec, fov, objectId) {
   const p = new URLSearchParams()
+  const old = new URLSearchParams(window.location.search)
   if (readMode() === 'science') p.set('mode', 'science')
   if (objectId) p.set('object', objectId)
+  // Detector and field size chosen for "click anywhere" (set by SpotLapse) stay in the link.
+  ;['band', 'size'].forEach((k) => old.has(k) && p.set(k, old.get(k)))
   p.set('ra', ra.toFixed(5))
   p.set('dec', dec.toFixed(5))
   p.set('fov', fov.toFixed(3))

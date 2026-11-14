@@ -11,7 +11,24 @@
  */
 
 const PIXEL_SCALE_ARCSEC = 6.15
-const GRID = 35 // pixels per side (same as the pipeline)
+// Field of view the user can choose (arcmin per side). The grid is that many SPHEREx pixels, odd so
+// the clicked point is the centre pixel. The cutout asked to IRSA is sqrt(2) larger, so a rotated
+// SPHEREx image still covers the corners of the north-up grid.
+export const SIZES_ARCMIN = [2, 4, 8]
+export const DEFAULT_SIZE_ARCMIN = 4
+export const BANDS = [
+  // Design wavelength range of each detector: SPHEREx mission paper, arXiv:2404.11017, Table 2 (rounded).
+  { id: 'D1', range: '0.75–1.1 µm' },
+  { id: 'D2', range: '1.1–1.6 µm' },
+  { id: 'D3', range: '1.6–2.4 µm' },
+  { id: 'D4', range: '2.4–3.8 µm' },
+  { id: 'D5', range: '3.8–4.4 µm' },
+  { id: 'D6', range: '4.4–5.0 µm' },
+]
+const gridFor = (arcmin) => {
+  const n = Math.round((arcmin * 60) / PIXEL_SCALE_ARCSEC)
+  return n % 2 ? n : n + 1
+}
 const WAVE_TOL = 0.02
 const MAX_FRAMES = 30
 const ENOUGH_FRAMES = 6 // stop early once this many similar-wavelength images span two epochs
@@ -113,30 +130,45 @@ function skyToTangent(ra, dec, ra0, dec0) {
   return [x / DEG * 3600, y / DEG * 3600]
 }
 
-// Resample one image onto the common grid (north up, east left), bilinear.
-// Locally (35 px) the full TAN+SIP mapping is replaced by its tangent-plane Jacobian,
-// computed exactly at the pixel nearest the target; the error is far below 0.01 px.
-function resample(img, ra0, dec0) {
-  const { h, nx, ny, data } = img
-  const cx = (nx + 1) / 2
-  const cy = (ny + 1) / 2
-  const p0 = skyToTangent(...pixToSky(h, cx, cy), ra0, dec0)
-  const px = skyToTangent(...pixToSky(h, cx + 1, cy), ra0, dec0)
-  const py = skyToTangent(...pixToSky(h, cx, cy + 1), ra0, dec0)
+// Linear map around one image pixel (1-based): tangent-plane position and its inverse Jacobian.
+function localMap(h, x, y, ra0, dec0) {
+  const p0 = skyToTangent(...pixToSky(h, x, y), ra0, dec0)
+  const px = skyToTangent(...pixToSky(h, x + 1, y), ra0, dec0)
+  const py = skyToTangent(...pixToSky(h, x, y + 1), ra0, dec0)
   const m = [px[0] - p0[0], py[0] - p0[0], px[1] - p0[1], py[1] - p0[1]] // d(tangent)/d(pixel)
   const det = m[0] * m[3] - m[1] * m[2]
-  const inv = [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det]
+  return { x, y, p0, inv: [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det] }
+}
+const applyMap = (L, east, north) => {
+  const dx = east - L.p0[0]
+  const dy = north - L.p0[1]
+  return [L.x + L.inv[0] * dx + L.inv[1] * dy, L.y + L.inv[2] * dx + L.inv[3] * dy] // 1-based
+}
+
+// Resample one image onto the common grid (north up, east left), bilinear.
+// The full TAN+SIP mapping is replaced, block by block (8x8 grid pixels), by its exact
+// tangent-plane Jacobian at the image pixel under the block centre. Within a block the
+// distortion error is far below 0.01 px, whatever the field of view.
+const BLOCK = 8
+function resample(img, ra0, dec0, GRID) {
+  const { h, nx, ny, data } = img
+  const centre = localMap(h, (nx + 1) / 2, (ny + 1) / 2, ra0, dec0)
 
   const out = new Float32Array(GRID * GRID).fill(NaN)
   const half = (GRID - 1) / 2
-  for (let j = 0; j < GRID; j++) {
-    for (let i = 0; i < GRID; i++) {
-      const east = (half - i) * PIXEL_SCALE_ARCSEC // east is left
-      const north = (half - j) * PIXEL_SCALE_ARCSEC // north is up
-      const dx = east - p0[0]
-      const dy = north - p0[1]
-      const x = cx + inv[0] * dx + inv[1] * dy - 1 // 0-based
-      const y = cy + inv[2] * dx + inv[3] * dy - 1
+  const gridEast = (i) => (half - i) * PIXEL_SCALE_ARCSEC // east is left
+  const gridNorth = (j) => (half - j) * PIXEL_SCALE_ARCSEC // north is up
+  for (let bj = 0; bj < GRID; bj += BLOCK) {
+    for (let bi = 0; bi < GRID; bi += BLOCK) {
+      const ci = Math.min(bi + BLOCK / 2, GRID - 1)
+      const cj = Math.min(bj + BLOCK / 2, GRID - 1)
+      const [gx, gy] = applyMap(centre, gridEast(ci), gridNorth(cj))
+      const L = localMap(h, Math.round(gx), Math.round(gy), ra0, dec0)
+      for (let j = bj; j < Math.min(bj + BLOCK, GRID); j++) {
+        for (let i = bi; i < Math.min(bi + BLOCK, GRID); i++) {
+      const [x1, y1] = applyMap(L, gridEast(i), gridNorth(j))
+      const x = x1 - 1 // 0-based
+      const y = y1 - 1
       const x0 = Math.floor(x)
       const y0 = Math.floor(y)
       if (x0 < 0 || y0 < 0 || x0 + 1 >= nx || y0 + 1 >= ny) continue
@@ -147,6 +179,8 @@ function resample(img, ra0, dec0) {
       const v01 = data[(y0 + 1) * nx + x0]
       const v11 = data[(y0 + 1) * nx + x0 + 1]
       out[j * GRID + i] = (v00 * (1 - fx) + v10 * fx) * (1 - fy) + (v01 * (1 - fx) + v11 * fx) * fy
+        }
+      }
     }
   }
   return out
@@ -166,7 +200,7 @@ function makeStretch(images) {
   return (v) => (Number.isFinite(v) ? Math.asinh(Math.min(Math.max((v - lo) / span, 0), 1) / soft) / norm : null)
 }
 
-function toPng(values, stretch) {
+function toPng(values, stretch, GRID) {
   const canvas = document.createElement('canvas')
   canvas.width = GRID
   canvas.height = GRID
@@ -230,9 +264,13 @@ function spread(list, n) {
   return Array.from({ length: n }, (_, k) => list[Math.round((k * (list.length - 1)) / (n - 1))])
 }
 
-export async function loadSpot(ra, dec, { band = 'D2', onProgress = () => {}, signal } = {}) {
+export async function loadSpot(ra, dec, { band = 'D2', sizeArcmin = DEFAULT_SIZE_ARCMIN, onProgress = () => {}, signal } = {}) {
+  const GRID = gridFor(sizeArcmin)
+  const cutoutDeg = Math.min(0.2, ((GRID * PIXEL_SCALE_ARCSEC) / 3600) * Math.SQRT2 + 0.003)
   onProgress({ step: 'search' })
-  const search = await (await fetchWithRetry(`/api/irsa?ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}&band=${band}`)).json()
+  const search = await (
+    await fetchWithRetry(`/api/irsa?ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}&band=${band}&size=${cutoutDeg.toFixed(4)}`)
+  ).json()
   const wanted = interleave(spread(search.frames, MAX_FRAMES))
   if (wanted.length === 0) return { empty: true }
 
@@ -263,13 +301,14 @@ export async function loadSpot(ra, dec, { band = 'D2', onProgress = () => {}, si
   if (!best || best.days < 2) return { empty: true, downloaded: got.length }
 
   const chosen = best.members.sort((a, b) => a.meta.mjd - b.meta.mjd)
-  const grids = chosen.map((g) => resample(g.img, ra, dec))
+  const grids = chosen.map((g) => resample(g.img, ra, dec, GRID))
   const stretch = makeStretch(grids)
 
   return {
     object: 'spot',
     name: `RA ${ra.toFixed(4)}°, Dec ${dec.toFixed(4)}°`,
     band,
+    size_arcmin: sizeArcmin,
     wavelength_um: best.center,
     wavelength_tolerance: WAVE_TOL,
     grid: { center_ra_deg: ra, center_dec_deg: dec, pixel_scale_arcsec: PIXEL_SCALE_ARCSEC, width: GRID, height: GRID, png_upscale: 1 },
@@ -279,7 +318,7 @@ export async function loadSpot(ra, dec, { band = 'D2', onProgress = () => {}, si
     frames: chosen.map((g, k) => {
       const names = flagNames(g.flags)
       return {
-        src: toPng(grids[k], stretch),
+        src: toPng(grids[k], stretch, GRID),
         date: g.meta.date,
         mjd: g.meta.mjd,
         wavelength_um: g.wave,

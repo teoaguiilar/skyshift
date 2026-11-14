@@ -25,7 +25,7 @@ export const EXPLORE_STEPS = [
   {
     target: '.panel',
     title: 'Time-lapse',
-    text: 'Here the same small patch of sky plays date by date. “Difference” shows the last visit minus the first one. Seen something odd? “Report a candidate” opens a public report.',
+    text: 'Here the same small patch of sky plays date by date. For a spot you clicked, choose the SPHEREx detector (D1 to D6, shorter to longer infrared) and the size of the field. “Difference” shows the last visit minus the first one. Seen something odd? “Report a candidate” opens a public report.',
   },
   {
     target: '.mode-switch',
