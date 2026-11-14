@@ -33,8 +33,8 @@ export default function SpotLapse({ ra, dec }) {
     return (
       <p className="hint">
         {progress.step === 'search'
-          ? 'Searching the SPHEREx archive at this spot…'
-          : `Downloading SPHEREx images… ${progress.done}/${progress.total}`}
+          ? 'Searching the SPHEREx archive at this spot… this can take about 20 seconds.'
+          : `Downloading SPHEREx images… ${progress.done}/${progress.total} (about half a minute)`}
       </p>
     )
   }

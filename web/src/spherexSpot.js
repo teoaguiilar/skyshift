@@ -181,7 +181,7 @@ function toPng(values, stretch) {
   return canvas.toDataURL('image/png')
 }
 
-async function fetchWithRetry(url, tries = 4) {
+async function fetchWithRetry(url, tries = 2) { // the bridge already retries IRSA itself
   for (let t = 1; ; t++) {
     try {
       const r = await fetch(url)
