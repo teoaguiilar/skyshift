@@ -71,6 +71,39 @@ function tourObjectFor(text) {
 }
 
 const DEFAULT_FOV = 0.5 // degrees
+
+// Coordinates typed in the search box that fall on a guided-tour object open its full panel, as its name
+// does. Fast-moving stars are matched anywhere along their path from the year-2000 catalogue position to
+// today's position (Barnard's Star has moved about 4.5′ since 2000). Positions: target of each manifest.
+const TOUR_MATCH_ARCMIN = 1
+let tourTargets = null
+const loadTourTargets = () =>
+  (tourTargets ??= Promise.all(
+    TOUR.map((o) =>
+      fetch(`${REPO_DATA}/${o.id}/manifest.json`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((m) => (m?.target ? { id: o.id, ...m.target } : null))
+        .catch(() => null),
+    ),
+  ).then((list) => list.filter(Boolean)))
+function tourObjectAt(ra, dec, targets) {
+  const year = new Date().getFullYear() + new Date().getMonth() / 12
+  let best = null
+  for (const tg of targets) {
+    const cosd = Math.cos((tg.dec_j2000_deg * Math.PI) / 180)
+    // Offsets in arcmin on the sky, from the year-2000 position.
+    const x = (((ra - tg.ra_j2000_deg + 540) % 360) - 180) * cosd * 60
+    const y = (dec - tg.dec_j2000_deg) * 60
+    const dt = year - 2000
+    const px = (((tg.pmra_mas_yr ?? 0) * dt) / 3.6e6) * 60
+    const py = (((tg.pmdec_mas_yr ?? 0) * dt) / 3.6e6) * 60
+    const len2 = px * px + py * py
+    const k = len2 > 0 ? Math.max(0, Math.min(1, (x * px + y * py) / len2)) : 0
+    const d = Math.hypot(x - k * px, y - k * py)
+    if (d <= TOUR_MATCH_ARCMIN && (!best || d < best.d)) best = { id: tg.id, ra: tg.ra_j2000_deg, dec: tg.dec_j2000_deg, d }
+  }
+  return best
+}
 // "Start here" suggestions in the empty panel (one line each, checked by the science team).
 const START_HERE = [
   { id: 'barnard', text: 'The star with the largest proper motion across our sky.' },
@@ -625,8 +658,12 @@ export default function App() {
     if (!aladin || !text.trim()) return
     const coords = parseCoords(text)
     if (coords) {
-      flyTo(coords.ra, coords.dec)
       setStatus('')
+      loadTourTargets().then((targets) => {
+        const hit = tourObjectAt(coords.ra, coords.dec, targets)
+        if (hit) flyTo(hit.ra, hit.dec, DEFAULT_FOV, hit.id)
+        else flyTo(coords.ra, coords.dec)
+      })
       return
     }
     // Typing the name of a guided-tour object opens its full panel (time-lapse, charts, card), not just the spot.
