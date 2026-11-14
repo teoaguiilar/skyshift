@@ -1,0 +1,40 @@
+{
+  "object": "eps-indi-b",
+  "name": "eps Ind B",
+  "file": "false_color.png",
+  "visit": {
+    "from": "2026-09-22",
+    "to": "2026-09-28"
+  },
+  "legend": [
+    {
+      "colour": "red",
+      "detector": "D6",
+      "images": 36,
+      "wavelengths_used_um": [
+        4.408,
+        5.011
+      ]
+    },
+    {
+      "colour": "green",
+      "detector": "D3",
+      "images": 36,
+      "wavelengths_used_um": [
+        1.619,
+        2.42
+      ]
+    },
+    {
+      "colour": "blue",
+      "detector": "D1",
+      "images": 5,
+      "wavelengths_used_um": [
+        0.87,
+        1.067
+      ]
+    }
+  ],
+  "note": "False colours: infrared light is invisible to the eye, so each colour stands for a range of infrared wavelengths (red = longest, blue = shortest). These are not the object's real colours.",
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}

@@ -1,0 +1,40 @@
+{
+  "object": "barnard",
+  "name": "Barnard's Star",
+  "file": "false_color.png",
+  "visit": {
+    "from": "2026-03-11",
+    "to": "2026-05-05"
+  },
+  "legend": [
+    {
+      "colour": "red",
+      "detector": "D6",
+      "images": 24,
+      "wavelengths_used_um": [
+        4.412,
+        5.002
+      ]
+    },
+    {
+      "colour": "green",
+      "detector": "D3",
+      "images": 24,
+      "wavelengths_used_um": [
+        1.625,
+        2.411
+      ]
+    },
+    {
+      "colour": "blue",
+      "detector": "D1",
+      "images": 18,
+      "wavelengths_used_um": [
+        0.745,
+        1.092
+      ]
+    }
+  ],
+  "note": "False colours: infrared light is invisible to the eye, so each colour stands for a range of infrared wavelengths (red = longest, blue = shortest). These are not the object's real colours.",
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA)"
+}
