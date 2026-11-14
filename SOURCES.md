@@ -9,6 +9,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | NASA Space Apps Challenge 2026: "Planet X and SPHEREx" | Challenge description and resources | https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/ | — |
 | Aladin Lite v3 by CDS, Université de Strasbourg | Interactive sky map in the web app | https://aladin.cds.unistra.fr | LGPL-3.0-or-later. Aladin logo and link kept intact, as its terms ask |
 | SPHEREx DR1 all-sky HiPS (NASA), served by NASA/IPAC IRSA | Infrared background map of the sky in the web app | https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube | See acknowledgements below |
+| AllWISE colour HiPS (NASA WISE; NASA/JPL-Caltech/UCLA), ESA HiPS mirror | Fast base map for navigating the sky | https://skies.esac.esa.int/AllWISEColor | Data: NASA WISE/NEOWISE. Mirror: ESA ESDC |
 | CDS Sesame name resolver | Turns object names into coordinates | https://cds.unistra.fr/cgi-bin/Sesame | Service of CDS, Université de Strasbourg |
 | IRSA tutorial "SPHEREx cutouts" (Caltech/IPAC) | Basis of the data pipeline (query and cutouts) | https://caltech-ipac.github.io/irsa-tutorials/spherex-cutouts | BSD-3-Clause, Copyright (c) 2022-2026, California Institute of Technology |
 | SPHEREx Explanatory Supplement (IRSA/Caltech-IPAC), Table 16 | Meaning of the FLAGS quality bits | https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp_QR.pdf | Public documentation |
