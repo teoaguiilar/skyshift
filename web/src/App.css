@@ -478,3 +478,10 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 /* "Watch it move" close-up: sky images hidden (smaller than one map pixel) -> black sky, not grey */
 .map.sky-hidden { background: #000; }
 .map.sky-hidden .aladin-imageCanvas { opacity: 0; }
+
+/* "Watch it move": pause button next to the close button */
+.sim-label .sim-pause { position: absolute; top: 4px; right: 30px; font-size: 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  padding: 2px 8px; color: var(--text); }
+.sim-label { padding-right: 96px; }
+@media (max-width: 760px) { .sim-label .sim-pause { top: 8px; right: 40px; } .sim-label { padding-right: 110px; } }
+.plx .tl-controls { margin: 4px 0 8px; }

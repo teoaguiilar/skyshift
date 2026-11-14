@@ -108,11 +108,11 @@ export function ShareButton() {
   )
 }
 
-export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate, hideReport = false, objectName, onFrameChange, requestMjd }) {
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, startFalseColor = false, science = false, onSimulate, hideReport = false, objectName, onFrameChange, requestMjd }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(false) // never starts on its own: press Play
   const [showExpected, setShowExpected] = useState(false)
   const [difference, setDifference] = useState(null)
   const [falseColor, setFalseColor] = useState(null)
@@ -131,7 +131,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     setManifest(null)
     setError(false)
     setIndex(0)
-    setPlaying(true)
+    setPlaying(false)
     if (given) {
       setManifest({ ...given, frames: [...given.frames].sort((a, b) => a.mjd - b.mjd) })
       return
@@ -163,7 +163,10 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
     getJson(`${DATA_BASE}/${id}/difference.json`).then(setDifference)
     // Bands tab (Science): only if the file exists and looks right.
     getJson(`${DATA_BASE}/${id}/bands.json`).then((b) => setBands(b?.grid?.width && b.visits?.length ? b : null))
-    getJson(`${DATA_BASE}/${id}/false_color.json`).then(setFalseColor)
+    getJson(`${DATA_BASE}/${id}/false_color.json`).then((fc) => {
+      setFalseColor(fc)
+      if (fc && startFalseColor) setMode('false') // e.g. WISE 0855: the view that shows at a glance that it works
+    })
     if (!hideSpectrum) {
       getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
       getJson(`${DATA_BASE}/${c}/spectrum_filtered.json`).then(setSpectrumFiltered)
@@ -177,8 +180,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
 
   // False colour is a Science view: back to the frames when switching to Explore.
   useEffect(() => {
-    if (!science) setMode((m) => (m === 'false' ? 'frames' : m))
-  }, [science])
+    if (!science && !startFalseColor) setMode((m) => (m === 'false' ? 'frames' : m))
+  }, [science, startFalseColor])
 
   useEffect(() => {
     clearInterval(timer.current)
@@ -303,7 +306,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
         </div>
       )}
 
-      {(difference || (science && falseColor)) && (
+      {(difference || ((science || startFalseColor) && falseColor)) && (
         <div className="seg" role="tablist">
           <button className={mode === 'frames' ? 'on' : ''} onClick={() => setMode('frames')}>
             {tr('Frames')}
@@ -313,7 +316,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
               {tr('Difference')}
             </button>
           )}
-          {science && falseColor && (
+          {(science || startFalseColor) && falseColor && (
             <button className={mode === 'false' ? 'on' : ''} onClick={() => setMode('false')}>
               {tr('False colour')}
             </button>
@@ -321,7 +324,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
         </div>
       )}
 
-      {mode === 'false' && science && falseColor ? (
+      {mode === 'false' && (science || startFalseColor) && falseColor ? (
         <>
           <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
             <img src={`${DATA_BASE}/${id}/${falseColor.file}`} alt={`${manifest.name}: SPHEREx infrared in false colour`} />

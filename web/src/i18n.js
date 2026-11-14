@@ -319,6 +319,7 @@ const ES = {
   'grey = single images (outside the range: cut off)': 'gris = imágenes sueltas (las que se salen del rango, cortadas)',
   'Spectrum, filtered: only {a}–{b} µm (SPHEREx)': 'Espectro filtrado: solo {a}–{b} µm (SPHEREx)',
   'Spectrum view': 'Vista del espectro',
+  'Time of the year': 'Momento del año',
   'Too faint in single images: SkyShift stacks all SPHEREx images of each visit to reveal it.': 'Demasiado débil en las imágenes sueltas: SkyShift suma todas las imágenes de SPHEREx de cada visita para que se vea.',
   'R Draconis is so bright that it saturates SPHEREx in every image, so its brightness changes cannot be measured with this method.': 'R Draconis es tan brillante que satura SPHEREx en todas las imágenes, así que con este método no se pueden medir sus cambios de brillo.',
   'Only 3.8–5 µm is shown: at shorter wavelengths the star saturates SPHEREx.': 'Solo se muestra de 3,8 a 5 µm: en longitudes de onda más cortas la estrella satura SPHEREx.',

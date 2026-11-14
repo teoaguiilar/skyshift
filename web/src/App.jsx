@@ -37,6 +37,9 @@ const TOUR = [
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
     note: 'Too faint in single images: SkyShift stacks all SPHEREx images of each visit to reveal it.',
+    // Main image in false colour: the red brown dwarf next to the blue background star (idea of Benjamín).
+    startFalseColor: true,
+    thumb: 'false_color.png',
   },
   { id: 'rw-aurigae', label: 'RW Aurigae', query: 'RW Aur', kind: 'varies' },
   {
@@ -116,7 +119,7 @@ const START_HERE = [
 ]
 // Thumbnails for the guided tour: the first real SPHEREx image of each object (from the pipeline, on GitHub).
 const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
-const thumbOf = (t) => `${REPO_DATA}/${t.id}/${t.id.endsWith('-stacked') ? 'visit_01.png' : 'frame_001.png'}`
+const thumbOf = (t) => `${REPO_DATA}/${t.id}/${t.thumb ?? (t.id.endsWith('-stacked') ? 'visit_01.png' : 'frame_001.png')}`
 // Load the guided-tour thumbnails as soon as the page opens (during the welcome screen), so they are
 // ready, not empty boxes, when the map appears.
 for (const o of TOUR) new Image().src = thumbOf(o)
@@ -257,6 +260,11 @@ export default function App() {
   // ---- "Watch it move": the star's path over years, from its catalogue proper motion (simulation).
   const simRef = useRef({ marker: null, trail: null, raf: 0 })
   const [simLabel, setSimLabel] = useState(null)
+  const [simPaused, setSimPaused] = useState(false)
+  const toggleSimPause = () => {
+    simRef.current.paused = !simRef.current.paused
+    setSimPaused(simRef.current.paused)
+  }
   // During the 2-year close-up the view is far smaller than one map pixel, so the sky images would only
   // show big grey blocks: hide them (black sky) and show them again afterwards.
   function setSkyHidden(hidden) {
@@ -276,6 +284,9 @@ export default function App() {
     cancelAnimationFrame(sim.raf)
     clearTimeout(sim.raf)
     setSkyHidden(false)
+    sim.paused = false
+    sim.pausedAt = null
+    setSimPaused(false)
     sim.marker?.removeAll()
     sim.trail?.removeAll()
     setSimLabel(null)
@@ -315,9 +326,19 @@ export default function App() {
       const fov = Math.max(extent * 2.2, 0.1 / 3600) // Aladin cannot zoom below about 0.1″
       const run = () => {
         sim.trail.removeAll()
-        const t0 = performance.now()
+        let t0 = performance.now()
         let lastDot = -1
         const frame = (now) => {
+          // Paused: keep the clock still (the start time moves forward with the pause).
+          if (sim.paused) {
+            sim.pausedAt ??= now
+            sim.raf = requestAnimationFrame(frame)
+            return
+          }
+          if (sim.pausedAt != null) {
+            t0 += now - sim.pausedAt
+            sim.pausedAt = null
+          }
           const f = Math.min(Math.max(0, now - t0) / duration, 1)
           const year = y0 + (y1 - y0) * f
           const [ra, dec] = at(year)
@@ -330,7 +351,10 @@ export default function App() {
           }
           setSimLabel({ ...label, name, year, view: fmtAngle(fov * 3600) })
           if (f < 1) sim.raf = requestAnimationFrame(frame)
-          else if (next) sim.raf = setTimeout(next, 1500)
+          else if (next) {
+            const go = () => (sim.paused ? (sim.raf = setTimeout(go, 300)) : next())
+            sim.raf = setTimeout(go, 1500)
+          }
         }
         sim.raf = requestAnimationFrame(frame)
       }
@@ -842,6 +866,9 @@ export default function App() {
                   Δα·cosδ = μα*·Δt + ϖ(X sinα − Y cosα) · Δδ = μδ·Δt + ϖ(X cosα sinδ + Y sinα sinδ − Z cosδ)
                 </code>
               )}
+              <button className="sim-pause" onClick={toggleSimPause}>
+                {simPaused ? t('Play') : t('Pause')}
+              </button>
               <button onClick={clearSim} aria-label={t('Close the simulation')}>
                 ×
               </button>
@@ -876,6 +903,7 @@ export default function App() {
                     note={t?.note}
                     hideSpectrum={t?.hideSpectrum}
                     spectrumNote={t?.spectrumNote}
+                    startFalseColor={t?.startFalseColor}
                     science={science}
                     objectName={t?.label}
                     onFrameChange={setPlayer}

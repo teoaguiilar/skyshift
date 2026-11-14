@@ -106,6 +106,7 @@ function Plot({ pts, dot, unit, title }) {
 
 export default function Parallax({ target, cardId, card, name, science }) {
   const [t, setT] = useState(0) // animation phase 0..1
+  const [playing, setPlaying] = useState(false) // never starts on its own: press Play
   const fromCard = cardId === 'rw-aurigae' ? plxFromCard(card) : null
   const ok = target && Number.isFinite(target.parallax_mas) && Number.isFinite(target.pmra_mas_yr) && (cardId !== 'rw-aurigae' || fromCard)
   const ra = target?.ra_j2000_deg
@@ -113,16 +114,18 @@ export default function Parallax({ target, cardId, card, name, science }) {
   const plx = fromCard ? fromCard.plx : target?.parallax_mas
 
   useEffect(() => {
-    if (!ok || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!ok || !playing) return
     let raf = 0
-    const t0 = performance.now()
+    let last = performance.now()
     const tick = (now) => {
-      setT(Math.max(0, (now - t0) / 8000) % 1) // one loop every 8 seconds (rAF time can start before t0)
+      const dt = Math.max(0, now - last)
+      last = now
+      setT((v) => (v + dt / 8000) % 1) // one loop every 8 seconds, from where it was paused
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [ok])
+  }, [ok, playing])
 
   // One year of parallax only (mas), during 2026.
   const ellipse = useMemo(
@@ -157,6 +160,23 @@ export default function Parallax({ target, cardId, card, name, science }) {
           { name },
         )}
       </p>
+      <div className="tl-controls">
+        <button className="btn tl-play" onClick={() => setPlaying((p) => !p)}>
+          {playing ? tr('Pause') : tr('Play')}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="0.999"
+          step="0.001"
+          value={t}
+          onChange={(e) => {
+            setPlaying(false)
+            setT(Number(e.target.value))
+          }}
+          aria-label={tr('Time of the year')}
+        />
+      </div>
       <Plot
         pts={ellipse}
         dot={dotE}
