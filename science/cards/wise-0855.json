@@ -3,7 +3,7 @@
   "name": "WISE 0855-0714",
   "type": "Brown dwarf (spectral class Y), the coldest known",
   "summary": "WISE 0855-0714 is a brown dwarf: a ball of gas too small to burn like a star. It is the coldest one known, colder than a home freezer, and one of our closest neighbours. It gives off almost no visible light, so it can only be seen in infrared images.",
-  "why_interesting": "It is so faint that it barely shows up in a single SPHEREx image. Adding up the images of each visit makes it appear, and then you can watch it move across the sky in a few months.",
+  "why_interesting": "It shines almost only in infrared, which makes it a perfect target for SPHEREx. It is so faint that it barely shows up in a single SPHEREx image. Adding up the images of each visit makes it appear, and then you can watch it move across the sky in a few months.",
   "facts": [
     {
       "label": "Distance",
@@ -28,6 +28,14 @@
       "compare": "Colder than a home freezer, and much colder than any star. Estimated by fitting models to its light.",
       "source": "Zapatero Osorio et al. (2016), A&A 592, A80",
       "source_url": "https://doi.org/10.1051/0004-6361/201628662"
+    },
+    {
+      "label": "Infrared brightness (4.0–5.0 µm)",
+      "value": "535 ± 27",
+      "unit": "µJy (measured by SkyShift with SPHEREx)",
+      "compare": "14 % above the clean NEOWISE W2 value (about 469 µJy, Wright & Foley 2025). The extra light comes from the background star next to it. The older AllWISE value is not used because the 2010 WISE images are contaminated by that source.",
+      "source": "SkyShift (SPHEREx, detectors D5 and D6); Wright & Foley (2025)",
+      "source_url": "https://arxiv.org/abs/2505.12105"
     },
     {
       "label": "Mass",
@@ -69,6 +77,11 @@
       "title": "Near-infrared photometry of WISE J085510.74-071442.5",
       "authors": "Zapatero Osorio et al. (2016), A&A 592, A80",
       "url": "https://doi.org/10.1051/0004-6361/201628662"
+    },
+    {
+      "title": "Flux and Color of WISE 0855-0714",
+      "authors": "Wright & Foley (2025), arXiv:2505.12105",
+      "url": "https://arxiv.org/abs/2505.12105"
     }
   ],
   "written_by": "Juan",

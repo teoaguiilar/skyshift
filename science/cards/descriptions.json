@@ -9,8 +9,8 @@
     "science": "The ε Indi system at 12.0 ly (parallax 270.66 mas; Feng et al. 2019) contains the star ε Indi A and a pair of T dwarfs, Ba (T1–1.5) and Bb (T6), first resolved by McCaughrean et al. (2004). Dynamical masses from about 10 years of VLT orbit monitoring: 66.92 ± 0.36 and 53.25 ± 0.29 MJup; system age about 3.5 Gyr (Chen et al. 2022). Model temperatures: 1,300–1,385 K (Ba) and 880–1,011 K (Bb) (King et al. 2010). SPHEREx pixels (6.15″) blend Ba and Bb into one source; its proper motion is 4.68″/yr (SIMBAD)."
   },
   "wise-0855": {
-    "explore": "WISE 0855-0714 is a lonely brown dwarf, with no star around it, about 7.4 light-years away. It is the coldest one known, colder than a home freezer, and it gives off almost no visible light. In a single SPHEREx image it is almost invisible; adding up the images of each visit makes it appear.",
-    "science": "Isolated Y-class brown dwarf at 7.43 ly (parallax 439.0 ± 2.4 mas; Kirkpatrick et al. 2021), the fourth-closest known system to the Sun. Teff 225–250 K and mass 2–10 MJup for an assumed age of 1–12 Gyr (Zapatero Osorio et al. 2016); model radius 1.17 RJup (Beamín et al. 2014). Proper motion 8.15″/yr. In SPHEREx detector D6 it is detected only by stacking the images of each visit (S/N 17.7); between November 2025 and April 2026 it moved about 3.1″ west (3.6″ predicted, parallax included). Below 3 µm its SPHEREx spectrum is contaminated by a hot background star next to it."
+    "explore": "WISE 0855-0714 is a lonely brown dwarf, with no star around it, about 7.4 light-years away. It is the coldest one known, colder than a home freezer, and it gives off almost no visible light: it shines in infrared, which is why SPHEREx can see it. In a single SPHEREx image it is almost invisible; adding up the images of each visit makes it appear. A star in the background sits right next to it, so SkyShift also shows it in false colour and keeps only the long wavelengths, where the brown dwarf shines.",
+    "science": "Isolated Y-class brown dwarf at 7.43 ly (parallax 439.0 ± 2.4 mas; Kirkpatrick et al. 2021), the fourth-closest known system to the Sun. Teff 225–250 K and mass 2–10 MJup for an assumed age of 1–12 Gyr (Zapatero Osorio et al. 2016); model radius 1.17 RJup (Beamín et al. 2014). Proper motion 8.15″/yr. In SPHEREx detector D6 it is detected only by stacking the images of each visit (S/N 17.7); between November 2025 and April 2026 it moved about 3.1″ west (3.6″ predicted, parallax included). Below 3 µm its SPHEREx spectrum is contaminated by a hot background star next to it. Infrared brightness: SPHEREx gives 535 ± 27 µJy between 4.0 and 5.0 µm (67 images, detectors D5 and D6), 14 % above the uncontaminated NEOWISE W2 value (13.91 mag, about 469 µJy; Wright & Foley 2025). The excess is consistent with light from the stationary background source next to it, which Wright & Foley also report in the 2010 WISE images; for that reason we do not use the older AllWISE value (W2 = 14.016 mag, 425 ± 19 µJy)."
   },
   "rw-aurigae": {
     "explore": "RW Aurigae is a very young system, only about 3 million years old, some 600 light-years away. Its main star has a companion and is surrounded by a disc of gas and dust. Its brightness changes: spots on the spinning star come in and out of view, and sometimes dust blocks its light for months.",
@@ -31,6 +31,13 @@
       "title": "The deep eclipses of RW Aur revisited by long-term photometric and spectroscopic monitoring",
       "url": "https://arxiv.org/abs/2312.17598",
       "status": "reviewed"
+    },
+    {
+      "object": "wise-0855",
+      "use": "Uncontaminated W2 magnitude (13.91) and the stationary background source",
+      "title": "Flux and Color of WISE 0855-0714",
+      "url": "https://arxiv.org/abs/2505.12105",
+      "status": "provided by Benjamín"
     }
   ]
 }
