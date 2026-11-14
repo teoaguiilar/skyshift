@@ -217,7 +217,10 @@ export default function App() {
     clearSim()
     const fov = fovOverride ?? aladin.getFov()[0]
     markerLayerRef.current.removeAll()
-    markerLayerRef.current.addSources([A.source(ra, dec)])
+    // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
+    // star is no longer there (Barnard's Star is about 4.5′ further north today). Say so next to the circle.
+    const moves = TOUR.find((t) => t.id === objectId)?.kind === 'moves'
+    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? 'Catalogue position in 2000: the star has moved since' : '' })])
     writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
     setActiveId(objectId)
@@ -327,10 +330,22 @@ export default function App() {
       simRef.current.marker = A.catalog({ name: 'Simulated position', shape: 'circle', color: '#f5c451', sourceSize: 14 })
       aladin.addCatalog(simRef.current.trail)
       aladin.addCatalog(simRef.current.marker)
-      const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#7fd8ff', sourceSize: 24 })
+      const markers = A.catalog({
+        name: 'Selected spot',
+        shape: 'circle',
+        color: '#7fd8ff',
+        sourceSize: 24,
+        displayLabel: true,
+        labelColumn: 'label',
+        labelColor: '#7fd8ff',
+        labelFont: '13px Archivo, system-ui, sans-serif',
+      })
       aladin.addCatalog(markers)
       markerLayerRef.current = markers
-      if (start) markers.addSources([A.source(start.ra, start.dec)])
+      if (start) {
+        const startMoves = TOUR.find((t) => t.id === new URLSearchParams(window.location.search).get('object'))?.kind === 'moves'
+        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? 'Catalogue position in 2000: the star has moved since' : '' })])
+      }
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
       // One layer per colour bin (BP-RP), plus one for stars without a measured colour.

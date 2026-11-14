@@ -141,8 +141,15 @@ export function PositionChart({ frames, currentMjd }) {
       yLabel={`Shift towards the ${dir} (arcsec)`}
       legend={
         <>
-          <i className="dot" /> measured by SkyShift (SPHEREx), mean per visit ± standard error; grey = single images{' '}
-          <i className="dash" /> expected from catalogue motion
+          <span className="legend-row">
+            <i className="dot" /> Measured by SkyShift (SPHEREx): mean per visit ± standard error
+          </span>
+          <span className="legend-row">
+            <i className="dot grey" /> Single SPHEREx images
+          </span>
+          <span className="legend-row">
+            <i className="dash" /> Expected from the catalogue motion
+          </span>
         </>
       }
     />
@@ -161,8 +168,13 @@ export function BrightnessChart({ frames, currentMjd }) {
       yLabel="Relative brightness (SPHEREx)"
       legend={
         <>
-          <i className="dot" /> mean per visit ± standard error; grey = single images. Changes much larger than the bars
-          make it a candidate variable until checked
+          <span className="legend-row">
+            <i className="dot" /> Mean per visit ± standard error
+          </span>
+          <span className="legend-row">
+            <i className="dot grey" /> Single SPHEREx images
+          </span>
+          <span className="legend-row muted">Changes much larger than the bars make it a candidate variable until checked.</span>
         </>
       }
     />

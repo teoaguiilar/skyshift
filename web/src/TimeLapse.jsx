@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { BrightnessChart, PositionChart, SpectrumChart, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
+import UpClose, { hasUpClose } from './UpClose.jsx'
 import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
@@ -169,6 +170,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   if (science && spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
   // Description for the current mode (falls back to the other one if only one is written).
   const description = descriptions ? (science ? descriptions.science || descriptions.explore : descriptions.explore || descriptions.science) : null
+  if (!given && hasUpClose(cardId ?? id)) tabs.push({ key: 'upclose', label: 'Up close' })
   if (card || description) tabs.push({ key: 'about', label: 'About' })
   const activeTab = tabs.find((t) => t.key === tab)?.key ?? tabs[0]?.key
 
@@ -377,6 +379,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'spectrum' && <SpectrumChart spectrum={spectrum} note={spectrumNote} />}
+          {activeTab === 'upclose' && <UpClose cardId={cardId ?? id} card={card} name={manifest.name} />}
           {activeTab === 'about' && <ObjectCard card={card} description={description} science={science} />}
         </div>
       )}
