@@ -27,6 +27,21 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | ESA (1997), The Hipparcos and Tycho Catalogues, Vol. 1, Sect. 1.5.3 | ICRS to Galactic rotation matrix (galactic coordinates in the web) | https://www.cosmos.esa.int/web/hipparcos/catalogues | Cited (standard constants) |
 | Michroma font, by Vernon Adams | Brand typography | https://fonts.google.com/specimen/Michroma | SIL Open Font License 1.1, served from Google Fonts |
 | Archivo font, by Omnibus-Type | Brand typography | https://fonts.google.com/specimen/Archivo | SIL Open Font License 1.1, served from Google Fonts |
+| Byrne et al. (2026), "The Barnard's Star planetary system: stability, composition, and evolution of four sub-Earth exoplanets", MNRAS 550 | Barnard's Star object card | https://academic.oup.com/mnras/article/550/2/stag1207/8715836 | Scientific paper, cited |
+| McCaughrean et al. (2004), "Epsilon Indi Ba/Bb: the nearest binary brown dwarf", A&A | Epsilon Indi B object card (discovery of the pair) | https://arxiv.org/abs/astro-ph/0309256 | Scientific paper, cited |
+| King et al. (2010), "Epsilon Indi Ba, Bb: a detailed study of the nearest known brown dwarfs", A&A | Epsilon Indi B object card (temperatures) | https://doi.org/10.1051/0004-6361/200912981 | Scientific paper, cited |
+| Chen et al. (2022), "Precise Dynamical Masses of Epsilon Indi Ba and Bb: Evidence of Slowed Cooling at the L/T Transition", AJ | Epsilon Indi B object card (masses and age) | https://doi.org/10.3847/1538-3881/ac66d2 | Scientific paper, cited |
+| Feng et al. (2019), via SIMBAD | Epsilon Indi B object card | https://uhra.herts.ac.uk/id/eprint/8145/1/stz2912.pdf | Scientific paper, cited |
+| Luhman (2014), "Discovery of a ~250 K Brown Dwarf at 2 pc from the Sun", ApJL 786, L18 | WISE 0855 object card | https://doi.org/10.1088/2041-8205/786/2/L18 | Scientific paper, cited |
+| Beamín et al. (2014), "Temperature constraints on the coldest brown dwarf known: WISE 0855-0714", A&A 570, L8 | WISE 0855 object card | https://doi.org/10.1051/0004-6361/201424505 | Scientific paper, cited |
+| Zapatero Osorio et al. (2016), "Near-infrared photometry of WISE J085510.74-071442.5", A&A 592, A80 | WISE 0855 object card | https://doi.org/10.1051/0004-6361/201628662 | Scientific paper, cited |
+| Kirkpatrick et al. (2021), "The Field Substellar Mass Function Based on the Full-sky 20 pc Census of 525 L, T, and Y Dwarfs", ApJS 253, 7, via SIMBAD | WISE 0855 object card | https://doi.org/10.3847/1538-4365/abd107 | Scientific paper, cited |
+| Kreplin et al. (2016), "Resolving the inner disk of UX Orionis", A&A | UX Orionis object card | https://doi.org/10.1051/0004-6361/201628281 | Scientific paper, cited |
+| 2023 study of RW Aurigae, Astronomische Nachrichten | RW Aurigae object card | https://doi.org/10.1002/asna.20230118 | Scientific paper, cited |
+| Bailer-Jones et al. (2021), "Estimating distances from parallaxes. V", AJ 161, 147, as cited in the 2023 RW Aurigae study | RW Aurigae object card (distance) | https://doi.org/10.3847/1538-3881/abd806 | Scientific paper, cited |
+| "The deep eclipses of RW Aur revisited by long-term photometric and spectroscopic monitoring" (arXiv:2312.17598) | RW Aurigae description (dimmings since 2010) | https://arxiv.org/abs/2312.17598 | Scientific paper, cited |
+| Tanner Helland (2012), "How to Convert Temperature (K) to RGB" | Approximate colour of each object from its temperature (blackbody to RGB) in the "Up close" tab | https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html | Algorithm described publicly; reimplemented in our own code |
+| WiseView (Caselden et al. 2018, ASCL 1806.004) | Inspiration and comparison table in the README | https://ascl.net/1806.004 | Cited |
 
 ## Acknowledgements
 
