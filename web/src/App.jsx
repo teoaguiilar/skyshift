@@ -117,6 +117,9 @@ const START_HERE = [
 // Thumbnails for the guided tour: the first real SPHEREx image of each object (from the pipeline, on GitHub).
 const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 const thumbOf = (t) => `${REPO_DATA}/${t.id}/${t.id.endsWith('-stacked') ? 'visit_01.png' : 'frame_001.png'}`
+// Load the guided-tour thumbnails as soon as the page opens (during the welcome screen), so they are
+// ready, not empty boxes, when the map appears.
+for (const o of TOUR) new Image().src = thumbOf(o)
 
 // Fast base map for smooth navigation: AllWISE colour infrared sky (NASA WISE data),
 // served from ESA's HiPS mirror, which answers about 4x faster than IRSA from Europe.
@@ -768,7 +771,7 @@ export default function App() {
             aria-pressed={activeId === t.id}
             onClick={() => goTo(t.query, t.id)}
           >
-            <img src={thumbOf(t)} alt="" loading="lazy" />
+            <img src={thumbOf(t)} alt="" decoding="async" />
             <span className="tour-text">
               <span>{t.label}</span>
               <span className={`tag ${t.kind}`}>{t.kind === 'moves' ? tr('Moves') : tr('Changes brightness')}</span>

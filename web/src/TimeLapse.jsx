@@ -475,7 +475,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
         </>
       )}
 
-      {note && <p className="note">{note}</p>}
+      {note && <p className="note">{tr(note)}</p>}
 
 
       {tabs.length > 0 && (
@@ -489,7 +489,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
           {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
           {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
-          {activeTab === 'spectrum' && <FilteredSpectrum spectrum={spectrum} filtered={spectrumFiltered} note={spectrumNote} />}
+          {activeTab === 'spectrum' && <FilteredSpectrum spectrum={spectrum} filtered={spectrumFiltered} note={spectrumNote && tr(spectrumNote)} />}
           {activeTab === 'bands' && <Bands key={id} bands={bands} />}
           {activeTab === 'parallax' && (
             <Parallax target={manifest.target} cardId={cardId ?? id} card={card} name={objectName ?? manifest.name} science={science} />
