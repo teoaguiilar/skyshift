@@ -15,6 +15,16 @@ All data comes from the NASA/IPAC Infrared Science Archive (IRSA). The script as
 7. **Check quality.** Decodes the SPHEREx `FLAGS` bits around the target (SPHEREx Explanatory Supplement, Table 16). A frame is marked bad only for flags the Supplement describes as unusable for science.
 8. **Write the output.** `data/<slug>/frame_NNN.png` (each sky pixel enlarged 10×) and `data/<slug>/manifest.json`.
 
+## Faint objects: stacking each visit
+
+SPHEREx passes over each patch of sky in visits about six months apart and takes several images in each visit. `stack_epochs.py` adds together (median) all images of one visit in one detector array, as the challenge suggests, so faint objects stand out from the noise. It reports the signal-to-noise ratio (S/N) of the target in each visit and marks it as detected at S/N 5 or more.
+
+```bash
+python pipeline/stack_epochs.py --name "WISE J085510.83-071442.5" --slug wise-0855-stacked --band D6
+```
+
+WISE 0855, the coldest known brown dwarf, cannot be seen in single SPHEREx images. Stacking the 21 images of each visit in detector D6 (4.4 to 5.0 microns) shows it clearly (S/N about 18 in November 2025 and April 2026), at the position predicted by the catalogue. This is a *candidate detection*.
+
 ## How to run it
 
 ```bash
@@ -39,7 +49,8 @@ Needs Python 3 with `numpy`, `astropy`, `astroquery`, `reproject` and `matplotli
 |---|---|---|---|
 | `barnard` | Barnard's Star | D2 | Challenge test object: fastest-moving star |
 | `eps-indi-b` | Epsilon Indi B | D2 | Challenge test object: nearby brown dwarf pair |
-| `wise-0855` | WISE 0855−0714 | D6 | Challenge test object: coldest known brown dwarf |
+| `wise-0855` | WISE 0855−0714 | D6 | Challenge test object: coldest known brown dwarf (single images, too faint) |
+| `wise-0855-stacked` | WISE 0855−0714 | D6 | Same object, one stacked frame per visit: visible |
 | `rw-aurigae` | RW Aurigae | D2 | Challenge test object: variable star |
 | `r-draconis` | R Draconis | D2 | Challenge test object: variable star |
 | `ux-orionis` | UX Orionis | D2 | Extra variable star chosen by the team |
@@ -48,7 +59,7 @@ Needs Python 3 with `numpy`, `astropy`, `astroquery`, `reproject` and `matplotli
 
 - SPHEREx pixels are about 6 arcseconds wide, so in about a year even Barnard's Star moves only about two pixels. Results are shown as *candidates*, not discoveries.
 - Barnard's Star and R Draconis saturate the detector: their positions are measured from the ring around the core, and no brightness is given.
-- WISE 0855 is too faint to see in single SPHEREx images.
+- WISE 0855 is too faint to see in single SPHEREx images; it shows up only when each visit is stacked, and the first visit (3 images) is not enough.
 - The parallax wobble of nearby stars is not yet included in the predicted positions.
 
 ## Credits
