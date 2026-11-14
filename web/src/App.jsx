@@ -33,7 +33,6 @@ const TOUR = [
   {
     id: 'wise-0855-stacked',
     card: 'wise-0855',
-    hideSpectrum: true, // contaminated below 3 µm, under review by Benjamín
     label: 'WISE 0855−0714',
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
@@ -340,7 +339,7 @@ export default function App() {
     // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
     // star is no longer there (Barnard's Star is about 4.5′ further north today). Say so next to the circle.
     const moves = TOUR.find((t) => t.id === objectId)?.kind === 'moves'
-    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? t('Catalogue position in 2000: the star has moved since') : '' })])
+    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? t('Catalogue position in 2000: the object has moved since') : '' })])
     writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
     setActiveId(objectId)
@@ -468,19 +467,34 @@ export default function App() {
       aladin.addCatalog(dateMarkerRef.current)
       const markers = A.catalog({
         name: 'Selected spot',
-        shape: 'circle',
+        // Circle drawn by hand so its label sits UNDER it: Aladin always writes labels to the right of the
+        // source, where the "Position on <date>" label of the moving object's cross already is.
+        shape: (src, ctx) => {
+          ctx.strokeStyle = '#7fd8ff'
+          ctx.lineWidth = 2
+          ctx.beginPath()
+          ctx.arc(src.x, src.y, 12, 0, 2 * Math.PI)
+          ctx.stroke()
+          const label = src.data?.label
+          if (label) {
+            ctx.font = '13px Archivo, system-ui, sans-serif'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'top'
+            ctx.lineWidth = 3
+            ctx.strokeStyle = 'rgba(7, 11, 24, 0.85)'
+            ctx.strokeText(label, src.x, src.y + 17)
+            ctx.fillStyle = '#7fd8ff'
+            ctx.fillText(label, src.x, src.y + 17)
+          }
+        },
         color: '#7fd8ff',
         sourceSize: 24,
-        displayLabel: true,
-        labelColumn: 'label',
-        labelColor: '#7fd8ff',
-        labelFont: '13px Archivo, system-ui, sans-serif',
       })
       aladin.addCatalog(markers)
       markerLayerRef.current = markers
       if (start) {
         const startMoves = TOUR.find((t) => t.id === new URLSearchParams(window.location.search).get('object'))?.kind === 'moves'
-        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? t('Catalogue position in 2000: the star has moved since') : '' })])
+        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? t('Catalogue position in 2000: the object has moved since') : '' })])
       }
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.

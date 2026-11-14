@@ -233,7 +233,7 @@ export function SpectrumChart({ spectrum, note, filtered = false }) {
 // "Filtering" (WISE 0855): keeps only the long wavelengths, where the cold brown dwarf shines and the
 // hot background star next to it matters less. Data: data/<obj>/spectrum_filtered.json (Teo, idea of Benjamín).
 export function FilteredSpectrum({ spectrum, filtered, note }) {
-  const [on, setOn] = useState(false)
+  const [on, setOn] = useState(true) // the filtered view first: below 3.8 µm a background star contaminates it
   const f = filtered?.filter
   if (!f || !(filtered.binned?.length > 2)) return <SpectrumChart spectrum={spectrum} note={note} />
   const medians = Object.entries(f.median_flux_ujy ?? {})

@@ -71,7 +71,7 @@ const ES = {
   'Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0 with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS). Team SkyShift Murcia · NASA Space Apps Challenge 2026.':
     'Datos: NASA SPHEREx (IRSA) · NASA WISE (copia HiPS de la ESA) · ESA Gaia DR3 (capa opcional, posiciones llevadas a 2026.0 con su movimiento propio) · nombres de objetos: CDS Sesame. Mapa del cielo: Aladin Lite (CDS). Equipo SkyShift Murcia · NASA Space Apps Challenge 2026.',
   'Scientific texts and notes from the team are in English.': 'Los textos científicos y las notas del equipo están en inglés.',
-  'Catalogue position in 2000: the star has moved since': 'Posición de catálogo en 2000: la estrella se ha movido desde entonces',
+  'Catalogue position in 2000: the object has moved since': 'Posición de catálogo en 2000: el objeto se ha movido desde entonces',
   // Simulation label
   Year: 'Año',
   'Close-up, 2 years (view {view} wide): {name} drifts with its proper motion and wobbles once a year by its parallax (±{wobble} mas), because we watch it from the moving Earth.':
