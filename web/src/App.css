@@ -220,3 +220,15 @@
 .fc-key.red { background: #ff3030; }
 .fc-key.green { background: #30d040; }
 .fc-key.blue { background: #3060ff; }
+
+/* Science mode: coordinate readout on the map */
+.coo-bar { position: absolute; top: 10px; left: 10px; z-index: 20; max-width: calc(100% - 250px); display: flex; flex-wrap: wrap; gap: 4px 12px;
+  align-items: center; font-family: var(--mono); font-size: 11px; color: var(--text); background: rgba(7, 8, 10, 0.75);
+  padding: 5px 9px; border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.coo-where { color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; min-width: 46px; }
+.coo-grid { display: flex; gap: 5px; align-items: center; cursor: pointer; }
+.coo-grid input { accent-color: var(--accent); }
+@media (max-width: 760px) {
+  .coo-bar { right: 10px; max-width: none; }
+  .gaia-toggle { top: auto; bottom: 40px; }
+}

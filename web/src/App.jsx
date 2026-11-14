@@ -9,6 +9,7 @@ import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
 import Intro, { Logo } from './Intro.jsx'
 import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
+import CooBar from './CooBar.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -106,7 +107,7 @@ const hasDeepLink = () => {
 
 // Full tutorial for each mode (Science adds its own steps before "Two modes").
 const tutorialFor = (mode) =>
-  mode === 'science' ? [...EXPLORE_STEPS.slice(0, 4), ...SCIENCE_STEPS.slice(0, 2), ...EXPLORE_STEPS.slice(4)] : EXPLORE_STEPS
+  mode === 'science' ? [...EXPLORE_STEPS.slice(0, 4), ...SCIENCE_STEPS.slice(0, 3), ...EXPLORE_STEPS.slice(4)] : EXPLORE_STEPS
 
 function writeUrl(ra, dec, fov, objectId) {
   const p = new URLSearchParams()
@@ -146,6 +147,7 @@ export default function App() {
   const [showIntro, setShowIntro] = useState(() => !hasDeepLink())
   const [tutorial, setTutorial] = useState(null) // list of steps while the tutorial is open
   const scienceTutSeen = useRef(false)
+  const cooHub = useRef({ cursor: () => {}, view: () => {} }).current // feeds the Science coordinate bar
   const [gaiaStatus, setGaiaStatus] = useState('')
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
@@ -265,6 +267,7 @@ export default function App() {
           return
         }
         updateLayers(f)
+        cooHub.view()
         if (gaiaRef.current.on) gaiaRef.current.refresh()
       })
 
@@ -311,7 +314,11 @@ export default function App() {
         }, 700)
       }
       gaiaRef.current.refresh = refreshGaia
-      aladin.on('positionChanged', () => gaiaRef.current.on && refreshGaia())
+      aladin.on('positionChanged', () => {
+        cooHub.view()
+        if (gaiaRef.current.on) refreshGaia()
+      })
+      aladin.on('mouseMove', (d) => cooHub.cursor(d))
 
       // A link with only ?object=<id> (e.g. the QR code) flies straight to that object.
       const linkedId = new URLSearchParams(window.location.search).get('object')
@@ -423,7 +430,8 @@ export default function App() {
 
       <main className="stage">
         <div className="map-wrap">
-          <div ref={mapRef} className="map" />
+          <div ref={mapRef} className="map" onMouseLeave={() => cooHub.cursor(null)} />
+          {science && <CooBar aladinRef={aladinRef} hub={cooHub} />}
           {science && (
           <label className="gaia-toggle">
             <input

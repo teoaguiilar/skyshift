@@ -47,6 +47,11 @@ export const SCIENCE_STEPS = [
     text: 'Draws Gaia DR3 stars brighter than G = 16 on the map, moved from 2016 to 2026 with their own motion. Zoom in below 1° to load them.',
   },
   {
+    target: '.coo-bar',
+    title: 'Coordinates',
+    text: 'Where the mouse points (or the centre of the view, if the mouse is off the map): right ascension and declination in the ICRS frame, in hours and degrees, the same point in galactic coordinates (l, b), and FoV, the size of the view. “Grid” draws the coordinate grid on the sky.',
+  },
+  {
     target: '.panel',
     title: 'Measurements',
     text: 'Under the time-lapse: Motion and Brightness charts (one point per visit, with its error bar; single images in grey), the spectrum, and the wavelength and quality flags of every image. Every number comes from the SPHEREx files.',
