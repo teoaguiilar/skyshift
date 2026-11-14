@@ -1,0 +1,254 @@
+{
+  "object": "ux-orionis",
+  "name": "UX Ori",
+  "target": {
+    "simbad_id": "V* UX Ori",
+    "ra_j2000_deg": 76.12494954085,
+    "dec_j2000_deg": -3.78730187002,
+    "pmra_mas_yr": 1.056,
+    "pmdec_mas_yr": -3.998,
+    "parallax_mas": 3.1004,
+    "source": "SIMBAD via CDS Sesame"
+  },
+  "band": "D2",
+  "wavelength_um": 1.1985,
+  "wavelength_tolerance": 0.02,
+  "grid": {
+    "center_ra_deg": 76.12495715925898,
+    "center_dec_deg": -3.7873306502102486,
+    "pixel_scale_arcsec": 6.15,
+    "width": 35,
+    "height": 35,
+    "png_upscale": 10,
+    "note": "In the PNG files north is up and east is left; each sky pixel is 10x10 PNG pixels"
+  },
+  "data_credit": "NASA SPHEREx via NASA/IPAC Infrared Science Archive (IRSA); target data from SIMBAD (CDS)",
+  "frames": [
+    {
+      "file": "frame_001.png",
+      "date": "2025-08-31",
+      "mjd": 60918.391821,
+      "wavelength_um": 1.1985,
+      "quality_ok": true,
+      "flag_value": 2228226,
+      "flags": [
+        "OVERFLOW",
+        "PERSIST",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495708552716,
+        "dec_deg": -3.7873303716723377
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.787330650210251,
+        "flux_rel": 322.0935259478095,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W35_2A/l2b-v27-2026-231/2/level2_2025W35_2A_0563_4D2_spx_l2b-v27-2026-231.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_002.png",
+      "date": "2025-09-02",
+      "mjd": 60920.836418,
+      "wavelength_um": 1.1959,
+      "quality_ok": true,
+      "flag_value": 270532613,
+      "flags": [
+        "TRANSIENT",
+        "SUR_ERROR",
+        "SOURCE",
+        "HALO"
+      ],
+      "predicted": {
+        "ra_deg": 76.1249570874947,
+        "dec_deg": -3.787330379105222
+      },
+      "measured": {
+        "ra_deg": 76.12564692016345,
+        "dec_deg": -3.7873306499366053,
+        "flux_rel": 291.81311544734814,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W36_1A/l2b-v27-2026-232/2/level2_2025W36_1A_0417_1D2_spx_l2b-v27-2026-232.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_003.png",
+      "date": "2025-09-04",
+      "mjd": 60922.060937,
+      "wavelength_um": 1.1787,
+      "quality_ok": true,
+      "flag_value": 2097154,
+      "flags": [
+        "OVERFLOW",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495708848029,
+        "dec_deg": -3.7873303828284137
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.7879263583258904,
+        "flux_rel": 351.10981814412224,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W36_1A/l2b-v27-2026-232/2/level2_2025W36_1A_0675_3D2_spx_l2b-v27-2026-232.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_004.png",
+      "date": "2025-09-04",
+      "mjd": 60922.329525,
+      "wavelength_um": 1.2065,
+      "quality_ok": true,
+      "flag_value": 270532613,
+      "flags": [
+        "TRANSIENT",
+        "SUR_ERROR",
+        "SOURCE",
+        "HALO"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495708869646,
+        "dec_deg": -3.7873303836450667
+      },
+      "measured": {
+        "ra_deg": 76.12568793078692,
+        "dec_deg": -3.787330649903097,
+        "flux_rel": 317.30864224240406,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W36_1A/l2b-v27-2026-232/2/level2_2025W36_1A_0737_1D2_spx_l2b-v27-2026-232.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_005.png",
+      "date": "2026-02-25",
+      "mjd": 61096.140154,
+      "wavelength_um": 1.1798,
+      "quality_ok": true,
+      "flag_value": 2097154,
+      "flags": [
+        "OVERFLOW",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495722858979,
+        "dec_deg": -3.7873309121224352
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.787330650210251,
+        "flux_rel": 499.4662782913917,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2026W09_1A/l2b-v27-2026-228/2/level2_2026W09_1A_0416_3D2_spx_l2b-v27-2026-228.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_006.png",
+      "date": "2026-03-01",
+      "mjd": 61100.145029,
+      "wavelength_um": 1.2083,
+      "quality_ok": true,
+      "flag_value": 69206019,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495723181317,
+        "dec_deg": -3.7873309242993995
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.787330650210251,
+        "flux_rel": 500.42823379934504,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2026W09_2A/l2b-v27-2026-229/2/level2_2026W09_2A_0490_1D2_spx_l2b-v27-2026-229.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_007.png",
+      "date": "2026-08-31",
+      "mjd": 61283.868564,
+      "wavelength_um": 1.1811,
+      "quality_ok": true,
+      "flag_value": 69206019,
+      "flags": [
+        "TRANSIENT",
+        "OVERFLOW",
+        "SOURCE",
+        "BLOOM"
+      ],
+      "predicted": {
+        "ra_deg": 76.124957379685,
+        "dec_deg": -3.7873314829173106
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.787330650210251,
+        "flux_rel": 421.8918088073791,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W36_1A/l2b-v27-2026-252/2/level2_2026W36_1A_0190_2D2_spx_l2b-v27-2026-252.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_008.png",
+      "date": "2026-09-03",
+      "mjd": 61286.452652,
+      "wavelength_um": 1.2116,
+      "quality_ok": true,
+      "flag_value": 2228226,
+      "flags": [
+        "OVERFLOW",
+        "PERSIST",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495738176484,
+        "dec_deg": -3.7873314907743207
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.7867589820080054,
+        "flux_rel": 312.12001221463834,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W36_1A/l2b-v27-2026-252/2/level2_2026W36_1A_0797_1D2_spx_l2b-v27-2026-252.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    },
+    {
+      "file": "frame_009.png",
+      "date": "2026-09-03",
+      "mjd": 61286.518418,
+      "wavelength_um": 1.2116,
+      "quality_ok": true,
+      "flag_value": 2097154,
+      "flags": [
+        "OVERFLOW",
+        "SOURCE"
+      ],
+      "predicted": {
+        "ra_deg": 76.12495738181777,
+        "dec_deg": -3.7873314909742852
+      },
+      "measured": {
+        "ra_deg": 76.12495715925898,
+        "dec_deg": -3.787330650210251,
+        "flux_rel": 360.10707407212885,
+        "saturated": false
+      },
+      "processing_version": "7.0.5",
+      "source_url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W36_2A/l2b-v27-2026-254/2/level2_2026W36_2A_0005_1D2_spx_l2b-v27-2026-254.fits?center=76.12495715925898,-3.7873306502102486d&size=0.06"
+    }
+  ]
+}
