@@ -12,7 +12,8 @@
  *      SPHEREx epoch using the proper motion.
  *
  * Written with help from Claude (Anthropic), reviewed by the SkyShift Murcia team.
- * See AI_USAGE.md. Data: ESA Gaia DR3 (Gaia Collaboration 2023). License: MIT.
+ * See AI_USAGE.md. Data: ESA Gaia DR3 — Gaia Collaboration (2022), Gaia DR3 v1.1,
+ * doi:10.5270/esa-qa4lep3; open and free to use with credit to "ESA/Gaia/DPAC". Code license: MIT.
  */
 
 const TAP_URL = 'https://gea.esac.esa.int/tap-server/tap/sync'

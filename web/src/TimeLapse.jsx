@@ -1,16 +1,21 @@
 /*
- * SkyShift — SPHEREx time-lapse player for one object.
+ * SkyShift — SPHEREx time-lapse player for one object (or for any clicked spot).
  * Code written with help from Claude (Anthropic), reviewed by the SkyShift Murcia team. See AI_USAGE.md.
- * Reads data/<id>/manifest.json + PNG frames produced by pipeline/fetch_object.py (Teo).
+ * Reads, from the public GitHub repo (pipeline by Teo, texts by the science team):
+ *   data/<id>/manifest.json + PNG frames, data/<id>/difference.json, data/<card>/spectrum.json,
+ *   science/cards/<card>.json.
+ * Every number shown comes from those files; nothing is typed in by hand here.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BrightnessChart, PositionChart } from './Charts.jsx'
+import { BrightnessChart, PositionChart, SpectrumChart, hasBrightness, hasPosition } from './Charts.jsx'
+import ObjectCard from './ObjectCard.jsx'
 
-// Data lives in the public GitHub repo, so new frames appear without redeploying the web.
-const DATA_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
+const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
+const DATA_BASE = `${REPO_RAW}/data`
+const CARDS_BASE = `${REPO_RAW}/science/cards`
 const VIEW_SIZE = 340 // px on screen
 
-// "Report a candidate": opens a pre-filled GitHub Issue. No personal data is collected by SkyShift;
+// "Report a candidate": opens a pre-filled GitHub Issue. SkyShift collects no personal data;
 // the discussion happens in the Issue comments and the team moderates it.
 const ISSUES_URL = 'https://github.com/teoaguiilar/skyshift/issues/new'
 function reportUrl(manifest, frame) {
@@ -47,26 +52,25 @@ function skyToPixel(ra, dec, grid) {
   return { x: w / 2 - dx, y: h / 2 - dy, w, h }
 }
 
-export default function TimeLapse({ id, manifest: given, kind }) {
+const getJson = (url) =>
+  fetch(url, { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null)
+
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [showExpected, setShowExpected] = useState(false)
-  const [difference, setDifference] = useState(null) // data/<id>/difference.json, if the pipeline made one
+  const [difference, setDifference] = useState(null)
+  const [spectrum, setSpectrum] = useState(null)
+  const [card, setCard] = useState(null)
   const [mode, setMode] = useState('frames') // 'frames' | 'difference'
-
-  useEffect(() => {
-    setDifference(null)
-    setMode('frames')
-    if (given || !id) return
-    fetch(`${DATA_BASE}/${id}/difference.json`, { cache: 'no-cache' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setDifference)
-      .catch(() => setDifference(null))
-  }, [id, given])
+  const [tab, setTab] = useState(null) // info tab under the player
   const timer = useRef(null)
 
+  // Main data: the frames.
   useEffect(() => {
     setManifest(null)
     setError(false)
@@ -76,27 +80,38 @@ export default function TimeLapse({ id, manifest: given, kind }) {
       setManifest({ ...given, frames: [...given.frames].sort((a, b) => a.mjd - b.mjd) })
       return
     }
-    fetch(`${DATA_BASE}/${id}/manifest.json`, { cache: 'no-cache' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))))
-      .then((m) => {
-        m.frames.sort((a, b) => a.mjd - b.mjd)
-        // Preload every frame so the animation does not flicker.
-        m.frames.forEach((f) => {
-          const img = new Image()
-          img.src = srcOf(f, id)
-        })
-        setManifest(m)
+    getJson(`${DATA_BASE}/${id}/manifest.json`).then((m) => {
+      if (!m) return setError(true)
+      m.frames.sort((a, b) => a.mjd - b.mjd)
+      m.frames.forEach((f) => {
+        const img = new Image() // preload, so the animation does not flicker
+        img.src = srcOf(f, id)
       })
-      .catch(() => setError(true))
+      setManifest(m)
+    })
   }, [id, given])
+
+  // Extras made by the pipeline and the science team (each one optional).
+  useEffect(() => {
+    setDifference(null)
+    setSpectrum(null)
+    setCard(null)
+    setMode('frames')
+    setTab(null)
+    if (given || !id) return
+    const c = cardId ?? id
+    getJson(`${DATA_BASE}/${id}/difference.json`).then(setDifference)
+    if (!hideSpectrum) getJson(`${DATA_BASE}/${c}/spectrum.json`).then(setSpectrum)
+    getJson(`${CARDS_BASE}/${c}.json`).then(setCard)
+  }, [id, given, cardId, hideSpectrum])
 
   useEffect(() => {
     clearInterval(timer.current)
-    if (playing && manifest && manifest.frames.length > 1) {
+    if (playing && mode === 'frames' && manifest && manifest.frames.length > 1) {
       timer.current = setInterval(() => setIndex((i) => (i + 1) % manifest.frames.length), 700)
     }
     return () => clearInterval(timer.current)
-  }, [playing, manifest])
+  }, [playing, manifest, mode])
 
   const frame = manifest?.frames[index]
   const expected = useMemo(() => {
@@ -109,18 +124,27 @@ export default function TimeLapse({ id, manifest: given, kind }) {
 
   const first = manifest.frames[0].date
   const last = manifest.frames[manifest.frames.length - 1].date
+  const g = manifest.grid
+
+  // Info tabs: only the ones with real data behind them.
+  const tabs = []
+  if (kind === 'moves' && hasPosition(manifest.frames)) tabs.push({ key: 'motion', label: 'Motion' })
+  if (kind === 'varies' && hasBrightness(manifest.frames)) tabs.push({ key: 'brightness', label: 'Brightness' })
+  if (spectrum?.binned?.length > 2) tabs.push({ key: 'spectrum', label: 'Spectrum' })
+  if (card) tabs.push({ key: 'about', label: 'About' })
+  const activeTab = tabs.find((t) => t.key === tab)?.key ?? tabs[0]?.key
 
   return (
     <div className="timelapse">
       <div className="tl-head">
         <span>SPHEREx time-lapse{manifest.stacked ? ' · stacked visits' : ''}</span>
         <span className="tl-band">
-          {manifest.band} · {manifest.wavelength_um.toFixed(2)} µm
+          {manifest.band} · {Number(manifest.wavelength_um).toFixed(2)} µm
         </span>
       </div>
 
       {difference && (
-        <div className="tl-modes" role="tablist">
+        <div className="seg" role="tablist">
           <button className={mode === 'frames' ? 'on' : ''} onClick={() => setMode('frames')}>
             Frames
           </button>
@@ -133,113 +157,119 @@ export default function TimeLapse({ id, manifest: given, kind }) {
       {mode === 'difference' && difference ? (
         <>
           <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
-            <img
-              src={`${DATA_BASE}/${id}/${difference.file}`}
-              alt={`${manifest.name}: last SPHEREx visit minus the first one`}
-            />
-            <svg
-              viewBox={`0 0 ${manifest.grid.width * manifest.grid.png_upscale} ${manifest.grid.height * manifest.grid.png_upscale}`}
-              className="tl-overlay"
-            >
-              {difference.visits.map((v) => {
-                const u = manifest.grid.png_upscale
-                const cx = (v.predicted_pixel.x + 0.5) * u
-                const cy = (manifest.grid.height - (v.predicted_pixel.y + 0.5)) * u
-                return <circle key={v.visit} cx={cx} cy={cy} r="24" className={v.visit === 'first' ? 'diff-first' : 'diff-last'} />
-              })}
+            <img src={`${DATA_BASE}/${id}/${difference.file}`} alt={`${manifest.name}: last SPHEREx visit minus the first one`} />
+            <svg viewBox={`0 0 ${g.width * g.png_upscale} ${g.height * g.png_upscale}`} className="tl-overlay">
+              {difference.visits.map((v) => (
+                <circle
+                  key={v.visit}
+                  cx={(v.predicted_pixel.x + 0.5) * g.png_upscale}
+                  cy={(g.height - (v.predicted_pixel.y + 0.5)) * g.png_upscale}
+                  r="24"
+                  className={v.visit === 'first' ? 'diff-first' : 'diff-last'}
+                />
+              ))}
             </svg>
             <span className="tl-compass">N ↑ · E ←</span>
           </div>
           <p className="hint">
-            <span className="diff-key first" /> {difference.visits[0].date} (first visit) →{' '}
-            <span className="diff-key last" /> {difference.visits[difference.visits.length - 1].date} (last visit). Circles: catalogue position.
+            <span className="diff-key first" /> {difference.visits[0].date} → <span className="diff-key last" />{' '}
+            {difference.visits[difference.visits.length - 1].date}. {difference.how_to_read} Circles: catalogue position.
           </p>
-          <p className="hint">{difference.how_to_read}</p>
         </>
       ) : (
-      <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
-          <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
-          {showExpected && expected && (
-            <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
-              <circle cx={expected.x} cy={expected.y} r="22" />
-              <line x1={expected.x - 40} y1={expected.y} x2={expected.x - 26} y2={expected.y} />
-              <line x1={expected.x + 26} y1={expected.y} x2={expected.x + 40} y2={expected.y} />
-              <line x1={expected.x} y1={expected.y - 40} x2={expected.x} y2={expected.y - 26} />
-              <line x1={expected.x} y1={expected.y + 26} x2={expected.x} y2={expected.y + 40} />
-            </svg>
+        <>
+          <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
+            <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
+            {showExpected && expected && (
+              <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
+                <circle cx={expected.x} cy={expected.y} r="22" />
+              </svg>
+            )}
+            <span className="tl-compass">N ↑ · E ←</span>
+          </div>
+
+          <div className="tl-controls">
+            <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause' : 'Play'}>
+              {playing ? 'Pause' : 'Play'}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max={manifest.frames.length - 1}
+              value={index}
+              onChange={(e) => {
+                setPlaying(false)
+                setIndex(Number(e.target.value))
+              }}
+              aria-label="Observation date"
+            />
+          </div>
+
+          <dl className="coords tl-meta">
+            <dt>Date</dt>
+            <dd>
+              {frame.date} <span className="muted">· {index + 1}/{manifest.frames.length}</span>
+            </dd>
+            <dt>λ</dt>
+            <dd>
+              {frame.wavelength_range_um
+                ? `${frame.wavelength_range_um[0].toFixed(2)}–${frame.wavelength_range_um[1].toFixed(2)} µm`
+                : `${frame.wavelength_um.toFixed(3)} µm`}
+            </dd>
+            {frame.stacked_images && (
+              <>
+                <dt>Stack</dt>
+                <dd>
+                  {frame.stacked_images} images · S/N {frame.snr?.toFixed(1)} ·{' '}
+                  <span className={frame.detected ? '' : 'warn'}>{frame.detected ? 'detected' : 'not detected'}</span>
+                </dd>
+              </>
+            )}
+            <dt>Quality</dt>
+            <dd className={frame.quality_ok ? '' : 'warn'}>
+              {frame.quality_ok ? 'OK' : 'Flagged'}
+              {frame.measured?.saturated ? ' · saturated' : ''}
+              {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
+            </dd>
+          </dl>
+
+          {manifest.frames.some((f) => f.predicted) && (
+            <label className="tl-toggle">
+              <input type="checkbox" checked={showExpected} onChange={(e) => setShowExpected(e.target.checked)} />
+              Show catalogue position
+            </label>
           )}
-          <span className="tl-compass">N ↑ · E ←</span>
+        </>
+      )}
+
+      {note && <p className="note">{note}</p>}
+
+      {tabs.length > 0 && (
+        <div className="info">
+          <div className="seg small" role="tablist">
+            {tabs.map((t) => (
+              <button key={t.key} className={activeTab === t.key ? 'on' : ''} onClick={() => setTab(t.key)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          {activeTab === 'motion' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
+          {activeTab === 'brightness' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
+          {activeTab === 'spectrum' && <SpectrumChart spectrum={spectrum} note={spectrumNote} />}
+          {activeTab === 'about' && <ObjectCard card={card} />}
         </div>
       )}
 
-      {mode === 'frames' && (
-        <>
-      <div className="tl-controls">
-        <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause' : 'Play'}>
-          {playing ? 'Pause' : 'Play'}
-        </button>
-        <input
-          type="range"
-          min="0"
-          max={manifest.frames.length - 1}
-          value={index}
-          onChange={(e) => {
-            setPlaying(false)
-            setIndex(Number(e.target.value))
-          }}
-          aria-label="Observation date"
-        />
+      <div className="tl-foot">
+        <p className="hint small">
+          {manifest.frames.length} images · {first} → {last} · 1 square = 1 SPHEREx pixel ({g.pixel_scale_arcsec}″)
+          <br />
+          {manifest.data_credit}
+        </p>
+        <a className="report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
+          Report a candidate ↗
+        </a>
       </div>
-
-      <dl className="coords tl-meta">
-        <dt>Date</dt>
-        <dd>
-          {frame.date} <span className="muted">({index + 1}/{manifest.frames.length})</span>
-        </dd>
-        <dt>λ</dt>
-        <dd>
-          {frame.wavelength_range_um
-            ? `${frame.wavelength_range_um[0].toFixed(2)}–${frame.wavelength_range_um[1].toFixed(2)} µm`
-            : `${frame.wavelength_um.toFixed(3)} µm`}
-        </dd>
-        {frame.stacked_images && (
-          <>
-            <dt>Stack</dt>
-            <dd>
-              {frame.stacked_images} images · S/N {frame.snr?.toFixed(1)} ·{' '}
-              <span className={frame.detected ? '' : 'warn'}>{frame.detected ? 'detected' : 'not detected'}</span>
-            </dd>
-          </>
-        )}
-        <dt>Quality</dt>
-        <dd className={frame.quality_ok ? '' : 'warn'}>
-          {frame.quality_ok ? 'OK' : 'Flagged'}
-          {frame.measured?.saturated ? ' · saturated' : ''}
-          {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
-        </dd>
-      </dl>
-        </>
-      )}
-
-      {manifest.frames.some((f) => f.predicted) && (
-      <label className="tl-toggle">
-        <input type="checkbox" checked={showExpected} onChange={(e) => setShowExpected(e.target.checked)} />
-        Show expected position (catalogue proper motion)
-      </label>
-      )}
-
-      {kind === 'moves' && <PositionChart frames={manifest.frames} currentMjd={frame.mjd} />}
-      {kind === 'varies' && <BrightnessChart frames={manifest.frames} currentMjd={frame.mjd} />}
-
-      <p className="hint">
-        {manifest.frames.length} images from {first} to {last}. Each square is one SPHEREx pixel (6.15″).
-      </p>
-      <p className="credit">{manifest.data_credit}</p>
-
-      <a className="report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
-        Report a candidate ↗
-      </a>
-      <p className="hint small">Opens a pre-filled public report on GitHub (free account needed). The team reviews every report.</p>
     </div>
   )
 }

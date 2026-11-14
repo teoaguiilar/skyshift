@@ -1,0 +1,58 @@
+{
+  "id": "ux-orionis",
+  "name": "UX Orionis",
+  "type": "Young variable star, Herbig Ae",
+  "summary": "UX Orionis is a young star with irregular brightness changes caused mainly by circumstellar dust obscuring the star.",
+  "why_interesting": "Its irregular dimming events help astronomers study the structure and dynamics of its circumstellar disk.",
+  "facts": [
+    {
+      "label": "Distance",
+      "value": "about 1,500",
+      "unit": "light-years",
+      "compare": "The light you see left it about 1,500 years ago (460 parsecs, the distance adopted in the 2016 study).",
+      "source": "Kreplin et al. (2016)",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+    },
+    {
+      "label": "Mass",
+      "value": "2.3-2.5",
+      "unit": "× the Sun",
+      "compare": "More than twice the mass of the Sun",
+      "source": "Kreplin et al. (2016)",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+    },
+    {
+      "label": "Size",
+      "value": "2.7",
+      "unit": "× the Sun",
+      "compare": "About 2.7 times the radius of the Sun.",
+      "source": "Kreplin et al. (2016)",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+    },
+    {
+      "label": "Temperature",
+      "value": "8600",
+      "unit": "K (about 8,330 °C)",
+      "compare": "Hotter than the Sun",
+      "source": "Kreplin et al. (2016)",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+    },
+    {
+      "label": "Age",
+      "value": "2-4.8",
+      "unit": "million years",
+      "compare": "Young, pre-main-sequence star; literature estimates",
+      "source": "Kreplin et al. (2016), citing earlier studies",
+      "source_url": "https://doi.org/10.1051/0004-6361/201628281"
+    }
+  ],
+  "papers": [
+    {
+      "title": "Resolving the inner disk of UX Orionis",
+      "authors": "Kreplin et al. (2016)",
+      "url": "https://doi.org/10.1051/0004-6361/201628281"
+    }
+  ],
+  "written_by": "Juan",
+  "reviewed_by": null
+}

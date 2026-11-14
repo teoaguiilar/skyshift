@@ -7,8 +7,6 @@ import { useEffect, useRef, useState } from 'react'
 import A from 'aladin-lite'
 import TimeLapse from './TimeLapse.jsx'
 import SpotLapse from './SpotLapse.jsx'
-import ObjectCard from './ObjectCard.jsx'
-import SpectrumPanel from './SpectrumPanel.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -153,15 +151,16 @@ export default function App() {
         target: start ? `${start.ra} ${start.dec}` : '269.45 4.69',
         cooFrame: 'ICRSd',
         showReticle: false,
-        showCooGridControl: true,
+        showCooGridControl: false,
+        showCooLocation: false, // no coordinate box: the panel shows the coordinates
+        showFrame: false,
         showSimbadPointerControl: false,
-        showLayersControl: true,
+        showLayersControl: false,
         showFullscreenControl: false,
         showShareControl: false,
         showSettingsControl: false,
         showProjectionControl: false,
         showContextMenu: false,
-        showFrame: true,
         inertia: true, // the sky keeps gliding after you let go
       })
       aladinRef.current = aladin
@@ -189,8 +188,17 @@ export default function App() {
       }
       updateLayers(aladin.getFov()[0])
       // Aladin keeps one callback per event, so every zoom reaction goes here.
+      // Guard: during the first seconds, if the base map pushes its own wide default view,
+      // put back the view from the link.
+      const guardUntil = Date.now() + 6000
       aladin.on('zoomChanged', (fov) => {
-        updateLayers(Array.isArray(fov) ? fov[0] : fov)
+        const f = Array.isArray(fov) ? fov[0] : fov
+        if (start && Date.now() < guardUntil && f > start.fov * 5) {
+          aladin.gotoRaDec(start.ra, start.dec)
+          aladin.setFoV(start.fov)
+          return
+        }
+        updateLayers(f)
         if (gaiaRef.current.on) gaiaRef.current.refresh()
       })
 
@@ -365,17 +373,19 @@ export default function App() {
           {activeId ? (
             <>
               <h2>{TOUR.find((t) => t.id === activeId)?.label ?? 'Object'}</h2>
-              <TimeLapse id={activeId} kind={TOUR.find((t) => t.id === activeId)?.kind} />
-              {TOUR.find((t) => t.id === activeId)?.note && (
-                <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
-              )}
-              {!TOUR.find((t) => t.id === activeId)?.hideSpectrum && (
-                <SpectrumPanel
-                  id={TOUR.find((t) => t.id === activeId)?.card ?? activeId}
-                  note={TOUR.find((t) => t.id === activeId)?.spectrumNote}
-                />
-              )}
-              <ObjectCard id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
+              {(() => {
+                const t = TOUR.find((x) => x.id === activeId)
+                return (
+                  <TimeLapse
+                    id={activeId}
+                    kind={t?.kind}
+                    cardId={t?.card}
+                    note={t?.note}
+                    hideSpectrum={t?.hideSpectrum}
+                    spectrumNote={t?.spectrumNote}
+                  />
+                )
+              })()}
             </>
           ) : (
             <>

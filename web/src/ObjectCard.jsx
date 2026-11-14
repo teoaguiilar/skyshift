@@ -4,27 +4,12 @@
  * Texts and numbers come from science/cards/<id>.json, written by the science team (Benjamín, Juan)
  * with a source for every number. The web reads them from GitHub, so edits appear without redeploying.
  */
-import { useEffect, useState } from 'react'
-
-const CARDS_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/science/cards'
-
-export default function ObjectCard({ id }) {
-  const [card, setCard] = useState(null)
-
-  useEffect(() => {
-    setCard(null)
-    if (!id) return
-    fetch(`${CARDS_BASE}/${id}.json`, { cache: 'no-cache' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((c) => setCard(c))
-      .catch(() => setCard(null))
-  }, [id])
-
+// The card JSON is loaded by the player (TimeLapse) and passed in.
+export default function ObjectCard({ card }) {
   if (!card) return null // no card yet: show nothing rather than an empty box
 
   return (
     <section className="card">
-      <h3>About this object</h3>
       {card.type && <p className="card-type">{card.type}</p>}
       {card.summary && <p>{card.summary}</p>}
       {card.why_interesting && (

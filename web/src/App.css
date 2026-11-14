@@ -66,10 +66,18 @@
 .fact-source { grid-column: 2; font-size: 11px; color: var(--muted); }
 .card a { color: var(--accent); }
 
-/* Frames / Difference switch */
-.tl-modes { display: flex; gap: 0; }
-.tl-modes button { flex: 1; background: transparent; border: 1px solid var(--line); padding: 5px 10px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.tl-modes button.on { border-color: var(--accent); color: var(--accent); }
+/* Segmented switches (Frames/Difference and the info tabs) */
+.seg { display: flex; }
+.seg button { flex: 1; background: transparent; border: 1px solid var(--line); margin-left: -1px; padding: 6px 8px; cursor: pointer;
+  font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.seg button:first-child { margin-left: 0; }
+.seg button.on { border-color: var(--accent); color: var(--accent); position: relative; }
+.seg.small button { font-size: 11px; padding: 5px 6px; }
+.info { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.info .chart { margin-top: 0; }
+.info .card { border-top: 0; margin-top: 0; padding-top: 0; }
+.note { margin: 0; font-size: 12px; line-height: 1.45; color: var(--warn); border-left: 2px solid var(--warn); padding-left: 8px; }
+.tl-foot { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
 .tl-overlay circle.diff-first { fill: none; stroke: var(--before); stroke-width: 3; }
 .tl-overlay circle.diff-last { fill: none; stroke: var(--after); stroke-width: 3; }
 .diff-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 2px solid; vertical-align: -1px; }

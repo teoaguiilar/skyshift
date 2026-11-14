@@ -111,6 +111,13 @@ function offset(p, ref) {
   return [(p.ra_deg - ref.ra_deg) * c * 3600, (p.dec_deg - ref.dec_deg) * 3600]
 }
 
+export const hasPosition = (frames) => {
+  const u = frames.filter((f) => f.predicted && f.measured?.ra_deg != null)
+  return u.length >= 2
+}
+export const hasBrightness = (frames) =>
+  frames.filter((f) => f.measured?.flux_rel != null && !f.measured?.saturated).length >= 3
+
 // Position along the direction the object is expected to move.
 export function PositionChart({ frames, currentMjd }) {
   const usable = frames.filter((f) => f.predicted && f.measured?.ra_deg != null)
