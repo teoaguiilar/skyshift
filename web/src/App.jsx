@@ -15,6 +15,7 @@ import { parallaxShift } from './Parallax.jsx'
 import { parseCoords } from './coords.js'
 import { getLang, setLang, t } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
+import ObjectCard from './ObjectCard.jsx'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -152,6 +153,7 @@ function writeUrl(ra, dec, fov, objectId) {
 export default function App() {
   const mapRef = useRef(null)
   const interactedRef = useRef(false) // set once the user moves the map or picks something
+  const objectClickRef = useRef(0) // time of the last click on a catalogue object (Gaia star, candidate)
   const aladinRef = useRef(null)
   const markerLayerRef = useRef(null)
   const [selected, setSelected] = useState(readUrl())
@@ -172,6 +174,7 @@ export default function App() {
   const cooHub = useRef({ cursor: () => {}, view: () => {} }).current // feeds the Science coordinate bar
   const [gaiaStatus, setGaiaStatus] = useState(null) // {key, vars}, translated when shown
   const [gaiaStar, setGaiaStar] = useState(null) // Gaia star clicked on the map
+  const [candidate, setCandidate] = useState(null) // community candidate (approved by the team) clicked on the map
   const gaiaRef = useRef({ on: false, refresh: () => {} })
   const panelRef = useRef(null)
   const [scrolledDown, setScrolledDown] = useState(false)
@@ -263,6 +266,7 @@ export default function App() {
     const aladin = aladinRef.current
     if (!aladin) return
     clearSim()
+    setCandidate(null)
     const fov = fovOverride ?? aladin.getFov()[0]
     markerLayerRef.current.removeAll()
     // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
@@ -451,7 +455,46 @@ export default function App() {
       // Click on a Gaia star: show its card (name, colour, parallax, motion).
       aladin.on('objectClicked', (obj) => {
         if (obj?.data?.designation) setGaiaStar(obj.data)
+        if (obj?.data?.designation || obj?.data?.candidate) objectClickRef.current = Date.now()
+        if (obj?.data?.candidate) {
+          const c = obj.data.candidate
+          selectSpot(c.position.ra_deg, c.position.dec_deg)
+          setCandidate(c)
+        }
       })
+
+      // Community candidates approved by the team: science/candidates/index.json lists their files
+      // (["candidate-....json", ...] or [{ "file": "..." }]). Optional: if it is not there, nothing shows.
+      const CAND_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/science/candidates'
+      const candCat = A.catalog({
+        name: 'Community candidates (approved)',
+        shape: 'square',
+        color: '#f5c451',
+        sourceSize: 16,
+        displayLabel: true,
+        labelColumn: 'label',
+        labelColor: '#f5c451',
+        labelFont: '12px Archivo, system-ui, sans-serif',
+      })
+      aladin.addCatalog(candCat)
+      fetch(`${CAND_BASE}/index.json`, { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : []))
+        .then((list) =>
+          Promise.all(
+            (Array.isArray(list) ? list : []).slice(0, 200).map((item) => {
+              const file = typeof item === 'string' ? item : item?.file
+              if (!file || !/^[\w.+-]+\.json$/.test(file)) return null
+              return fetch(`${CAND_BASE}/${file}`, { cache: 'no-cache' })
+                .then((r) => (r.ok ? r.json() : null))
+                .catch(() => null)
+            }),
+          ),
+        )
+        .then((cards) => {
+          const ok = (cards ?? []).filter((c) => c && Number.isFinite(c.position?.ra_deg) && Number.isFinite(c.position?.dec_deg))
+          candCat.addSources(ok.map((c) => A.source(c.position.ra_deg, c.position.dec_deg, { label: c.name, candidate: c })))
+        })
+        .catch(() => {})
 
       // A link with only ?object=<id> (e.g. the QR code) flies straight to that object.
       const linkedId = new URLSearchParams(window.location.search).get('object')
@@ -477,6 +520,7 @@ export default function App() {
       // Click anywhere on the sky (not while dragging) to choose that spot.
       aladin.on('click', (e) => {
         if (!e || e.isDragging) return
+        if (Date.now() - objectClickRef.current < 400) return // the click was on a star or a candidate
         selectSpot(e.ra, e.dec)
       })
     })
@@ -675,6 +719,7 @@ export default function App() {
                     hideSpectrum={t?.hideSpectrum}
                     spectrumNote={t?.spectrumNote}
                     science={science}
+                    objectName={t?.label}
                     onSimulate={(target, years, plx) => simulate(target, years, plx)}
                   />
                 )
@@ -682,7 +727,8 @@ export default function App() {
             </>
           ) : (
             <>
-              <h2>{t('Selected spot')}</h2>
+              <h2>{candidate ? `${t('Community candidate')}: ${candidate.name}` : t('Selected spot')}</h2>
+              {candidate && <ObjectCard card={candidate} />}
               {selected ? (
                 <dl className="coords">
                   <dt>RA</dt>

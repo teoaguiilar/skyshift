@@ -341,3 +341,34 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
   .help-btn { width: 30px; height: 30px; }
   .topbar { gap: 6px; }
 }
+
+/* Report form (modal) */
+.spot-report { align-self: flex-start; margin-bottom: 12px; }
+.rf-back { position: fixed; inset: 0; z-index: 120; background: rgba(4, 7, 15, 0.75); display: grid; place-items: center; padding: 16px; overflow: auto; }
+.rf { width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: var(--panel); border: 1px solid var(--line);
+  border-top: 2px solid var(--accent); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.rf-head { display: flex; justify-content: space-between; align-items: center; }
+.rf-head h3 { margin: 0; font-size: 18px; }
+.rf-x { background: none; border: 0; color: var(--muted); font-size: 22px; cursor: pointer; }
+.rf label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
+.rf input, .rf textarea, .rf select { background: var(--panel-2); border: 1px solid var(--line); border-radius: 2px; color: var(--text);
+  padding: 7px 9px; font: 14px var(--sans); }
+.rf input:focus, .rf textarea:focus, .rf select:focus { border-color: var(--accent); outline: none; }
+.rf fieldset { border: 1px solid var(--line); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.rf legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
+.rf-row { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 1fr 1.4fr auto; gap: 4px; }
+.rf-row:has(input:nth-child(3):last-of-type) { grid-template-columns: 1.6fr 1fr 1.6fr auto; }
+.rf-del { background: none; border: 1px solid var(--line); color: var(--muted); cursor: pointer; width: 30px; }
+.rf-where { display: flex; flex-direction: column; font-size: 14px; }
+.rf-problems { margin: 0; padding-left: 18px; color: var(--warn); font-size: 13px; }
+.rf-json pre { max-height: 200px; overflow: auto; background: var(--panel-2); padding: 8px; font: 12px ui-monospace, Consolas, monospace; }
+.rf-json summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.rf-actions { display: flex; gap: 16px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+@media (max-width: 760px) { .rf-row, .rf-row:has(input:nth-child(3):last-of-type) { grid-template-columns: 1fr; } }
+.rf-row input { min-width: 0; }
+.rf fieldset .btn-link { align-self: flex-start; }
+
+/* Spectrum on the fly (click anywhere) */
+.otf { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.otf-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.otf-actions .seg { flex: 1; min-width: 180px; }

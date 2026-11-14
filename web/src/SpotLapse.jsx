@@ -7,26 +7,85 @@ import { useEffect, useState } from 'react'
 import TimeLapse from './TimeLapse.jsx'
 import { StarIcon } from './Logo.jsx'
 import { t } from './i18n.js'
-import { BANDS, DEFAULT_SIZE_ARCMIN, SIZES_ARCMIN, loadSpot } from './spherexSpot.js'
+import ReportForm from './ReportForm.jsx'
+import { SpectrumChart } from './Charts.jsx'
 
-// "Report a candidate" also works when no SPHEREx images could be loaded: it sends the position and
-// the detector chosen, and the person describes what they saw. No personal data is collected.
-function spotReportUrl(ra, dec, band, size, why) {
-  const body = [
-    `**Where:** RA ${ra.toFixed(5)}°, Dec ${dec.toFixed(5)}°`,
-    `**SPHEREx detector chosen:** ${band}, field ${size}′ × ${size}′`,
-    `**SPHEREx images in SkyShift:** ${why}`,
-    `**Link:** ${window.location.href}`,
-    '',
-    '**What do you see?** (something that moves between dates, or changes brightness)',
-    '',
-    '**Evidence:** (which images or catalogues show it; did you check Gaia DR3, SIMBAD or another catalogue?)',
-    '',
-    '_Please do not include personal data. A candidate is not a discovery until it is checked._',
-  ].join('\n')
-  const q = new URLSearchParams({ title: `Candidate near RA ${ra.toFixed(3)}, Dec ${dec.toFixed(3)}`, body })
-  return `https://github.com/teoaguiilar/skyshift/issues/new?${q.toString()}`
+// "Spectrum (on the fly)": asks our /api/spectrum function (by Teo) to measure this point in every
+// SPHEREx image of one visit, all six detectors (0.75-5 µm). It can take up to a minute.
+function OnTheFlySpectrum({ ra, dec }) {
+  const [visit, setVisit] = useState('latest')
+  const [state, setState] = useState('idle') // idle | loading | done | error
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setState('idle')
+    setResult(null)
+  }, [ra, dec])
+
+  const run = async (which) => {
+    setVisit(which)
+    setState('loading')
+    setResult(null)
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), 75000)
+    try {
+      const q = `ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}${which === 'first' ? '&visit=first' : ''}`
+      const r = await fetch(`/api/spectrum?${q}`, { signal: ctrl.signal })
+      const data = await r.json().catch(() => null)
+      if (!r.ok || !data) throw new Error(data?.error || `HTTP ${r.status}`)
+      setResult(data)
+      setState('done')
+    } catch (e) {
+      setError(e.name === 'AbortError' ? t('IRSA took too long, try again') : e.message)
+      setState('error')
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  return (
+    <div className="otf">
+      <div className="otf-actions">
+        <button className="btn btn-link" onClick={() => run(visit)} disabled={state === 'loading'}>
+          {t('Spectrum (on the fly)')}
+        </button>
+        <div className="seg small" role="tablist" aria-label={t('Visit')}>
+          {['latest', 'first'].map((v) => (
+            <button key={v} className={visit === v ? 'on' : ''} onClick={() => (state === 'idle' ? setVisit(v) : run(v))} disabled={state === 'loading'}>
+              {v === 'latest' ? t('Latest visit') : t('First visit')}
+            </button>
+          ))}
+        </div>
+      </div>
+      {state === 'loading' && <p className="hint">{t('Measuring every SPHEREx image of this visit, all six detectors… up to 1 min.')}</p>}
+      {state === 'error' && <p className="status">{error}</p>}
+      {state === 'done' && result && (
+        <>
+          {result.count === 0 ? (
+            <p className="hint">{result.note ?? t('SPHEREx has no images of this point yet.')}</p>
+          ) : (
+            <>
+              <SpectrumChart spectrum={result} />
+              <p className="small-label">
+                {t('Visit {from} → {to} · {n} measurements · {skipped} images skipped · {s} s', {
+                  from: result.visit?.from,
+                  to: result.visit?.to,
+                  n: result.count,
+                  skipped: result.skipped ?? 0,
+                  s: result.seconds,
+                })}
+              </p>
+              {result.partial && <p className="note">{t('partial: IRSA was slow, so not every image was measured.')}</p>}
+              <p className="small-label">{t('Measured on the fly: no aperture correction, so absolute values are approximate; the shape is what matters.')}</p>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  )
 }
+import { BANDS, DEFAULT_SIZE_ARCMIN, SIZES_ARCMIN, loadSpot } from './spherexSpot.js'
 
 function readChoice() {
   const p = new URLSearchParams(window.location.search)
@@ -47,6 +106,7 @@ export default function SpotLapse({ ra, dec, science = false }) {
   const [progress, setProgress] = useState({ step: 'search' })
   const [state, setState] = useState('loading')
   const [attempt, setAttempt] = useState(0) // "Try again" bumps this to reload
+  const [reporting, setReporting] = useState(false)
 
   const choose = (next) => {
     const c = { band, size, ...next }
@@ -129,21 +189,13 @@ export default function SpotLapse({ ra, dec, science = false }) {
               {t('Try again')}
             </button>
           )}
-          <a
-            className="btn btn-primary report"
-            href={spotReportUrl(ra, dec, band, size, state === 'empty' ? 'not enough images here yet' : 'the archive did not answer')}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t('Report a candidate ↗')}
-          </a>
         </div>
       </div>
     )
   } else {
     body = (
       <>
-        <TimeLapse id="spot" manifest={manifest} science={science} />
+        <TimeLapse id="spot" manifest={manifest} science={science} hideReport />
         <p className="hint">
           {t('{n} of {searched} SPHEREx images here were taken at a similar wavelength (±2 %).', {
             n: manifest.frames.length,
@@ -168,6 +220,23 @@ export default function SpotLapse({ ra, dec, science = false }) {
   return (
     <>
       {pickers}
+      {/* Available at once, without waiting for the SPHEREx images (they can take a minute). */}
+      <button className="btn btn-primary report spot-report" onClick={() => setReporting(true)}>
+        {t('Report a candidate')}
+      </button>
+      <OnTheFlySpectrum ra={ra} dec={dec} />
+      {reporting && (
+        <ReportForm
+          onClose={() => setReporting(false)}
+          context={{
+            ra,
+            dec,
+            band,
+            wavelength_um: manifest?.wavelength_um,
+            dates: manifest ? [manifest.frames[0].date, manifest.frames[manifest.frames.length - 1].date] : null,
+          }}
+        />
+      )}
       {body}
     </>
   )

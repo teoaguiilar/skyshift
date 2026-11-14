@@ -14,35 +14,13 @@ import Frame, { FrameOverlay } from './Frame.jsx'
 import UpClose, { hasUpClose } from './UpClose.jsx'
 import Parallax, { usedParallax } from './Parallax.jsx'
 import { getLang, t as tr } from './i18n.js'
+import ReportForm from './ReportForm.jsx'
 import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
 const DATA_BASE = `${REPO_RAW}/data`
 const CARDS_BASE = `${REPO_RAW}/science/cards`
 const VIEW_SIZE = 340 // px on screen
-
-// "Report a candidate": opens a pre-filled GitHub Issue. SkyShift collects no personal data;
-// the discussion happens in the Issue comments and the team moderates it.
-const ISSUES_URL = 'https://github.com/teoaguiilar/skyshift/issues/new'
-function reportUrl(manifest, frame) {
-  const g = manifest.grid
-  const first = manifest.frames[0].date
-  const last = manifest.frames[manifest.frames.length - 1].date
-  const body = [
-    `**Where:** RA ${g.center_ra_deg.toFixed(5)}°, Dec ${g.center_dec_deg.toFixed(5)}° (${manifest.name})`,
-    `**SPHEREx data:** band ${manifest.band}, about ${Number(manifest.wavelength_um).toFixed(2)} µm, ${manifest.frames.length} images from ${first} to ${last}`,
-    `**Image I was looking at:** ${frame.date}`,
-    `**Link:** ${window.location.href}`,
-    '',
-    '**What do you see?** (something that moves between dates, or changes brightness)',
-    '',
-    '**Evidence:** (which dates/images show it; did you check Gaia DR3, SIMBAD or another catalogue?)',
-    '',
-    '_Please do not include personal data. A candidate is not a discovery until it is checked._',
-  ].join('\n')
-  const q = new URLSearchParams({ title: `Candidate near RA ${g.center_ra_deg.toFixed(3)}, Dec ${g.center_dec_deg.toFixed(3)}`, body })
-  return `${ISSUES_URL}?${q.toString()}`
-}
 
 // Frames from data/ have a file name; frames built in the browser carry their own image (src).
 const srcOf = (f, id) => f.src ?? `${DATA_BASE}/${id}/${f.file}`
@@ -82,7 +60,7 @@ function simYears(target) {
   return [100, 1000, 10000].find((y) => (pm * y) / 1000 >= 120) ?? 10000
 }
 
-export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate }) {
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate, hideReport = false, objectName }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -92,6 +70,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
   const [falseColor, setFalseColor] = useState(null)
   const [spectrum, setSpectrum] = useState(null)
   const [card, setCard] = useState(null)
+  const [reporting, setReporting] = useState(false)
   const [descriptions, setDescriptions] = useState(null) // this object's {explore, science}, if any
   const [mode, setMode] = useState('frames') // 'frames' | 'difference' | 'false'
   const [tab, setTab] = useState(null) // info tab under the player
@@ -408,9 +387,25 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           <br />
           {manifest.data_credit}
         </p>
-        <a className="btn btn-primary report" href={reportUrl(manifest, frame)} target="_blank" rel="noreferrer">
-          {tr('Report a candidate ↗')}
-        </a>
+        {!hideReport && (
+          <button className="btn btn-primary report" onClick={() => setReporting(true)}>
+            {tr('Report a candidate')}
+          </button>
+        )}
+        {reporting && (
+          <ReportForm
+            onClose={() => setReporting(false)}
+            context={{
+              ra: g.center_ra_deg,
+              dec: g.center_dec_deg,
+              band: manifest.band,
+              wavelength_um: manifest.wavelength_um,
+              dates: [first, last],
+              imageDate: frame.date,
+              objectName: objectName ?? manifest.name,
+            }}
+          />
+        )}
       </div>
     </div>
   )
