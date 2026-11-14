@@ -24,7 +24,8 @@ function dms(dec) {
 const sdeg = (v, n) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(n)}°`
 function fovText(fov) {
   const big = Math.max(fov[0], fov[1]) // same unit for both sides
-  const f = (v) => (big >= 1 ? `${v.toFixed(2)}°` : big >= 1 / 60 ? `${(v * 60).toFixed(1)}′` : `${(v * 3600).toFixed(0)}″`)
+  const f = (v) =>
+    big >= 1 ? `${v.toFixed(2)}°` : big >= 1 / 60 ? `${(v * 60).toFixed(1)}′` : big >= 1 / 3600 ? `${(v * 3600).toFixed(0)}″` : `${(v * 3.6e6).toFixed(0)} mas`
   return `${f(fov[0])} × ${f(fov[1])}`
 }
 

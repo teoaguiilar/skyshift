@@ -52,10 +52,16 @@ const EXTRA = {
 // RW Aurigae: the team does not use the SIMBAD parallax (15.42 ± 3.69 mas: 24 % error, and RW Aur is a
 // double star, which spoils the measurement). Its parallax is taken from the distance in its science card.
 const LY_PER_PC = 3.26156
-function plxFromCard(card) {
+export function plxFromCard(card) {
   const f = card?.facts?.find((x) => /distance/i.test(x.label) && /light/i.test(x.unit ?? ''))
   const ly = f ? parseFloat(String(f.value).replace(/,/g, '')) : NaN
   return Number.isFinite(ly) && ly > 0 ? { plx: (1000 * LY_PER_PC) / ly, text: `${f.value} ${f.unit}`, source: f.source } : null
+}
+
+// Parallax (mas) the team uses for an object: the card distance for RW Aurigae, otherwise the manifest value.
+export function usedParallax(cardId, target, card) {
+  if (cardId === 'rw-aurigae') return plxFromCard(card)?.plx ?? null
+  return Number.isFinite(target?.parallax_mas) ? target.parallax_mas : null
 }
 
 // A small square plot. pts: [[east, north], ...] in the given unit; east is drawn to the LEFT, as on the sky.

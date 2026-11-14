@@ -11,6 +11,7 @@ import Intro from './Intro.jsx'
 import { Logo } from './Logo.jsx'
 import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
+import { parallaxShift } from './Parallax.jsx'
 import { parseCoords } from './coords.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import './App.css'
@@ -166,49 +167,71 @@ export default function App() {
   function clearSim() {
     const sim = simRef.current
     cancelAnimationFrame(sim.raf)
+    clearTimeout(sim.raf)
     sim.marker?.removeAll()
     sim.trail?.removeAll()
     setSimLabel(null)
   }
   // target = manifest.target from the pipeline: J2000 position and proper motion from SIMBAD (via Sesame).
-  function simulate(target, years, name) {
+  // plx = parallax used by the team (mas). Position at a decimal year = J2000 position + proper motion
+  // + the yearly parallax wobble (same equations as the Parallax tab).
+  // Two phases: (1) close-up, 2 years, where the parallax wobble is visible; (2) zoom out, many years.
+  function simulate(target, years, plx) {
     const aladin = aladinRef.current
     const sim = simRef.current
     if (!aladin || !sim.marker) return
     clearSim()
     interactedRef.current = true
+    const name = TOUR.find((t) => t.id === activeId)?.label ?? 'The star'
+    const cosd = Math.cos((target.dec_j2000_deg * Math.PI) / 180)
+    const p = Number.isFinite(plx) ? plx : 0
     const at = (year) => {
       const t = year - 2000
-      const dec = target.dec_j2000_deg + (target.pmdec_mas_yr * t) / 3.6e6
-      const ra = target.ra_j2000_deg + (target.pmra_mas_yr * t) / 3.6e6 / Math.cos((target.dec_j2000_deg * Math.PI) / 180)
+      const [pe, pn] = parallaxShift(target.ra_j2000_deg, target.dec_j2000_deg, p, year) // mas
+      const dec = target.dec_j2000_deg + (target.pmdec_mas_yr * t + pn) / 3.6e6
+      const ra = target.ra_j2000_deg + (target.pmra_mas_yr * t + pe) / 3.6e6 / cosd
       return [ra, dec]
     }
     const start = 2026
-    const [ra0, dec0] = at(start)
-    const [ra1, dec1] = at(start + years)
-    const moved = (Math.hypot(target.pmra_mas_yr, target.pmdec_mas_yr) * years) / 1000 // arcsec
-    const fov = Math.max((moved * 2.4) / 3600, 2 / 60)
-    const duration = 7000
-    const run = () => {
-      const t0 = performance.now()
-      let lastDot = -1
-      const frame = (now) => {
-        const f = Math.min((now - t0) / duration, 1)
-        const year = start + years * f
-        const [ra, dec] = at(year)
-        sim.marker.removeAll()
-        sim.marker.addSources([A.source(ra, dec)])
-        const dot = Math.floor(f * 24)
-        if (dot !== lastDot) {
-          lastDot = dot
-          sim.trail.addSources([A.source(ra, dec)])
+    const pm = Math.hypot(target.pmra_mas_yr, target.pmdec_mas_yr) // mas/yr
+    const fmtAngle = (arcsec) => (arcsec >= 60 ? `${(arcsec / 60).toFixed(1)}′` : arcsec >= 1 ? `${arcsec.toFixed(1)}″` : `${(arcsec * 1000).toFixed(0)} mas`)
+
+    // A run of the marker along at(year) from y0 to y1, centred on the path, then `next`.
+    const phase = (y0, y1, duration, dots, label, next) => {
+      const pts = Array.from({ length: 50 }, (_, i) => at(y0 + ((y1 - y0) * i) / 49))
+      const ras = pts.map((q) => q[0])
+      const decs = pts.map((q) => q[1])
+      const cra = (Math.max(...ras) + Math.min(...ras)) / 2
+      const cdec = (Math.max(...decs) + Math.min(...decs)) / 2
+      const extent = Math.max((Math.max(...ras) - Math.min(...ras)) * cosd, Math.max(...decs) - Math.min(...decs)) // deg
+      const fov = Math.max(extent * 2.2, 0.1 / 3600) // Aladin cannot zoom below about 0.1″
+      const run = () => {
+        sim.trail.removeAll()
+        const t0 = performance.now()
+        let lastDot = -1
+        const frame = (now) => {
+          const f = Math.min(Math.max(0, now - t0) / duration, 1)
+          const year = y0 + (y1 - y0) * f
+          const [ra, dec] = at(year)
+          sim.marker.removeAll()
+          sim.marker.addSources([A.source(ra, dec)])
+          const dot = Math.floor(f * dots)
+          if (dot !== lastDot) {
+            lastDot = dot
+            sim.trail.addSources([A.source(ra, dec)])
+          }
+          setSimLabel({ ...label, name, year, view: fmtAngle(fov * 3600) })
+          if (f < 1) sim.raf = requestAnimationFrame(frame)
+          else if (next) sim.raf = setTimeout(next, 1500)
         }
-        setSimLabel({ name, year: Math.round(year), years, moved })
-        if (f < 1) sim.raf = requestAnimationFrame(frame)
+        sim.raf = requestAnimationFrame(frame)
       }
-      sim.raf = requestAnimationFrame(frame)
+      aladin.animateToRaDec(cra, cdec, 1.2, () => aladin.zoomToFoV(fov, 1.2, run))
     }
-    aladin.animateToRaDec((ra0 + ra1) / 2, (dec0 + dec1) / 2, 1.2, () => aladin.zoomToFoV(fov, 1.2, run))
+
+    const longRun = () =>
+      phase(start, start + years, 7000, 24, { phase: 'long', years, moved: (pm * years) / 1000, wobble: p })
+    phase(start, start + 2, 8000, 90, { phase: 'close', years: 2, moved: (pm * 2) / 1000, wobble: p }, longRun)
   }
 
   function selectSpot(ra, dec, fovOverride, objectId = null) {
@@ -557,13 +580,27 @@ export default function App() {
           {science && gaiaStar && <GaiaStar star={gaiaStar} onClose={() => setGaiaStar(null)} />}
           {simLabel && (
             <div className="sim-label">
-              <span className="sim-year">Year {simLabel.year}</span>
-              <span>
-                Simulation: {simLabel.name} moves {simLabel.moved >= 60 ? `${(simLabel.moved / 60).toFixed(1)}′` : `${simLabel.moved.toFixed(0)}″`} in{' '}
-                {simLabel.years.toLocaleString('en')} years
+              <span className="sim-year">Year {simLabel.phase === 'close' ? simLabel.year.toFixed(2) : Math.round(simLabel.year)}</span>
+              {simLabel.phase === 'close' ? (
+                <span>
+                  Close-up, 2 years (view {simLabel.view} wide): {simLabel.name} drifts with its proper motion and wobbles once a year
+                  by its parallax (±{simLabel.wobble.toFixed(simLabel.wobble < 10 ? 2 : 0)} mas), because we watch it from the moving Earth.
+                </span>
+              ) : (
+                <span>
+                  {simLabel.years.toLocaleString('en')} years (view {simLabel.view} wide): {simLabel.name} moves{' '}
+                  {simLabel.moved >= 60 ? `${(simLabel.moved / 60).toFixed(1)}′` : `${simLabel.moved.toFixed(1)}″`}; the yearly wobble is
+                  now far too small to see.
+                </span>
+              )}
+              <span className="muted">
+                Simulation from catalogue values (SIMBAD); other stars are shown where they are today.
               </span>
-              <span className="muted">Straight-line path from its proper motion in SIMBAD; other stars are shown where they are today.</span>
-              {science && <code className="sim-eq">Δα·cosδ = μα*·Δt · Δδ = μδ·Δt (yearly parallax wobble not shown: see the Parallax tab)</code>}
+              {science && (
+                <code className="sim-eq">
+                  Δα·cosδ = μα*·Δt + ϖ(X sinα − Y cosα) · Δδ = μδ·Δt + ϖ(X cosα sinδ + Y sinα sinδ − Z cosδ)
+                </code>
+              )}
               <button onClick={clearSim} aria-label="Close the simulation">
                 ×
               </button>
@@ -593,7 +630,7 @@ export default function App() {
                     hideSpectrum={t?.hideSpectrum}
                     spectrumNote={t?.spectrumNote}
                     science={science}
-                    onSimulate={(target, years) => simulate(target, years, t?.label ?? 'The star')}
+                    onSimulate={(target, years, plx) => simulate(target, years, plx)}
                   />
                 )
               })()}

@@ -12,7 +12,7 @@ import { BrightnessChart, PositionChart, SpectrumChart, hasBrightness, hasPositi
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
 import UpClose, { hasUpClose } from './UpClose.jsx'
-import Parallax from './Parallax.jsx'
+import Parallax, { usedParallax } from './Parallax.jsx'
 import { StarIcon } from './Logo.jsx'
 
 const REPO_RAW = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main'
@@ -367,8 +367,8 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
       {note && <p className="note">{note}</p>}
 
       {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
-        <button className="btn btn-link sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target))}>
-          ▶ Watch it move over {simYears(manifest.target).toLocaleString('en')} years <span className="muted">· simulation</span>
+        <button className="btn btn-link sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target), usedParallax(cardId ?? id, manifest.target, card))}>
+          ▶ Watch it move: 2 years up close, then {simYears(manifest.target).toLocaleString('en')} years <span className="muted">· simulation</span>
         </button>
       )}
 
