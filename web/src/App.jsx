@@ -14,12 +14,18 @@ import './App.css'
 // The five test objects of the challenge, resolved by name through CDS Sesame.
 const TOUR = [
 // `id` = folder name in data/ (agreed with the data pipeline).
-  { id: 'barnard', label: "Barnard's Star", query: "Barnard's star", kind: 'moves' },
+  {
+    id: 'barnard',
+    label: "Barnard's Star",
+    query: "Barnard's star",
+    kind: 'moves',
+    spectrumNote: 'Only 3.8–5 µm is shown: at shorter wavelengths the star saturates SPHEREx.',
+  },
   { id: 'eps-indi-b', label: 'Epsilon Indi B', query: 'eps Ind B', kind: 'moves' },
   {
     id: 'wise-0855-stacked',
     card: 'wise-0855',
-    hideSpectrum: true, // spectrum under review by the data team (light from neighbours?)
+    hideSpectrum: true, // contaminated below 3 µm, under review by Benjamín
     label: 'WISE 0855−0714',
     query: 'WISE J085510.83-071442.5',
     kind: 'moves',
@@ -31,6 +37,7 @@ const TOUR = [
     label: 'R Draconis',
     query: 'R Dra',
     kind: 'varies',
+    hideSpectrum: true, // saturated in 2,318 of 2,325 images
     note: 'R Draconis is so bright that it saturates SPHEREx in every image, so its brightness changes cannot be measured with this method.',
   },
   { id: 'ux-orionis', label: 'UX Orionis', query: 'UX Ori', kind: 'varies' },
@@ -273,7 +280,10 @@ export default function App() {
                 <p className="status">{TOUR.find((t) => t.id === activeId).note}</p>
               )}
               {!TOUR.find((t) => t.id === activeId)?.hideSpectrum && (
-                <SpectrumPanel id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
+                <SpectrumPanel
+                  id={TOUR.find((t) => t.id === activeId)?.card ?? activeId}
+                  note={TOUR.find((t) => t.id === activeId)?.spectrumNote}
+                />
               )}
               <ObjectCard id={TOUR.find((t) => t.id === activeId)?.card ?? activeId} />
             </>

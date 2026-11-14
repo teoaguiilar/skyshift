@@ -30,6 +30,18 @@ export default function TimeLapse({ id, manifest: given, kind }) {
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [showExpected, setShowExpected] = useState(false)
+  const [difference, setDifference] = useState(null) // data/<id>/difference.json, if the pipeline made one
+  const [mode, setMode] = useState('frames') // 'frames' | 'difference'
+
+  useEffect(() => {
+    setDifference(null)
+    setMode('frames')
+    if (given || !id) return
+    fetch(`${DATA_BASE}/${id}/difference.json`, { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setDifference)
+      .catch(() => setDifference(null))
+  }, [id, given])
   const timer = useRef(null)
 
   useEffect(() => {
@@ -84,20 +96,61 @@ export default function TimeLapse({ id, manifest: given, kind }) {
         </span>
       </div>
 
-      <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
-        <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
-        {showExpected && expected && (
-          <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
-            <circle cx={expected.x} cy={expected.y} r="22" />
-            <line x1={expected.x - 40} y1={expected.y} x2={expected.x - 26} y2={expected.y} />
-            <line x1={expected.x + 26} y1={expected.y} x2={expected.x + 40} y2={expected.y} />
-            <line x1={expected.x} y1={expected.y - 40} x2={expected.x} y2={expected.y - 26} />
-            <line x1={expected.x} y1={expected.y + 26} x2={expected.x} y2={expected.y + 40} />
-          </svg>
-        )}
-        <span className="tl-compass">N ↑ · E ←</span>
-      </div>
+      {difference && (
+        <div className="tl-modes" role="tablist">
+          <button className={mode === 'frames' ? 'on' : ''} onClick={() => setMode('frames')}>
+            Frames
+          </button>
+          <button className={mode === 'difference' ? 'on' : ''} onClick={() => setMode('difference')}>
+            Difference
+          </button>
+        </div>
+      )}
 
+      {mode === 'difference' && difference ? (
+        <>
+          <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
+            <img
+              src={`${DATA_BASE}/${id}/${difference.file}`}
+              alt={`${manifest.name}: last SPHEREx visit minus the first one`}
+            />
+            <svg
+              viewBox={`0 0 ${manifest.grid.width * manifest.grid.png_upscale} ${manifest.grid.height * manifest.grid.png_upscale}`}
+              className="tl-overlay"
+            >
+              {difference.visits.map((v) => {
+                const u = manifest.grid.png_upscale
+                const cx = (v.predicted_pixel.x + 0.5) * u
+                const cy = (manifest.grid.height - (v.predicted_pixel.y + 0.5)) * u
+                return <circle key={v.visit} cx={cx} cy={cy} r="24" className={v.visit === 'first' ? 'diff-first' : 'diff-last'} />
+              })}
+            </svg>
+            <span className="tl-compass">N ↑ · E ←</span>
+          </div>
+          <p className="hint">
+            <span className="diff-key first" /> {difference.visits[0].date} (first visit) →{' '}
+            <span className="diff-key last" /> {difference.visits[difference.visits.length - 1].date} (last visit). Circles: catalogue position.
+          </p>
+          <p className="hint">{difference.how_to_read}</p>
+        </>
+      ) : (
+      <div className="tl-view" style={{ width: VIEW_SIZE, height: VIEW_SIZE }}>
+          <img src={srcOf(frame, id)} alt={`${manifest.name}, SPHEREx image of ${frame.date}`} />
+          {showExpected && expected && (
+            <svg viewBox={`0 0 ${expected.w} ${expected.h}`} className="tl-overlay">
+              <circle cx={expected.x} cy={expected.y} r="22" />
+              <line x1={expected.x - 40} y1={expected.y} x2={expected.x - 26} y2={expected.y} />
+              <line x1={expected.x + 26} y1={expected.y} x2={expected.x + 40} y2={expected.y} />
+              <line x1={expected.x} y1={expected.y - 40} x2={expected.x} y2={expected.y - 26} />
+              <line x1={expected.x} y1={expected.y + 26} x2={expected.x} y2={expected.y + 40} />
+            </svg>
+          )}
+          <span className="tl-compass">N ↑ · E ←</span>
+        </div>
+      )}
+
+      {mode === 'frames' && (
+        <>
       <div className="tl-controls">
         <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? 'Pause' : 'Play'}>
           {playing ? 'Pause' : 'Play'}
@@ -142,6 +195,8 @@ export default function TimeLapse({ id, manifest: given, kind }) {
           {frame.flags?.length > 0 && <span className="flags">{frame.flags.join(' · ')}</span>}
         </dd>
       </dl>
+        </>
+      )}
 
       {manifest.frames.some((f) => f.predicted) && (
       <label className="tl-toggle">

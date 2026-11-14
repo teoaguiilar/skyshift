@@ -7,7 +7,7 @@ import { SpectrumChart } from './Charts.jsx'
 
 const DATA_BASE = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 
-export default function SpectrumPanel({ id }) {
+export default function SpectrumPanel({ id, note }) {
   const [spectrum, setSpectrum] = useState(null)
   useEffect(() => {
     setSpectrum(null)
@@ -18,5 +18,5 @@ export default function SpectrumPanel({ id }) {
       .catch(() => setSpectrum(null))
   }, [id])
   if (!spectrum) return null
-  return <SpectrumChart spectrum={spectrum} />
+  return <SpectrumChart spectrum={spectrum} note={note} />
 }

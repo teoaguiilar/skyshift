@@ -12,9 +12,13 @@ function scale(v, a, b, A, B) {
   return b === a ? (A + B) / 2 : A + ((v - a) / (b - a)) * (B - A)
 }
 
-function Chart({ points, line, current, yLabel, legend, xFormat, yFormat }) {
-  const ts = [...points.map((p) => p.t), ...(line || []).map((p) => p.t)]
-  const ys = [...points.flatMap((p) => [p.y, p.lo ?? p.y, p.hi ?? p.y]), ...(line || []).map((p) => p.y)]
+function Chart({ points, raw, line, current, yLabel, legend, xFormat, yFormat }) {
+  const ts = [...points.map((p) => p.t), ...(raw || []).map((p) => p.t), ...(line || []).map((p) => p.t)]
+  const ys = [
+    ...points.flatMap((p) => [p.y, p.lo ?? p.y, p.hi ?? p.y]),
+    ...(raw || []).map((p) => p.y),
+    ...(line || []).map((p) => p.y),
+  ]
   const t0 = Math.min(...ts)
   const t1 = Math.max(...ts)
   let y0 = Math.min(...ys)
@@ -48,6 +52,9 @@ function Chart({ points, line, current, yLabel, legend, xFormat, yFormat }) {
         {line && line.length > 1 && (
           <polyline className="expected" points={line.map((p) => `${X(p.t)},${Y(p.y)}`).join(' ')} />
         )}
+        {(raw || []).map((p, k) => (
+          <circle key={`r${k}`} className="raw" cx={X(p.t)} cy={Y(p.y)} r="1.8" />
+        ))}
         {points.map((p, k) =>
           p.lo != null && p.hi - p.lo > 0 ? (
             <g key={`e${k}`} className="err">
@@ -69,24 +76,30 @@ function Chart({ points, line, current, yLabel, legend, xFormat, yFormat }) {
   )
 }
 
-// Images of the same visit (taken less than 3 days apart) become one point:
-// the average, with a bar from the lowest to the highest value of that visit.
-const VISIT_DAYS = 3
+// Visits = groups of images separated by more than 30 days (as in the pipeline plots).
+// Each visit becomes one point: the mean, with an error bar = standard deviation / sqrt(n)
+// (idea of Juan). The single images are drawn small and grey behind.
+const VISIT_GAP_DAYS = 30
 function byVisit(items) {
+  const sorted = [...items].sort((a, b) => a.t - b.t)
   const groups = []
-  for (const it of [...items].sort((a, b) => a.t - b.t)) {
+  for (const it of sorted) {
     const g = groups[groups.length - 1]
-    if (g && it.t - g[0].t < VISIT_DAYS) g.push(it)
+    if (g && it.t - g[g.length - 1].t <= VISIT_GAP_DAYS) g.push(it)
     else groups.push([it])
   }
   return groups.map((g) => {
     const ys = g.map((i) => i.y)
+    const n = ys.length
+    const mean = ys.reduce((s, v) => s + v, 0) / n
+    const sd = n > 1 ? Math.sqrt(ys.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1)) : 0
+    const se = n > 1 ? sd / Math.sqrt(n) : null
     return {
-      t: g.reduce((s, i) => s + i.t, 0) / g.length,
-      y: ys.reduce((s, v) => s + v, 0) / ys.length,
-      lo: Math.min(...ys),
-      hi: Math.max(...ys),
-      n: g.length,
+      t: g.reduce((s, i) => s + i.t, 0) / n,
+      y: mean,
+      lo: se != null ? mean - se : null,
+      hi: se != null ? mean + se : null,
+      n,
       hollow: g.every((i) => i.hollow),
     }
   })
@@ -115,12 +128,13 @@ export function PositionChart({ frames, currentMjd }) {
   return (
     <Chart
       points={byVisit(usable.map((f) => ({ t: f.mjd, y: along(f.measured), hollow: f.detected === false })))}
+      raw={usable.map((f) => ({ t: f.mjd, y: along(f.measured) }))}
       line={byVisit(usable.map((f) => ({ t: f.mjd, y: along(f.predicted) })))}
       current={currentMjd}
       yLabel={`Shift towards the ${dir} (arcsec)`}
       legend={
         <>
-          <i className="dot" /> measured by SkyShift (SPHEREx), average per visit; bar = spread of its images{' '}
+          <i className="dot" /> measured by SkyShift (SPHEREx), mean per visit ± standard error; grey = single images{' '}
           <i className="dash" /> expected from catalogue motion
         </>
       }
@@ -135,12 +149,13 @@ export function BrightnessChart({ frames, currentMjd }) {
   return (
     <Chart
       points={byVisit(usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel })))}
+      raw={usable.map((f) => ({ t: f.mjd, y: f.measured.flux_rel }))}
       current={currentMjd}
       yLabel="Relative brightness (SPHEREx)"
       legend={
         <>
-          <i className="dot" /> average per visit; bar = spread of its images. Changes larger than the bars make it a
-          candidate variable until checked
+          <i className="dot" /> mean per visit ± standard error; grey = single images. Changes much larger than the bars
+          make it a candidate variable until checked
         </>
       }
     />
@@ -151,7 +166,7 @@ const fmtFlux = (v) =>
   Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)} Jy` : Math.abs(v) >= 1e3 ? `${(v / 1e3).toFixed(1)} mJy` : `${v.toFixed(0)} µJy`
 
 // Spectrum: SPHEREx brightness at each wavelength (binned), from data/<object>/spectrum.json.
-export function SpectrumChart({ spectrum }) {
+export function SpectrumChart({ spectrum, note }) {
   const pts = (spectrum?.binned ?? []).filter((b) => Number.isFinite(b.flux_ujy))
   if (pts.length < 3) return null
   return (
@@ -169,6 +184,7 @@ export function SpectrumChart({ spectrum }) {
         <>
           <i className="dot" /> SPHEREx images averaged by wavelength; bar = uncertainty. Absolute values are approximate.
           {spectrum.saturated_images_skipped > 0 && ` ${spectrum.saturated_images_skipped} saturated images left out.`}
+          {note && ` ${note}`}
         </>
       }
     />

@@ -60,6 +60,16 @@
 .fact-source { grid-column: 2; font-size: 11px; color: var(--muted); }
 .card a { color: var(--accent); }
 
+/* Frames / Difference switch */
+.tl-modes { display: flex; gap: 0; }
+.tl-modes button { flex: 1; background: transparent; border: 1px solid var(--line); padding: 5px 10px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.tl-modes button.on { border-color: var(--accent); color: var(--accent); }
+.tl-overlay circle.diff-first { fill: none; stroke: #4aa3ff; stroke-width: 3; }
+.tl-overlay circle.diff-last { fill: none; stroke: #ff4a4a; stroke-width: 3; }
+.diff-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 2px solid; vertical-align: -1px; }
+.diff-key.first { border-color: #4aa3ff; }
+.diff-key.last { border-color: #ff4a4a; }
+
 /* Charts */
 .chart { margin: 0; border: 1px solid var(--line); padding: 6px 6px 8px; }
 .chart svg { width: 100%; height: auto; display: block; }
@@ -68,6 +78,7 @@
 .chart .now { stroke: var(--muted); stroke-dasharray: 2 3; }
 .chart .expected { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .chart .pt { fill: var(--accent); }
+.chart .raw { fill: var(--muted); opacity: 0.55; }
 .chart .err line { stroke: var(--accent); stroke-width: 1.2; opacity: 0.7; }
 .chart .pt.hollow { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .chart figcaption { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); margin-top: 4px; }
