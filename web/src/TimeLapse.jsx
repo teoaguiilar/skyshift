@@ -61,7 +61,14 @@ const getJson = (url) =>
 // science = false (Explore mode): only the essentials. Science mode adds the measurements
 // (charts, spectrum, wavelength, quality flags). Nothing is hidden that changes what the images mean:
 // a flagged image is still marked as flagged in Explore.
-export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false }) {
+// How many years to show in "Watch it move": the first of these in which the star shifts at least 2′
+// (at most 10,000 years, where a straight-line path is still a fair picture).
+function simYears(target) {
+  const pm = Math.hypot(target.pmra_mas_yr, target.pmdec_mas_yr) // mas/yr
+  return [100, 1000, 10000].find((y) => (pm * y) / 1000 >= 120) ?? 10000
+}
+
+export default function TimeLapse({ id, manifest: given, kind, cardId, note, hideSpectrum, spectrumNote, science = false, onSimulate }) {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(false)
   const [index, setIndex] = useState(0)
@@ -300,6 +307,12 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
       )}
 
       {note && <p className="note">{note}</p>}
+
+      {onSimulate && Number.isFinite(manifest.target?.pmra_mas_yr) && Number.isFinite(manifest.target?.pmdec_mas_yr) && (
+        <button className="sim-btn" onClick={() => onSimulate(manifest.target, simYears(manifest.target))}>
+          ▶ Watch it move over {simYears(manifest.target).toLocaleString('en')} years <span className="muted">· simulation</span>
+        </button>
+      )}
 
       {tabs.length > 0 && (
         <div className="info">

@@ -156,9 +156,61 @@ export default function App() {
   const [activeId, setActiveId] = useState(() => new URLSearchParams(window.location.search).get('object'))
 
   // Select a sky position: marker + URL + panel.
+  // ---- "Watch it move": the star's path over years, from its catalogue proper motion (simulation).
+  const simRef = useRef({ marker: null, trail: null, raf: 0 })
+  const [simLabel, setSimLabel] = useState(null)
+  function clearSim() {
+    const sim = simRef.current
+    cancelAnimationFrame(sim.raf)
+    sim.marker?.removeAll()
+    sim.trail?.removeAll()
+    setSimLabel(null)
+  }
+  // target = manifest.target from the pipeline: J2000 position and proper motion from SIMBAD (via Sesame).
+  function simulate(target, years, name) {
+    const aladin = aladinRef.current
+    const sim = simRef.current
+    if (!aladin || !sim.marker) return
+    clearSim()
+    interactedRef.current = true
+    const at = (year) => {
+      const t = year - 2000
+      const dec = target.dec_j2000_deg + (target.pmdec_mas_yr * t) / 3.6e6
+      const ra = target.ra_j2000_deg + (target.pmra_mas_yr * t) / 3.6e6 / Math.cos((target.dec_j2000_deg * Math.PI) / 180)
+      return [ra, dec]
+    }
+    const start = 2026
+    const [ra0, dec0] = at(start)
+    const [ra1, dec1] = at(start + years)
+    const moved = (Math.hypot(target.pmra_mas_yr, target.pmdec_mas_yr) * years) / 1000 // arcsec
+    const fov = Math.max((moved * 2.4) / 3600, 2 / 60)
+    const duration = 7000
+    const run = () => {
+      const t0 = performance.now()
+      let lastDot = -1
+      const frame = (now) => {
+        const f = Math.min((now - t0) / duration, 1)
+        const year = start + years * f
+        const [ra, dec] = at(year)
+        sim.marker.removeAll()
+        sim.marker.addSources([A.source(ra, dec)])
+        const dot = Math.floor(f * 24)
+        if (dot !== lastDot) {
+          lastDot = dot
+          sim.trail.addSources([A.source(ra, dec)])
+        }
+        setSimLabel({ name, year: Math.round(year), years, moved })
+        if (f < 1) sim.raf = requestAnimationFrame(frame)
+      }
+      sim.raf = requestAnimationFrame(frame)
+    }
+    aladin.animateToRaDec((ra0 + ra1) / 2, (dec0 + dec1) / 2, 1.2, () => aladin.zoomToFoV(fov, 1.2, run))
+  }
+
   function selectSpot(ra, dec, fovOverride, objectId = null) {
     const aladin = aladinRef.current
     if (!aladin) return
+    clearSim()
     const fov = fovOverride ?? aladin.getFov()[0]
     markerLayerRef.current.removeAll()
     markerLayerRef.current.addSources([A.source(ra, dec)])
@@ -265,6 +317,10 @@ export default function App() {
         if (gaiaRef.current.on) gaiaRef.current.refresh()
       })
 
+      simRef.current.trail = A.catalog({ name: 'Simulated path', shape: 'circle', color: 'rgba(230,232,235,0.55)', sourceSize: 5 })
+      simRef.current.marker = A.catalog({ name: 'Simulated position', shape: 'circle', color: '#ffc857', sourceSize: 14 })
+      aladin.addCatalog(simRef.current.trail)
+      aladin.addCatalog(simRef.current.marker)
       const markers = A.catalog({ name: 'Selected spot', shape: 'circle', color: '#ff7a3d', sourceSize: 24 })
       aladin.addCatalog(markers)
       markerLayerRef.current = markers
@@ -336,6 +392,7 @@ export default function App() {
       const restoreView = (tries = 0) => {
         if (!base.added && tries < 100) return setTimeout(() => restoreView(tries + 1), 100)
         setTimeout(() => {
+          if (interactedRef.current) return // the user already moved on: do not pull the view back
           if (start) {
             aladin.gotoRaDec(start.ra, start.dec)
             aladin.setFoV(start.fov)
@@ -469,6 +526,19 @@ export default function App() {
           </div>
           )}
           {science && gaiaStar && <GaiaStar star={gaiaStar} onClose={() => setGaiaStar(null)} />}
+          {simLabel && (
+            <div className="sim-label">
+              <span className="sim-year">Year {simLabel.year}</span>
+              <span>
+                Simulation: {simLabel.name} moves {simLabel.moved >= 60 ? `${(simLabel.moved / 60).toFixed(1)}′` : `${simLabel.moved.toFixed(0)}″`} in{' '}
+                {simLabel.years.toLocaleString('en')} years
+              </span>
+              <span className="muted">Straight-line path from its proper motion in SIMBAD; other stars are shown where they are today.</span>
+              <button onClick={clearSim} aria-label="Close the simulation">
+                ×
+              </button>
+            </div>
+          )}
           <span className="sky-layer">
             {skyLayer === 'spherex' ? 'Sky: NASA SPHEREx (all-sky map)' : 'Sky: NASA WISE · zoom in to see SPHEREx'}
           </span>
@@ -493,6 +563,7 @@ export default function App() {
                     hideSpectrum={t?.hideSpectrum}
                     spectrumNote={t?.spectrumNote}
                     science={science}
+                    onSimulate={(target, years) => simulate(target, years, t?.label ?? 'The star')}
                   />
                 )
               })()}
