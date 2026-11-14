@@ -63,10 +63,10 @@ export default function CooBar({ aladinRef, hub }) {
       <span>
         <span className="muted">ICRS</span> RA {hms(p.ra)} · Dec {dms(p.dec)}
       </span>
-      <span className="muted">
+      <span className="muted coo-deg">
         ({p.ra.toFixed(4)}°, {sdeg(p.dec, 4)})
       </span>
-      <span>
+      <span className="coo-gal">
         <span className="muted">{t('Galactic')}</span> l {l.toFixed(3)}° · b {sdeg(b, 3)}
       </span>
       <span>

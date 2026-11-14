@@ -150,10 +150,13 @@ export default function Tutorial({ steps, onClose }) {
           : { top: Math.max(12, vh / 2 - 95), left: Math.max(12, vw / 2 - cardW / 2), width: cardW }
   }
 
+  // Phones: the card goes to the top when the element it explains is in the lower half, so it never covers it.
+  const phoneTop = !!rect && rect.top + rect.height / 2 > vh / 2
+
   return (
     <div className="tut" role="dialog" aria-modal="true" aria-label="Tutorial">
       {rect && <div className="tut-spot" style={rect} />}
-      <div className="tut-card" style={cardStyle} key={i}>
+      <div className={`tut-card${phoneTop ? ' tut-top' : ''}`} style={cardStyle} key={i}>
         <span className="tut-count">
           {i + 1} / {visible.length}
         </span>

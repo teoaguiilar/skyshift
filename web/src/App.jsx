@@ -70,6 +70,11 @@ function tourObjectFor(text) {
 }
 
 const DEFAULT_FOV = 0.5 // degrees
+// Label of the circle at the year-2000 catalogue position (shorter on phones, where it must fit the map).
+const catalogueLabel = () =>
+  window.matchMedia('(max-width: 760px)').matches
+    ? t('Catalogue position (2000)')
+    : t('Catalogue position in 2000: the object has moved since')
 
 // Coordinates typed in the search box that fall on a guided-tour object open its full panel, as its name
 // does. Fast-moving stars are matched anywhere along their path from the year-2000 catalogue position to
@@ -228,9 +233,20 @@ export default function App() {
   const showPanel = () => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   useEffect(() => {
-    const onScroll = () => setScrolledDown(window.scrollY > 200)
+    // Phones: the "Time-lapse below" button only while the panel is still out of sight under the screen.
+    const onScroll = () => {
+      const top = panelRef.current?.getBoundingClientRect().top
+      setScrolledDown(window.scrollY > 200 || (top != null && top < window.innerHeight - 80))
+    }
+    onScroll()
+    const timer = setInterval(onScroll, 1000) // the panel moves when the map or the panel change size
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      clearInterval(timer)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
   const [activeId, setActiveId] = useState(() => new URLSearchParams(window.location.search).get('object'))
 
@@ -339,7 +355,7 @@ export default function App() {
     // Tour objects that move: the name resolver gives the catalogue position for the year 2000, and the
     // star is no longer there (Barnard's Star is about 4.5′ further north today). Say so next to the circle.
     const moves = TOUR.find((t) => t.id === objectId)?.kind === 'moves'
-    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? t('Catalogue position in 2000: the object has moved since') : '' })])
+    markerLayerRef.current.addSources([A.source(ra, dec, { label: moves ? catalogueLabel() : '' })])
     writeUrl(ra, dec, fov, objectId)
     setSelected({ ra, dec, fov })
     setActiveId(objectId)
@@ -494,7 +510,7 @@ export default function App() {
       markerLayerRef.current = markers
       if (start) {
         const startMoves = TOUR.find((t) => t.id === new URLSearchParams(window.location.search).get('object'))?.kind === 'moves'
-        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? t('Catalogue position in 2000: the object has moved since') : '' })])
+        markers.addSources([A.source(start.ra, start.dec, { label: startMoves ? catalogueLabel() : '' })])
       }
 
       // Gaia DR3 layer: stars moved to the SPHEREx epoch with their proper motion.
@@ -836,7 +852,7 @@ export default function App() {
             {skyLayer === 'spherex' ? t('Sky: NASA SPHEREx (all-sky map)') : t('Sky: NASA WISE · zoom in to see SPHEREx')}
           </span>
         </div>
-        {activeId && !scrolledDown && (
+        {activeId && !scrolledDown && !simLabel && (
           <button className="to-panel" onClick={showPanel}>
             {t('▼ Time-lapse below')}
           </button>
