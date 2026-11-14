@@ -563,6 +563,7 @@ export default function App() {
                 {simLabel.years.toLocaleString('en')} years
               </span>
               <span className="muted">Straight-line path from its proper motion in SIMBAD; other stars are shown where they are today.</span>
+              {science && <code className="sim-eq">Δα·cosδ = μα*·Δt · Δδ = μδ·Δt (yearly parallax wobble not shown: see the Parallax tab)</code>}
               <button onClick={clearSim} aria-label="Close the simulation">
                 ×
               </button>

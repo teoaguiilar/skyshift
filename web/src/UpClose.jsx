@@ -189,7 +189,7 @@ export default function UpClose({ cardId, card, name }) {
   return (
     <figure className="upclose">
       <canvas ref={canvasRef} className="upclose-canvas" role="img" aria-label={`Artist's impression of ${name}`} />
-      <span className="upclose-tag">Artist's impression · drawn in code · not to scale</span>
+      <span className="upclose-tag">Artist's impression · drawn by code written with AI help · not to scale</span>
       <figcaption className="small-label">
         {recipe.basis}{' '}
         {temp
