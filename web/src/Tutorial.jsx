@@ -10,7 +10,7 @@ export const EXPLORE_STEPS = [
   {
     target: '.search',
     title: 'Search the sky',
-    text: 'Type the name of a star (for example “Barnard’s Star”) or its position in degrees (RA Dec), then press Go.',
+    text: 'Type the name of a star (for example “Barnard’s Star”) or its coordinates, then press Go. Coordinates can be in degrees (269.45 4.69), in hours and degrees (17 57 48 +04 41 36) or galactic (gal 31.0 14.1).',
   },
   {
     target: '.tour',

@@ -10,6 +10,7 @@ import SpotLapse from './SpotLapse.jsx'
 import Intro, { Logo } from './Intro.jsx'
 import Tutorial, { EXPLORE_STEPS, SCIENCE_STEPS } from './Tutorial.jsx'
 import CooBar from './CooBar.jsx'
+import { parseCoords } from './coords.js'
 import './App.css'
 
 // The five test objects of the challenge, resolved by name through CDS Sesame.
@@ -120,16 +121,6 @@ function writeUrl(ra, dec, fov, objectId) {
   p.set('dec', dec.toFixed(5))
   p.set('fov', fov.toFixed(3))
   window.history.replaceState(null, '', `?${p.toString()}`)
-}
-
-// "269.45 4.69" or "269.45, 4.69" -> numbers; anything else is treated as a name.
-function parseCoords(text) {
-  const m = text.trim().match(/^(-?\d+(?:\.\d+)?)[\s,]+([+-]?\d+(?:\.\d+)?)$/)
-  if (!m) return null
-  const ra = parseFloat(m[1])
-  const dec = parseFloat(m[2])
-  if (ra < 0 || ra >= 360 || dec < -90 || dec > 90) return null
-  return { ra, dec }
 }
 
 export default function App() {
@@ -378,7 +369,7 @@ export default function App() {
         flyTo(ra, dec, DEFAULT_FOV, objectId)
         setStatus('')
       })
-      .catch(() => setStatus(`“${text}” not found. Try another name or "RA Dec" in degrees.`))
+      .catch(() => setStatus(`“${text}” not found. Try another name, or coordinates such as 269.45 4.69, 17 57 48 +04 41 36 or gal 31.0 14.1.`))
   }
 
   return (
@@ -406,7 +397,7 @@ export default function App() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Object name or RA Dec (degrees)"
+            placeholder="Name or coordinates, e.g. 17 57 48 +04 41 36"
             aria-label="Search the sky"
           />
           <button type="submit">Go</button>

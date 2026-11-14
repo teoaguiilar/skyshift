@@ -5,21 +5,7 @@
  * degrees, galactic coordinates, and the field of view. "Grid" turns on Aladin's coordinate grid.
  */
 import { useEffect, useState } from 'react'
-
-const D = Math.PI / 180
-// ICRS -> Galactic rotation matrix (Hipparcos definition, ESA 1997, Vol. 1, Sect. 1.5.3).
-const GAL = [
-  [-0.0548755604162154, -0.873437090234885, -0.4838350155487132],
-  [0.4941094278755837, -0.4448296299600112, 0.7469822444972189],
-  [-0.8676661490190047, -0.1980763734312015, 0.4559837761750669],
-]
-export function toGalactic(ra, dec) {
-  const v = [Math.cos(dec * D) * Math.cos(ra * D), Math.cos(dec * D) * Math.sin(ra * D), Math.sin(dec * D)]
-  const g = GAL.map((r) => r[0] * v[0] + r[1] * v[1] + r[2] * v[2])
-  let l = Math.atan2(g[1], g[0]) / D
-  if (l < 0) l += 360
-  return [l, Math.asin(Math.max(-1, Math.min(1, g[2]))) / D]
-}
+import { toGalactic } from './coords.js'
 
 const pad = (n, w) => String(n).padStart(w, '0')
 function hms(ra) {
