@@ -28,6 +28,9 @@
 }
 .tour-btn:hover { border-color: var(--accent); color: var(--accent); }
 .tour-btn.varies { border-style: dashed; }
+.tour-legend { order: 99; margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.tour-legend .key { display: inline-block; width: 18px; height: 10px; border: 1px solid var(--muted); }
+.tour-legend .key.varies { border-style: dashed; margin-left: 8px; }
 .tour-btn.active { border-color: var(--accent); color: var(--accent); }
 
 .stage { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 0; overflow: hidden; }

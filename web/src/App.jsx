@@ -225,6 +225,9 @@ export default function App() {
 
       <nav className="tour" aria-label="Guided tour">
         <span className="tour-label">Guided tour</span>
+        <span className="tour-legend">
+          <span className="key moves" /> moves <span className="key varies" /> changes brightness
+        </span>
         {TOUR.map((t) => (
           <button key={t.label} className={`tour-btn ${t.kind}${activeId === t.id ? ' active' : ''}`} onClick={() => goTo(t.query, t.id)}>
             {t.label}

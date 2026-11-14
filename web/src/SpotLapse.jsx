@@ -46,7 +46,8 @@ export default function SpotLapse({ ra, dec }) {
       <TimeLapse id="spot" manifest={manifest} />
       <p className="hint">
         {manifest.frames.length} of {manifest.searched} SPHEREx images here were taken at a similar wavelength (±2 %).
-        Anything that moves or blinks is only a <strong>candidate</strong> until it is checked.
+        Something that shifts between dates is only a <strong>candidate moving object</strong>, and something that
+        changes brightness only a <strong>candidate variable</strong>, until it is checked against other data.
       </p>
     </>
   )
