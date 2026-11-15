@@ -2,7 +2,7 @@
 
 **See the sky move.** SkyShift is a free website where anyone can see what moves or changes brightness in the sky, using NASA SPHEREx infrared images of the same spot taken months apart.
 
-**Try it:** https://skyshift-roan.vercel.app
+**Try it:** https://skyshift-roan.vercel.app · **Demo video (30 s):** https://youtu.be/pNHKTIQ7-fM
 NASA Space Apps Challenge 2026 · Challenge: *Planet X and SPHEREx* · Team **SkyShift Murcia** (Murcia, Spain)
 
 ### Try it in two minutes
