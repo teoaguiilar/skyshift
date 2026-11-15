@@ -87,3 +87,12 @@ Needs Python 3 with `numpy`, `astropy`, `astroquery`, `reproject` and `matplotli
 Based on the IRSA tutorial "SPHEREx cutouts" (Caltech/IPAC). Written with help from Claude (Anthropic) and reviewed by the SkyShift Murcia team; see `AI_USAGE.md`. All sources are listed in `SOURCES.md`.
 
 This research has made use of the NASA/IPAC Infrared Science Archive, which is funded by the National Aeronautics and Space Administration and operated by the California Institute of Technology.
+
+## More scripts
+
+- `stack_epochs.py`: stacks all images of each visit (reveals faint objects such as WISE 0855).
+- `difference.py`: last visit minus first, so still sources cancel out.
+- `false_color.py`: three infrared bands as red, green and blue.
+- `spectrum.py`: infrared spectrum from all six detectors, with robust error bars (`--rebin` recomputes them offline).
+- `filter_spectrum.py`: keeps only a wavelength range (WISE 0855: 3.8 to 5.1 µm, to reduce the background star).
+- `band_stacks.py`: summed picture per detector and visit, and motion measured in each detector (`--from-spectrum` reuses downloaded images when IRSA is down).
