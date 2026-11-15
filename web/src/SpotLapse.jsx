@@ -10,10 +10,14 @@ import { t } from './i18n.js'
 import ReportForm from './ReportForm.jsx'
 import { SpectrumChart } from './Charts.jsx'
 import { IconFlag, IconWave } from './Icons.jsx'
+import { loadTargets, tourObjectAt } from './tourMatch.js'
+
+const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/data'
 
 // "Spectrum (on the fly)": asks our /api/spectrum function (by Teo) to measure this point in every
 // SPHEREx image of one visit, all six detectors (0.75-5 µm). It can take up to a minute.
-function OnTheFlySpectrum({ ra, dec }) {
+// tour = [{ id, spectrum }]: guided-tour objects and the folder of their precomputed spectrum.
+function OnTheFlySpectrum({ ra, dec, tour = [] }) {
   const [visit, setVisit] = useState('latest')
   const [state, setState] = useState('idle') // idle | loading | done | error
   const [result, setResult] = useState(null)
@@ -31,6 +35,19 @@ function OnTheFlySpectrum({ ra, dec }) {
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), 75000)
     try {
+      // On a guided-tour object (less than 1′ away): its spectrum already computed by the team from the
+      // same SPHEREx images, so the button works even when IRSA is down.
+      if (tour.length) {
+        const targets = await loadTargets(tour.map((o) => o.id), REPO_DATA)
+        const hit = tourObjectAt(ra, dec, targets)
+        const folder = hit && tour.find((o) => o.id === hit.id)?.spectrum
+        const saved = folder && (await fetch(`${REPO_DATA}/${folder}/spectrum.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null))
+        if (saved?.binned?.length > 2) {
+          setResult({ ...saved, precomputed: true })
+          setState('done')
+          return
+        }
+      }
       const q = `ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}${which === 'first' ? '&visit=first' : ''}`
       const r = await fetch(`/api/spectrum?${q}`, { signal: ctrl.signal })
       if ([502, 503, 504].includes(r.status)) throw new Error('IRSA_DOWN')
@@ -82,6 +99,11 @@ function OnTheFlySpectrum({ ra, dec }) {
           ) : (
             <>
               <SpectrumChart spectrum={result} />
+              {result.precomputed ? (
+                <p className="small-label">
+                  {result.name} · {t('Precomputed from the same SPHEREx images')} · {t('{n} measurements', { n: result.points?.length ?? 0 })}
+                </p>
+              ) : (
               <p className="small-label">
                 {t('Visit {from} → {to} · {n} measurements · {skipped} images skipped · {s} s', {
                   from: result.visit?.from,
@@ -91,8 +113,9 @@ function OnTheFlySpectrum({ ra, dec }) {
                   s: result.seconds,
                 })}
               </p>
+              )}
               {result.partial && <p className="note">{t('partial: IRSA was slow, so not every image was measured.')}</p>}
-              <p className="small-label">{t('Measured on the fly: no aperture correction, so absolute values are approximate; the shape is what matters.')}</p>
+              {!result.precomputed && <p className="small-label">{t('Measured on the fly: no aperture correction, so absolute values are approximate; the shape is what matters.')}</p>}
             </>
           )}
         </>
@@ -115,7 +138,7 @@ function writeChoice(band, size) {
   window.history.replaceState(null, '', `?${p.toString()}`)
 }
 
-export default function SpotLapse({ ra, dec, science = false, onFrameChange, requestMjd }) {
+export default function SpotLapse({ ra, dec, science = false, onFrameChange, requestMjd, tour }) {
   const [{ band, size }, setChoice] = useState(readChoice)
   const [manifest, setManifest] = useState(null)
   const [progress, setProgress] = useState({ step: 'search' })
@@ -243,7 +266,7 @@ export default function SpotLapse({ ra, dec, science = false, onFrameChange, req
         </button>
         <ShareButton />
       </div>
-      <OnTheFlySpectrum ra={ra} dec={dec} />
+      <OnTheFlySpectrum ra={ra} dec={dec} tour={tour} />
       {reporting && (
         <ReportForm
           onClose={() => setReporting(false)}
