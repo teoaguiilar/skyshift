@@ -107,7 +107,7 @@ npm run dev
 - SPHEREx pixels are about 6″ wide and we have about a year and a half of visits, so slow objects move only a pixel or two. Results are candidates.
 - Epsilon Indi B is a pair of brown dwarfs; SPHEREx sees them as a single blended point.
 - Very bright stars saturate the detector: no brightness is measured for them (Barnard's Star, R Draconis).
-- "Click anywhere" and the spectrum on the fly depend on IRSA being online; the guided tour works without it.
+- "Click anywhere" and the spectrum on the fly depend on IRSA being online; the guided tour works without it. Within 1′ of a guided-tour object, the spectrum shown is precomputed from the same SPHEREx images, and the web says so.
 
 ## Team SkyShift Murcia
 
