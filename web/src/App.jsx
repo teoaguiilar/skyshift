@@ -476,7 +476,21 @@ export default function App() {
         if (!url) return // nothing answers: keep trying the WISE map
         baseName = 'backup'
         const backup = A.imageHiPS(url, { name: '2MASS colour (backup)' })
+        // A new base map can make Aladin jump to that map's default view (2MASS: the Galactic centre,
+        // about 59° wide). Watch for 4 s: if it jumps there, put back the last view before the jump.
+        const view = () => ({ radec: aladin.getRaDec(), fov: aladin.getFov()[0] })
+        const jumped = (v) => Math.abs(v.radec[0] - 266.405) < 0.05 && Math.abs(v.radec[1] + 28.936) < 0.05 && Math.abs(v.fov - 58.63) < 0.5
+        let last = view()
         aladin.setBaseImageLayer(backup)
+        const keepView = (tries = 0) => {
+          const v = view()
+          if (jumped(v) && !jumped(last)) {
+            aladin.gotoRaDec(last.radec[0], last.radec[1])
+            aladin.setFoV(last.fov)
+          } else last = v
+          if (tries < 40) setTimeout(() => keepView(tries + 1), 100)
+        }
+        keepView()
         simRef.current.base = backup
         if (simRef.current.dark) setTimeout(() => backup.setOpacity?.(0), 500)
         label()
@@ -670,14 +684,19 @@ export default function App() {
       // When the base map finishes loading, Aladin jumps to the map's own default view
       // (the whole sky). Put back the view from the link once that has happened.
       const restoreView = (tries = 0) => {
-        if (!base.added && tries < 100) return setTimeout(() => restoreView(tries + 1), 100)
+        if (!base.added && tries < 30) return setTimeout(() => restoreView(tries + 1), 100) // at most 3 s if the map server is slow
         setTimeout(() => {
           if (interactedRef.current) return // the user already moved on: do not pull the view back
           if (start) {
             aladin.gotoRaDec(start.ra, start.dec)
             aladin.setFoV(start.fov)
           } else if (linked) {
-            goTo(linked.query, linked.id)
+            // Position from the object's own manifest (no name lookup needed); by name if that fails.
+            loadTourTargets().then((targets) => {
+              const tg = targets.find((x) => x.id === linked.id)
+              if (tg) flyTo(tg.ra_j2000_deg, tg.dec_j2000_deg, DEFAULT_FOV, linked.id)
+              else goTo(linked.query, linked.id)
+            })
             // On phones the player is below the map: glide down to it once the flight is done.
             if (isPhone()) setTimeout(showPanel, 4500)
           }
@@ -722,7 +741,20 @@ export default function App() {
     interactedRef.current = true
     selectSpot(ra, dec, fov, objectId)
     const current = aladin.getFov()[0]
-    const glide = () => aladin.animateToRaDec(ra, dec, 1.6, () => aladin.zoomToFoV(fov, 1.4))
+    // Aladin does not call back when it is already at the target (e.g. a link opening on the object
+    // the map starts on), so zoom straight away in that case, and never wait more than 2 s for the glide.
+    const glide = () => {
+      const [ra0, dec0] = aladin.getRaDec()
+      if (Math.abs(ra0 - ra) < 0.01 && Math.abs(dec0 - dec) < 0.01) return aladin.zoomToFoV(fov, 1.4)
+      let zoomed = false
+      const zoom = () => {
+        if (zoomed) return
+        zoomed = true
+        aladin.zoomToFoV(fov, 1.4)
+      }
+      aladin.animateToRaDec(ra, dec, 1.6, zoom)
+      setTimeout(zoom, 2000)
+    }
     if (current < 20) aladin.zoomToFoV(20, 0.8, glide)
     else glide()
   }
