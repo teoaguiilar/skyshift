@@ -493,6 +493,6 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .discuss-new:hover { color: var(--accent); }
 .credits a { color: var(--accent); }
 
-/* Recorded example shown when IRSA is down (real saved data, clearly labelled) */
-.example-banner { margin: 8px 0; padding: 8px 12px; border: 1px solid var(--warn); border-radius: var(--radius); color: var(--warn);
+/* Notice when an outside service (NASA IRSA) does not answer */
+.service-down { margin: 8px 0; padding: 8px 12px; border: 1px solid var(--warn); border-radius: var(--radius); color: var(--warn);
   background: rgba(245, 196, 81, 0.08); font-size: 13px; line-height: 1.45; }

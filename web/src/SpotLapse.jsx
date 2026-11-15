@@ -16,9 +16,9 @@ const REPO_DATA = 'https://raw.githubusercontent.com/teoaguiilar/skyshift/main/d
 
 // "Spectrum (on the fly)": asks our /api/spectrum function (by Teo) to measure this point in every
 // SPHEREx image of one visit, all six detectors (0.75-5 µm). It can take up to a minute.
-// When IRSA is down: real SPHEREx data saved by the team, clearly labelled as an example (not this spot).
-const EXAMPLE_SPECTRUM = 'eps-indi-b' // a clean, well-sampled spectrum (93 wavelength bins)
-const EXAMPLE_TIMELAPSE = { id: 'barnard', name: "Barnard's Star" } // a star that clearly moves
+// Shown when NASA's IRSA services do not answer (they are outside SkyShift).
+const IRSA_DOWN_TEXT =
+  "Temporarily unavailable: this feature searches SPHEREx images live on NASA's IRSA archive, which is not answering right now. It is not a SkyShift problem: it will work again as soon as NASA's service is back. Meanwhile, the guided tour works normally, because its data is saved by the team."
 
 // tour = [{ id, spectrum }]: guided-tour objects and the folder of their precomputed spectrum.
 function OnTheFlySpectrum({ ra, dec, tour = [] }) {
@@ -26,14 +26,6 @@ function OnTheFlySpectrum({ ra, dec, tour = [] }) {
   const [state, setState] = useState('idle') // idle | loading | done | error
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
-  const showExample = async () => {
-    setState('loading')
-    const saved = await fetch(`${REPO_DATA}/${EXAMPLE_SPECTRUM}/spectrum.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
-    if (saved?.binned?.length > 2) {
-      setResult({ ...saved, name: 'Epsilon Indi B', precomputed: true, example: true })
-      setState('done')
-    } else setState('error')
-  }
 
   useEffect(() => {
     setState('idle')
@@ -71,7 +63,7 @@ function OnTheFlySpectrum({ ra, dec, tour = [] }) {
       // IRSA busy or down (502/503/504) or too slow: a friendly message, not a raw error.
       setError(
         e.name === 'AbortError' || e.message === 'IRSA_DOWN' || /IRSA|took too long|502|503|504/.test(e.message)
-          ? t("NASA's IRSA archive is not answering right now. Try again in a few minutes, or explore the guided tour.")
+          ? t(IRSA_DOWN_TEXT)
           : e.message,
       )
       setState('error')
@@ -98,13 +90,10 @@ function OnTheFlySpectrum({ ra, dec, tour = [] }) {
       {state === 'loading' && <p className="hint">{t('Measuring every SPHEREx image of this visit, all six detectors… up to 1 min.')}</p>}
       {state === 'error' && (
         <div className="spot-fail">
-          <p className="status">{error}</p>
+          <p className="service-down">{error}</p>
           <div className="spot-fail-actions">
             <button className="btn btn-link" onClick={() => run(visit)}>
               {t('Try again')}
-            </button>
-            <button className="btn btn-link" onClick={showExample}>
-              {t('Show a recorded example')}
             </button>
           </div>
         </div>
@@ -116,11 +105,6 @@ function OnTheFlySpectrum({ ra, dec, tour = [] }) {
           ) : (
             <>
               <SpectrumChart spectrum={result} />
-              {result.example && (
-                <p className="example-banner">
-                  {t('Recorded example: NASA IRSA is not answering, so this is the spectrum of {name} that the team saved from the same kind of SPHEREx images. It is not the point you chose.', { name: result.name })}
-                </p>
-              )}
               {result.precomputed ? (
                 <p className="small-label">
                   {result.name} · {t('Precomputed from the same SPHEREx images')} · {t('{n} measurements', { n: result.points?.length ?? 0 })}
@@ -231,36 +215,18 @@ export default function SpotLapse({ ra, dec, science = false, onFrameChange, req
           : t('Downloading SPHEREx images… {done}/{total} (about half a minute)', { done: progress.done, total: progress.total })}
       </p>
     )
-  } else if (state === 'example') {
-    body = (
-      <>
-        <p className="example-banner">
-          {t('Recorded example: NASA IRSA is not answering, so this shows how the result looks with SPHEREx images of {name} that the team saved. It is not the spot you chose.', { name: EXAMPLE_TIMELAPSE.name })}
-        </p>
-        <TimeLapse id={EXAMPLE_TIMELAPSE.id} science={science} hideReport onFrameChange={onFrameChange} requestMjd={requestMjd} />
-      </>
-    )
   } else if (state === 'empty' || state === 'error') {
     body = (
       <div className="spot-fail">
         {state === 'empty' ? (
           <p className="hint">{t('Not enough SPHEREx images at a similar wavelength here yet. Try another spot or detector.')}</p>
         ) : (
-          <p className="status">
-            {t(
-              "NASA's IRSA archive is not answering right now. Try again in a few minutes, or explore the guided tour.",
-            )}
-          </p>
+          <p className="service-down">{t(IRSA_DOWN_TEXT)}</p>
         )}
         <div className="spot-fail-actions">
           {state === 'error' && (
             <button className="btn btn-link" onClick={() => setAttempt((a) => a + 1)}>
               {t('Try again')}
-            </button>
-          )}
-          {state === 'error' && (
-            <button className="btn btn-link" onClick={() => setState('example')}>
-              {t('Show a recorded example')}
             </button>
           )}
         </div>
