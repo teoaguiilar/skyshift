@@ -536,7 +536,7 @@ svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 
 @media (min-width: 761px) {
   .app { grid-template-rows: auto minmax(0, 1fr); }
-  .stage { --lw: 300px; --rw: 440px; position: relative; display: block; overflow: hidden; background: #000; }
+  .stage { --lw: 300px; --rw: 440px; position: relative; display: block; overflow: hidden; background: var(--bg); }
   .app.is-science .stage { --lw: 86px; --rw: 480px; }
   /* The map fills only the space between the two panels, so its centre (where objects open) is never hidden */
   .stage > .map-wrap { position: absolute; top: 0; bottom: 0; left: var(--lw); right: var(--rw); }
