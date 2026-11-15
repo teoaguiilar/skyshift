@@ -826,12 +826,33 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app${science ? ' is-science' : ''}`}>
       <header className="topbar">
         <div className="brand">
           <Logo size={30} />
           <span className="brand-tag small-label">{t('See the sky move')}</span>
         </div>
+        <form
+          className="search"
+          onSubmit={(e) => {
+            e.preventDefault()
+            goTo(query)
+          }}
+        >
+          <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-4-4" />
+          </svg>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('Search a star, a name or coordinates')}
+            aria-label={t('Search the sky')}
+          />
+          <button type="submit" className="btn search-go">
+            {t('Go')}
+          </button>
+        </form>
         <div className="seg mode-switch" role="tablist" aria-label="Mode">
           <button className={!science ? 'on' : ''} onClick={() => setMode('explore')} role="tab" aria-selected={!science}>
             {t('Explore')}
@@ -847,47 +868,35 @@ export default function App() {
             </button>
           ))}
         </div>
-        <form
-          className="search"
-          onSubmit={(e) => {
-            e.preventDefault()
-            goTo(query)
-          }}
-        >
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('Name or coordinates, e.g. 17 57 48 +04 41 36')}
-            aria-label={t('Search the sky')}
-          />
-          <button type="submit" className="btn search-go">
-            {t('Go')}
-          </button>
-        </form>
         <button className="help-btn" onClick={() => setTutorial(tutorialFor(mode))} aria-label={t('Show the tutorial')} title={t('Tutorial')}>
           ?
         </button>
       </header>
 
-      <nav className="tour" aria-label="Guided tour">
-        <span className="small-label tour-label">{t('Guided tour')}</span>
-        {TOUR.map((t) => (
-          <button
-            key={t.label}
-            className={`tour-obj ${t.kind}`}
-            aria-pressed={activeId === t.id}
-            onClick={() => goTo(t.query, t.id)}
-          >
-            <img src={thumbOf(t)} alt="" decoding="async" />
-            <span className="tour-text">
-              <span>{t.label}</span>
-              <span className={`tag ${t.kind}`}>{t.tag ? tr(t.tag) : t.kind === 'moves' ? tr('Moves') : tr('Changes brightness')}</span>
-            </span>
-          </button>
-        ))}
-      </nav>
 
       <main className="stage">
+        <nav className="tour" aria-label="Guided tour">
+          <div className="tour-head">
+            <h2>{t('Guided tour')}</h2>
+            <span className="small-label">{t('{n} objects', { n: TOUR.length })}</span>
+          </div>
+          <p className="tour-hint">{t('Real SPHEREx images, months apart. Pick one and watch it change.')}</p>
+          {TOUR.map((t) => (
+            <button
+              key={t.label}
+              className={`tour-obj ${t.kind}`}
+              aria-pressed={activeId === t.id}
+              onClick={() => goTo(t.query, t.id)}
+            >
+              <img src={thumbOf(t)} alt="" decoding="async" />
+              <span className="tour-text">
+                <span>{t.label}</span>
+                <span className={`tag ${t.kind}`}>{t.tag ? tr(t.tag) : t.kind === 'moves' ? tr('Moves') : tr('Changes brightness')}</span>
+              </span>
+            </button>
+          ))}
+          <p className="tour-foot small-label">{t('Or click anywhere on the sky')}</p>
+        </nav>
         <div className="map-wrap">
           <div ref={mapRef} className="map" onMouseLeave={() => cooHub.cursor(null)} />
           {science && <CooBar aladinRef={aladinRef} hub={cooHub} />}
