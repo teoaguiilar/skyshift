@@ -26,6 +26,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | "SPHEREx: NASA's Near-Infrared Spectrophotometric All-Sky Survey" (arXiv:2404.11017), Table 2 | SPHEREx detector wavelength ranges (D1–D6) shown in the web | https://arxiv.org/abs/2404.11017 | arXiv paper (cited, values only) |
 | ESA (1997), The Hipparcos and Tycho Catalogues, Vol. 1, Sect. 1.5.3 | ICRS to Galactic rotation matrix (galactic coordinates in the web) | https://www.cosmos.esa.int/web/hipparcos/catalogues | Cited (standard constants) |
 | Michroma font, by Vernon Adams | Brand typography | https://fonts.google.com/specimen/Michroma | SIL Open Font License 1.1, served from Google Fonts |
+| Inter font, by Rasmus Andersson | Text in the demo video | https://rsms.me/inter/ | SIL Open Font License 1.1 |
 | Archivo font, by Omnibus-Type | Brand typography | https://fonts.google.com/specimen/Archivo | SIL Open Font License 1.1, served from Google Fonts |
 | Byrne et al. (2026), "The Barnard's Star planetary system: stability, composition, and evolution of four sub-Earth exoplanets", MNRAS 550 | Barnard's Star object card | https://academic.oup.com/mnras/article/550/2/stag1207/8715836 | Scientific paper, cited |
 | McCaughrean et al. (2004), "Epsilon Indi Ba/Bb: the nearest binary brown dwarf", A&A | Epsilon Indi B object card (discovery of the pair) | https://arxiv.org/abs/astro-ph/0309256 | Scientific paper, cited |
