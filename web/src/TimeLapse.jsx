@@ -9,6 +9,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Bands from './Bands.jsx'
+import { DiscussButton } from './Discuss.jsx'
 import { BrightnessChart, PositionChart, FilteredSpectrum, SpectrumChart, byVisit, hasBrightness, hasPosition } from './Charts.jsx'
 import ObjectCard from './ObjectCard.jsx'
 import Frame, { FrameOverlay } from './Frame.jsx'
@@ -280,6 +281,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </button>
         )}
         {!hideReport && <ShareButton />}
+        {!hideReport && <DiscussButton name={objectName ?? manifest.name} />}
       </div>
 
       {manifest.frames.length > 1 && (

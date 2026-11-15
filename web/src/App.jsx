@@ -16,6 +16,7 @@ import { parseCoords } from './coords.js'
 import { getLang, setLang, t, t as tr } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import ObjectCard from './ObjectCard.jsx'
+import { DISCUSSIONS, DiscussButton } from './Discuss.jsx'
 import DateControl, { mjdToDate, mjdToYear } from './DateControl.jsx'
 import './App.css'
 
@@ -917,6 +918,11 @@ export default function App() {
             <>
               <h2>{candidate ? `${t('Community candidate')}: ${candidate.name}` : selected ? t('Selected spot') : t('Start here')}</h2>
               {candidate && <ObjectCard card={candidate} />}
+              {candidate && (
+                <div className="actions">
+                  <DiscussButton name={candidate.name} />
+                </div>
+              )}
               {selected ? (
                 <dl className="coords">
                   <dt>RA</dt>
@@ -952,6 +958,13 @@ export default function App() {
               'Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0 with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS). Team SkyShift Murcia · NASA Space Apps Challenge 2026.',
             )}
             {getLang() === 'es' && <span className="credits-lang"> {t('Scientific texts and notes from the team are in English.')}</span>}
+          </p>
+          <p className="credits">
+            {t('Community: talk about any object, add information or point out errors in')}{' '}
+            <a href={DISCUSSIONS} target="_blank" rel="noopener noreferrer">
+              {t('SkyShift Discussions (GitHub)')}
+            </a>
+            .
           </p>
         </aside>
       </main>
