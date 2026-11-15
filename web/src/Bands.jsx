@@ -243,7 +243,7 @@ export default function Bands({ bands }) {
         </tbody>
       </table>
       <p className="small-label">{t('Shift between visits; east = left on the image, north = up.')}</p>
-      {bands.how_to_read && <p className="hint">{bands.how_to_read}</p>}
+      {bands.how_to_read && <p className="hint">{t(bands.how_to_read)}</p>}
     </div>
   )
 }

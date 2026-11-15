@@ -33,6 +33,8 @@ export function setLang(next) {
 }
 document.documentElement.lang = lang
 
+import SCIENCE_ES from './scienceEs.js'
+
 export function t(text, vars) {
   let out = lang === 'es' ? (ES[text] ?? text) : text
   if (vars) for (const [k, v] of Object.entries(vars)) out = out.split(`{${k}}`).join(String(v))
@@ -70,7 +72,6 @@ const ES = {
     'Arrastra y acerca el mapa y pulsa cualquier punto del cielo, o elige un objeto de la visita guiada.',
   'Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0 with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS). Team SkyShift Murcia · NASA Space Apps Challenge 2026.':
     'Datos: NASA SPHEREx (IRSA) · NASA WISE (copia HiPS de la ESA) · ESA Gaia DR3 (capa opcional, posiciones llevadas a 2026.0 con su movimiento propio) · nombres de objetos: CDS Sesame. Mapa del cielo: Aladin Lite (CDS). Equipo SkyShift Murcia · NASA Space Apps Challenge 2026.',
-  'Scientific texts and notes from the team are in English.': 'Los textos científicos y las notas del equipo están en inglés.',
   'Catalogue position (2000)': 'Posición de catálogo (2000)',
   'Catalogue position in 2000: the object has moved since': 'Posición de catálogo en 2000: el objeto se ha movido desde entonces',
   // Simulation label
@@ -319,6 +320,7 @@ const ES = {
   'grey = single images (outside the range: cut off)': 'gris = imágenes sueltas (las que se salen del rango, cortadas)',
   'Spectrum, filtered: only {a}–{b} µm (SPHEREx)': 'Espectro filtrado: solo {a}–{b} µm (SPHEREx)',
   'Spectrum view': 'Vista del espectro',
+  'S/N': 'S/R',
   'Community discussions are coming soon.': 'Los debates de la comunidad llegan pronto.',
   'Precomputed from the same SPHEREx images': 'Calculado antes con las mismas imágenes de SPHEREx',
   '{n} measurements': '{n} medidas',
@@ -364,3 +366,6 @@ const ES = {
   Next: 'Siguiente',
   Done: 'Hecho',
 }
+
+// Texts from the data and the science cards (scienceEs.js).
+Object.assign(ES, SCIENCE_ES)

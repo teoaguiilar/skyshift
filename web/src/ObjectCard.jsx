@@ -15,17 +15,17 @@ export default function ObjectCard({ card, description, science = false }) {
       {description && (
         <div className="card-description">
           <span className="small-label">{science ? t('The system, in detail') : t('The system')}</span>
-          <p>{description}</p>
+          <p>{t(description)}</p>
         </div>
       )}
       {!card ? null : (
         <>
-      {card.type && <p className="card-type">{card.type}</p>}
-      {card.summary && <p>{card.summary}</p>}
+      {card.type && <p className="card-type">{t(card.type)}</p>}
+      {card.summary && <p>{t(card.summary)}</p>}
       {card.why_interesting && (
         <p>
           <strong>{t('Why it matters here: ')}</strong>
-          {card.why_interesting}
+          {t(card.why_interesting)}
         </p>
       )}
 
@@ -33,20 +33,20 @@ export default function ObjectCard({ card, description, science = false }) {
         <ul className="facts">
           {card.facts.map((f, k) => (
             <li key={k}>
-              <span className="fact-label">{f.label}</span>
+              <span className="fact-label">{t(f.label)}</span>
               <span className="fact-value">
-                {f.value} {f.unit}
+                {typeof f.value === 'string' ? t(f.value) : f.value} {f.unit && t(f.unit)}
               </span>
-              {f.compare && <span className="fact-compare">{f.compare}</span>}
+              {f.compare && <span className="fact-compare">{t(f.compare)}</span>}
               {f.source && (
                 <span className="fact-source">
                   {t('Source:')}{' '}
                   {f.source_url ? (
                     <a href={f.source_url} target="_blank" rel="noreferrer">
-                      {f.source}
+                      {t(f.source)}
                     </a>
                   ) : (
-                    f.source
+                    t(f.source)
                   )}
                 </span>
               )}

@@ -32,7 +32,7 @@ function factNumbers(card, re) {
     .filter((n) => n.length)
     .map((n) => (n.length >= 2 ? (n[0] + n[1]) / 2 : n[0]))
   if (!values.length) return null
-  return { value: values[0], values, text: `${f.value} ${f.unit ?? ''}`.trim() }
+  return { value: values[0], values, text: `${t(String(f.value))} ${f.unit ? t(f.unit) : ''}`.trim() }
 }
 
 // Approximate colour of a blackbody at temperature T (Kelvin), as RGB 0-255.

@@ -57,7 +57,7 @@ const LY_PER_PC = 3.26156
 export function plxFromCard(card) {
   const f = card?.facts?.find((x) => /distance/i.test(x.label) && /light/i.test(x.unit ?? ''))
   const ly = f ? parseFloat(String(f.value).replace(/,/g, '')) : NaN
-  return Number.isFinite(ly) && ly > 0 ? { plx: (1000 * LY_PER_PC) / ly, text: `${f.value} ${f.unit}`, source: f.source } : null
+  return Number.isFinite(ly) && ly > 0 ? { plx: (1000 * LY_PER_PC) / ly, text: `${tr(String(f.value))} ${tr(f.unit)}`, source: tr(f.source) } : null
 }
 
 // Parallax (mas) the team uses for an object: the card distance for RW Aurigae, otherwise the manifest value.

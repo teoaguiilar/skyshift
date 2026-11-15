@@ -931,7 +931,6 @@ export default function App() {
             {t(
               'Data: NASA SPHEREx (IRSA) · NASA WISE (ESA HiPS mirror) · ESA Gaia DR3 (optional layer, positions moved to 2026.0 with their proper motion) · object names: CDS Sesame. Sky map: Aladin Lite (CDS). Team SkyShift Murcia · NASA Space Apps Challenge 2026.',
             )}
-            {getLang() === 'es' && <span className="credits-lang"> {t('Scientific texts and notes from the team are in English.')}</span>}
           </p>
           {DISCUSSIONS_OPEN && (
             <p className="credits">

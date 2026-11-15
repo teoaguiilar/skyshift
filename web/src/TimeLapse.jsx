@@ -342,7 +342,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             ))}
           </ul>
           <p className="hint">
-            {tr('One visit: {from} → {to}.', { from: falseColor.visit.from, to: falseColor.visit.to })} {falseColor.note}
+            {tr('One visit: {from} → {to}.', { from: falseColor.visit.from, to: falseColor.visit.to })} {falseColor.note && tr(falseColor.note)}
           </p>
         </>
       ) : mode === 'difference' && difference ? (
@@ -364,7 +364,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
           </div>
           <p className="hint">
             <span className="diff-key first" /> {difference.visits[0].date} → <span className="diff-key last" />{' '}
-            {difference.visits[difference.visits.length - 1].date}. {difference.how_to_read} {tr('Circles: catalogue position.')}
+            {difference.visits[difference.visits.length - 1].date}. {difference.how_to_read && tr(difference.how_to_read)} {tr('Circles: catalogue position.')}
           </p>
         </>
       ) : (
@@ -416,7 +416,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
               <>
                 <dt>{tr('Stack')}</dt>
                 <dd>
-                  {frame.stacked_images} images · S/N {frame.snr?.toFixed(1)} ·{' '}
+                  {frame.stacked_images} {tr('images')} · {tr('S/N')} {frame.snr?.toFixed(1)} ·{' '}
                   <span className={frame.detected ? '' : 'warn'}>{frame.detected ? tr('detected') : tr('not detected')}</span>
                 </dd>
               </>
@@ -513,7 +513,7 @@ export default function TimeLapse({ id, manifest: given, kind, cardId, note, hid
             px: g.pixel_scale_arcsec,
           })}
           <br />
-          {manifest.data_credit}
+          {manifest.data_credit && tr(manifest.data_credit)}
         </p>
         {reporting && (
           <ReportForm

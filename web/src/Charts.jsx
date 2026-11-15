@@ -250,7 +250,7 @@ export function FilteredSpectrum({ spectrum, filtered, note }) {
       {on ? <SpectrumChart spectrum={filtered} filtered note={note} /> : <SpectrumChart spectrum={spectrum} note={note} />}
       {on && (
         <div className="filter-info">
-          <p>{f.why}</p>
+          <p>{t(f.why)}</p>
           <p className="muted">
             {t('Detectors {d} · {k} images kept, {l} left out.', {
               d: (f.detectors ?? []).join(', '),
