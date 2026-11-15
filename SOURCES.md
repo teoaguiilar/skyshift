@@ -46,6 +46,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | GitHub Discussions | Community conversations about objects and candidates ("Discuss" button on each object and candidate) | https://docs.github.com/en/discussions | GitHub Terms of Service |
 | 2MASS colour HiPS (CDS/P/2MASS/color), IRSA mirror | Backup sky map when the WISE or SPHEREx maps do not answer | https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color | 2MASS: NASA/IPAC, UMass. HiPS by CDS. See acknowledgements below |
 | White & Ghez (2001); Pecaut & Mamajek (2013); Dodin et al. (2020), as cited in the 2023 RW Aur study (Astron. Nachr., doi:10.1002/asna.20230118) | RW Aurigae object card: stellar parameters and the dimming explanation | https://doi.org/10.1002/asna.20230118 | Scientific papers, cited through the 2023 study |
+| VizieR (CDS), mirror at Harvard-CfA: Gaia DR3 catalogue I/355/gaiadr3 | Backup source for the Gaia star layer | https://vizier.cfa.harvard.edu/viz-bin/VizieR?-source=I/355/gaiadr3 | Gaia DR3: ESA/Gaia/DPAC, free use with credit; VizieR: CDS, Strasbourg |
 
 ## Acknowledgements
 
