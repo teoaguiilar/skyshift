@@ -44,6 +44,8 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | WiseView (Caselden et al. 2018, ASCL 1806.004) | Inspiration and comparison table in the README | https://ascl.net/1806.004 | Cited |
 | Wright & Foley (2025), "Flux and Color of WISE 0855-0714", arXiv:2505.12105 | WISE 0855 object card: clean NEOWISE W2 brightness (W2 = 13.91) to compare with our SPHEREx flux, and why the AllWISE value is not used (contaminated by a background source) | https://arxiv.org/abs/2505.12105 | Scientific paper, cited |
 | GitHub Discussions | Community conversations about objects and candidates ("Discuss" button on each object and candidate) | https://docs.github.com/en/discussions | GitHub Terms of Service |
+| 2MASS colour HiPS (CDS/P/2MASS/color), IRSA mirror | Backup sky map when the WISE or SPHEREx maps do not answer | https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color | 2MASS: NASA/IPAC, UMass. HiPS by CDS. See acknowledgements below |
+| White & Ghez (2001); Pecaut & Mamajek (2013); Dodin et al. (2020), as cited in the 2023 RW Aur study (Astron. Nachr., doi:10.1002/asna.20230118) | RW Aurigae object card: stellar parameters and the dimming explanation | https://doi.org/10.1002/asna.20230118 | Scientific papers, cited through the 2023 study |
 
 ## Acknowledgements
 
