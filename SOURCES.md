@@ -43,6 +43,7 @@ Every dataset, library, piece of code, image or text that is not our own. Add an
 | Tanner Helland (2012), "How to Convert Temperature (K) to RGB" | Approximate colour of each object from its temperature (blackbody to RGB) in the "Up close" tab | https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html | Algorithm described publicly; reimplemented in our own code |
 | WiseView (Caselden et al. 2018, ASCL 1806.004) | Inspiration and comparison table in the README | https://ascl.net/1806.004 | Cited |
 | Wright & Foley (2025), "Flux and Color of WISE 0855-0714", arXiv:2505.12105 | WISE 0855 object card: clean NEOWISE W2 brightness (W2 = 13.91) to compare with our SPHEREx flux, and why the AllWISE value is not used (contaminated by a background source) | https://arxiv.org/abs/2505.12105 | Scientific paper, cited |
+| GitHub Discussions | Community conversations about objects and candidates ("Discuss" button on each object and candidate) | https://docs.github.com/en/discussions | GitHub Terms of Service |
 
 ## Acknowledgements
 
