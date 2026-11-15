@@ -16,7 +16,7 @@ import { parseCoords } from './coords.js'
 import { getLang, setLang, t, t as tr } from './i18n.js'
 import GaiaStar, { GAIA_BINS, GAIA_NO_COLOUR, binFor } from './GaiaStar.jsx'
 import ObjectCard from './ObjectCard.jsx'
-import { DISCUSSIONS, DiscussButton } from './Discuss.jsx'
+import { DISCUSSIONS, DISCUSSIONS_OPEN, DiscussButton } from './Discuss.jsx'
 import { loadTargets, tourObjectAt } from './tourMatch.js'
 import DateControl, { mjdToDate, mjdToYear } from './DateControl.jsx'
 import './App.css'
@@ -933,13 +933,15 @@ export default function App() {
             )}
             {getLang() === 'es' && <span className="credits-lang"> {t('Scientific texts and notes from the team are in English.')}</span>}
           </p>
-          <p className="credits">
-            {t('Community: talk about any object, add information or point out errors in')}{' '}
-            <a href={DISCUSSIONS} target="_blank" rel="noopener noreferrer">
-              {t('SkyShift Discussions (GitHub)')}
-            </a>
-            .
-          </p>
+          {DISCUSSIONS_OPEN && (
+            <p className="credits">
+              {t('Community: talk about any object, add information or point out errors in')}{' '}
+              <a href={DISCUSSIONS} target="_blank" rel="noopener noreferrer">
+                {t('SkyShift Discussions (GitHub)')}
+              </a>
+              .
+            </p>
+          )}
         </aside>
       </main>
 

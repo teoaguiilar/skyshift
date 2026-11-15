@@ -319,6 +319,7 @@ const ES = {
   'grey = single images (outside the range: cut off)': 'gris = imágenes sueltas (las que se salen del rango, cortadas)',
   'Spectrum, filtered: only {a}–{b} µm (SPHEREx)': 'Espectro filtrado: solo {a}–{b} µm (SPHEREx)',
   'Spectrum view': 'Vista del espectro',
+  'Community discussions are coming soon.': 'Los debates de la comunidad llegan pronto.',
   'Precomputed from the same SPHEREx images': 'Calculado antes con las mismas imágenes de SPHEREx',
   '{n} measurements': '{n} medidas',
   'Moves · shines in infrared': 'Se mueve · brilla en infrarrojo',
