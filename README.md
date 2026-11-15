@@ -29,9 +29,9 @@ Everything SkyShift flags is a **candidate**, never a discovery: SPHEREx pixels 
 
 ## ⭐ Report a candidate: the sky needs more eyes
 
-Projects like Backyard Worlds have shown that curious people find real brown dwarfs. SkyShift brings that to SPHEREx: if you see something move or flicker, **Report a candidate** turns it into a proposal in the same format as our fact cards (coordinates, dates, wavelength and evidence), checks it for sources and personal data, and sends it as a GitHub Issue. The team reviews it in public, and approved candidates appear on the map. Anyone can already add information to a candidate by commenting on its GitHub Issue.
+Projects like Backyard Worlds have shown that curious people find real brown dwarfs. SkyShift brings that to SPHEREx: if you see something move or flicker, **Report a candidate** turns it into a proposal in the same format as our fact cards (coordinates, dates, wavelength and evidence), checks it for sources and personal data, and sends it as a GitHub Issue. The team reviews it in public, and approved candidates appear on the map.
 
-**Next step:** a discussion space for every candidate, where amateurs and scientists can talk it through together. It is a future improvement, not part of SkyShift yet.
+**Discuss it together:** every object and candidate has a **Discuss** button that opens a GitHub Discussions thread, where amateurs and scientists can talk it through.
 
 ## How SkyShift answers the challenge
 
@@ -47,7 +47,7 @@ Projects like Backyard Worlds have shown that curious people find real brown dwa
 | Coordinates in the URL | `?ra=&dec=&fov=`, `?object=`, plus detector and size |
 | Use metadata such as contamination flags | SPHEREx `FLAGS` decoded for every image |
 | Use public tools (Astropy, Aladin) | Astropy, astroquery, reproject and Aladin Lite |
-| Involve the public in discovery | **Report a candidate**, reviewed in public on GitHub |
+| Involve the public in discovery | **Report a candidate**, reviewed in public on GitHub, and a **Discuss** thread for every object and candidate |
 
 ## What we measured with SkyShift
 
