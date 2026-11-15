@@ -136,7 +136,7 @@ Teo (data and pipeline) · Pedro (web) · Antonio (presentation and submission) 
 
 ## Use of AI
 
-We used AI assistants (Claude by Anthropic) to help write code, organise the work and translate texts, and ElevenLabs to generate the English voiceover of the demo video. The idea, the decisions and every scientific statement are the team's, and the team reviewed everything. Images drawn in code are labelled as such. Details, file by file: [AI_USAGE.md](AI_USAGE.md).
+We used AI assistants (Claude by Anthropic) to help write code, organise the work and translate texts. The demo video uses an AI-generated voiceover (ElevenLabs) from the team's script and five AI-generated cartoon presenters (Higgsfield, GPT Image), labelled "AI-generated characters" on screen. The idea, the decisions and every scientific statement are the team's, and the team reviewed everything. Drawings inside the web app ("Up close") are drawn in code and labelled as such. Details, file by file: [AI_USAGE.md](AI_USAGE.md).
 
 ## Licence
 
