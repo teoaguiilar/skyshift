@@ -107,6 +107,23 @@ const SPHEREX_SURVEY = 'https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_
 // The cube has one image per wavelength. Temporary choice; the data team picks the final one.
 const SPHEREX_SLICE = 30
 const SPHEREX_MAX_FOV = 15 // degrees: SPHEREx layer appears below this field of view
+// Backup map when a server does not answer: 2MASS colour infrared sky (CDS HiPS "CDS/P/2MASS/color").
+// Its mirrors are tried in order and the first one that answers is used.
+const BACKUP_SURVEYS = [
+  'https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color',
+  'https://alaskybis.cds.unistra.fr/2MASS/Color',
+  'https://alasky.cds.unistra.fr/2MASS/Color',
+]
+const PROBE_MS = 6000
+// Does this HiPS server answer now? (a small file, never from the browser cache)
+const answers = (url) => {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), PROBE_MS)
+  return fetch(`${url}/properties?check=${Date.now()}`, { signal: ctrl.signal, cache: 'no-store' })
+    .then((r) => r.ok)
+    .catch(() => false)
+    .finally(() => clearTimeout(timer))
+}
 
 // Gaia DR3 stars (ESA), through our /api/gaia function. Off by default.
 const GAIA_MAX_FOV = 1 // degrees: only load stars when zoomed in
@@ -427,12 +444,15 @@ export default function App() {
       // SPHEREx layer on top of the base map, only when zoomed in. While its (slower) tiles
       // arrive, the base map shows underneath, so the view never goes blank.
       let spherexOn = false
+      let spherexDown = false // IRSA's SPHEREx map did not answer: stay on the base map
+      let baseName = 'wise'
+      const label = () => setSkyLayer(spherexOn && !spherexDown ? 'spherex' : baseName === 'wise' ? (spherexOn ? 'wise-nospherex' : 'base') : spherexOn ? 'backup-nospherex' : 'backup')
       const updateLayers = (fov) => {
         const wantSpherex = fov <= SPHEREX_MAX_FOV
         if (wantSpherex === spherexOn) return
         spherexOn = wantSpherex
-        setSkyLayer(wantSpherex ? 'spherex' : 'base')
-        if (wantSpherex) {
+        label()
+        if (wantSpherex && !spherexDown) {
           const layer = A.imageHiPS(SPHEREX_SURVEY, { name: 'SPHEREx DR1 all-sky' })
           aladin.setOverlayImageLayer(layer, 'spherex')
           simRef.current.spherex = layer
@@ -448,6 +468,26 @@ export default function App() {
           aladin.removeImageLayer('spherex')
         }
       }
+      // Backup map: if the WISE or the SPHEREx server does not answer within a few seconds, switch.
+      answers(BASE_SURVEY).then(async (ok) => {
+        if (ok) return
+        let url = null
+        for (const u of BACKUP_SURVEYS) if (await answers(u)) { url = u; break }
+        if (!url) return // nothing answers: keep trying the WISE map
+        baseName = 'backup'
+        const backup = A.imageHiPS(url, { name: '2MASS colour (backup)' })
+        aladin.setBaseImageLayer(backup)
+        simRef.current.base = backup
+        if (simRef.current.dark) setTimeout(() => backup.setOpacity?.(0), 500)
+        label()
+      })
+      answers(SPHEREX_SURVEY).then((ok) => {
+        if (ok) return
+        spherexDown = true
+        aladin.removeImageLayer('spherex')
+        simRef.current.spherex = null
+        label()
+      })
       updateLayers(aladin.getFov()[0])
       // Aladin keeps one callback per event, so every zoom reaction goes here.
       // Guard: during the first seconds, if the base map pushes its own wide default view,
@@ -856,7 +896,15 @@ export default function App() {
             onFree={setFreeMjd}
           />}
           <span className="sky-layer">
-            {skyLayer === 'spherex' ? t('Sky: NASA SPHEREx (all-sky map)') : t('Sky: NASA WISE · zoom in to see SPHEREx')}
+            {
+              {
+                spherex: t('Sky: NASA SPHEREx (all-sky map)'),
+                base: t('Sky: NASA WISE · zoom in to see SPHEREx'),
+                'wise-nospherex': t('Sky: NASA WISE · the SPHEREx map (NASA IRSA) is not answering now'),
+                backup: t('Sky: 2MASS (backup: the WISE map is not answering now)'),
+                'backup-nospherex': t('Sky: 2MASS (backup: the WISE and SPHEREx maps are not answering now)'),
+              }[skyLayer]
+            }
           </span>
         </div>
         {activeId && !scrolledDown && !simLabel && (
