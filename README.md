@@ -5,6 +5,15 @@
 **Try it:** https://skyshift-roan.vercel.app
 NASA Space Apps Challenge 2026 · Challenge: *Planet X and SPHEREx* · Team **SkyShift Murcia** (Murcia, Spain)
 
+### Try it in two minutes
+
+- WISE 0855, the coldest known brown dwarf: invisible in single SPHEREx images, it appears when each visit is stacked. https://skyshift-roan.vercel.app/?object=wise-0855-stacked
+- Barnard's Star, the fastest-moving star in our sky: press "Watch it move", then compare its motion with Gaia DR3. https://skyshift-roan.vercel.app/?object=barnard
+- Epsilon Indi B in Science mode: the Difference view leaves only the mover, and the Bands tab shows the same motion in four detectors. https://skyshift-roan.vercel.app/?mode=science&object=eps-indi-b
+- UX Orionis: a young star whose brightness changes between visits. https://skyshift-roan.vercel.app/?object=ux-orionis
+
+If NASA's IRSA archive is down (it was for most of the hackathon weekend), the guided tour still works, because its data are stored in our repository.
+
 ## What it is
 
 NASA's SPHEREx telescope photographs the whole sky in 102 infrared colours, coming back to every spot about every six months. Its archive is built for experts. SkyShift opens it to anyone: move around the sky, search a name or click any point, and SkyShift fetches every SPHEREx image of that spot, keeps the ones taken at the same wavelength, aligns them and plays them in order. Things that move, jump out. Things that change brightness, flicker.
@@ -12,6 +21,17 @@ NASA's SPHEREx telescope photographs the whole sky in 102 infrared colours, comi
 In short, the challenge asks for a public tool where you enter a position (RA and Dec) and see the SPHEREx images as a video, to spot what moves, tested on Barnard's Star, Epsilon Indi B, WISE 0855, RW Aurigae and R Draconis. SkyShift does exactly that, and more.
 
 Everything SkyShift flags is a **candidate**, never a discovery: SPHEREx pixels are about 6 arcseconds wide and we have about a year and a half of data so far (May 2025 to October 2026).
+
+## Why it matters for science
+
+- *A new use for SPHEREx data.* SPHEREx was built to map the infrared spectrum of the whole sky, not to hunt moving objects. SkyShift shows that its repeated visits can also measure motion: for Barnard's Star we get 11.5 ± 1.1″/yr, against 10.4″/yr from ESA's Gaia DR3, within the precision that 6″ pixels allow.
+- *Built-in checks against false alarms.* A real mover shifts the same way in every SPHEREx detector (Bands tab), leaves a before/after pair in the Difference view and does not sit on flagged pixels. Every candidate comes with that evidence attached.
+- *Faint, cold objects.* Stacking each visit reveals objects too faint for a single image, such as the brown dwarf WISE 0855 (signal-to-noise 17.7). Its spectrum rises between 4 and 5 µm, the signature of a very cold object: the kind of nearby, cold neighbour of the Sun that infrared surveys are best at finding.
+- *Better with every release.* The pipeline is open (MIT) and reruns with one command, and the web asks IRSA live, so each new SPHEREx visit lengthens the time baseline and makes the motion measurements more precise.
+
+## Open to everyone, checked by people who know
+
+Think of SkyShift as a Wikipedia of moving stars, but stricter. Anyone can explore every object and propose a candidate, but nobody can write directly onto the map. A proposal must include its coordinates, dates, wavelength and a source for every number. The team reviews it in public on GitHub, and only approved proposals appear on the map, always labelled as candidates, never as discoveries.
 
 ## What you can do
 
