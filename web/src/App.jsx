@@ -78,7 +78,7 @@ function tourObjectFor(text) {
 const DEFAULT_FOV = 0.5 // degrees
 // Label of the circle at the year-2000 catalogue position (shorter on phones, where it must fit the map).
 const catalogueLabel = () =>
-  window.matchMedia('(max-width: 760px)').matches
+  window.matchMedia('(max-width: 1280px)').matches
     ? t('Catalogue position (2000)')
     : t('Catalogue position in 2000: the object has moved since')
 
@@ -486,6 +486,9 @@ export default function App() {
           const pickSlice = (tries = 0) => {
             if (layer.added) {
               layer.setSliceNumber(SPHEREX_SLICE)
+              // Added on top of the base map (not covering it): while SPHEREx tiles load, or where they
+              // are empty, the stars of the base map still show instead of a black sky.
+              try { layer.setBlendingConfig(true) } catch { /* older Aladin: normal blending */ }
               if (simRef.current.dark) layer.setOpacity(0)
             }
             else if (tries < 50) setTimeout(() => pickSlice(tries + 1), 100)
