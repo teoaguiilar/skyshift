@@ -125,6 +125,33 @@ const answers = (url) => {
     .finally(() => clearTimeout(timer))
 }
 
+// Same Gaia DR3 stars from the VizieR copy at Harvard-CfA (catalogue I/355/gaiadr3, positions at epoch
+// 2016.0 like ESA's), used when ESA's Gaia archive does not answer. Same columns, brightest first.
+async function gaiaFromVizier(ra, dec, r, signal) {
+  const url =
+    'https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?' +
+    new URLSearchParams({
+      '-source': 'I/355/gaiadr3',
+      '-c': `${ra.toFixed(5)} ${dec >= 0 ? '+' : ''}${dec.toFixed(5)}`,
+      '-c.rd': r.toFixed(3),
+      '-out': 'RA_ICRS,DE_ICRS,pmRA,pmDE,Gmag,BP-RP,Plx,Source',
+      '-out.max': '500',
+      '-sort': 'Gmag',
+      Gmag: '<16',
+    })
+  const resp = await fetch(url, { signal })
+  if (!resp.ok) throw new Error(resp.status)
+  const num = (v) => (v.trim() === '' ? null : Number(v))
+  const stars = (await resp.text())
+    .split('\n')
+    .filter((l) => l && !l.startsWith('#'))
+    .slice(3) // column names, units, dashes
+    .map((l) => l.split('\t'))
+    .filter((c) => c.length >= 8 && Number.isFinite(Number(c[0])))
+    .map((c) => [num(c[0]), num(c[1]), num(c[2]), num(c[3]), num(c[4]), num(c[5]), num(c[6]), `Gaia DR3 ${c[7].trim()}`])
+  return { ra, dec, r, epoch: 2016.0, count: stars.length, stars, mirror: 'VizieR (CfA)' }
+}
+
 // Gaia DR3 stars (ESA), through our /api/gaia function. Off by default.
 const GAIA_MAX_FOV = 1 // degrees: only load stars when zoomed in
 const GAIA_EPOCH = 2016.0
@@ -594,15 +621,24 @@ export default function App() {
           const [ra, dec] = aladin.getRaDec()
           const seq = ++gaiaSeq
           setGaiaStatus({ key: 'loading…' })
+          const radius = Math.min(fov * 0.75, 0.5)
           try {
-            const ctrl = new AbortController()
-            const t = setTimeout(() => ctrl.abort(), 12000) // never hang the page
-            const r = await fetch(`/api/gaia?ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}&r=${Math.min(fov * 0.75, 0.5).toFixed(3)}`, {
-              signal: ctrl.signal,
-            })
-            clearTimeout(t)
-            if (!r.ok) throw new Error(r.status)
-            const data = await r.json()
+            let data = null
+            try {
+              const ctrl = new AbortController()
+              const t = setTimeout(() => ctrl.abort(), 10000) // never hang the page
+              const r = await fetch(`/api/gaia?ra=${ra.toFixed(5)}&dec=${dec.toFixed(5)}&r=${radius.toFixed(3)}`, { signal: ctrl.signal })
+              clearTimeout(t)
+              if (!r.ok) throw new Error(r.status)
+              data = await r.json()
+            } catch {
+              // ESA's archive did not answer: the same Gaia DR3 catalogue from the VizieR copy.
+              if (seq !== gaiaSeq) return
+              const ctrl = new AbortController()
+              const t = setTimeout(() => ctrl.abort(), 10000)
+              data = await gaiaFromVizier(ra, dec, radius, ctrl.signal)
+              clearTimeout(t)
+            }
             if (seq !== gaiaSeq || !gaiaRef.current.on) return
             gaiaRef.current.data = data
             gaiaRef.current.draw()
